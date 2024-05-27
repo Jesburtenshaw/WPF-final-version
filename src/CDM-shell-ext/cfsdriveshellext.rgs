@@ -2,7 +2,7 @@ HKCR
 {
 	NoRemove CLSID
 	{
-		ForceRemove {f70a8770-1f4b-4af5-90e4-35260bcd97df} = s 'CFS Drive'
+		ForceRemove {f70a8770-1f4b-4af5-90e4-35260bcd97df} = s 'CDM Drive'
 		{
 			ForceRemove val SortOrderIndex = d '&H00000042'
 			ForceRemove val System.IsPinnedToNamespaceTree = d '&H00000001'
@@ -12,7 +12,7 @@ HKCR
 			}
 			TypeLib = s '{09614f9a-0000-4e87-89e9-873111e4597a}'
 			Version = s '1.0'
-			ForceRemove val InfoTip = s 'CFS Drive'
+			ForceRemove val InfoTip = s 'CDM Drive'
 			ForceRemove DefaultIcon = s '%MODULE%,0'
 			ForceRemove ShellFolder
 			{
@@ -39,7 +39,7 @@ HKCU
 						{
 							NoRemove NameSpace
 							{
-								ForceRemove {f70a8770-1f4b-4af5-90e4-35260bcd97df} = s 'CFS Drive'
+								ForceRemove {f70a8770-1f4b-4af5-90e4-35260bcd97df} = s 'CDM Drive'
 							}
 						}
 					}
@@ -47,7 +47,7 @@ HKCU
 					{
 						NoRemove Approved
 						{
-							ForceRemove val {f70a8770-1f4b-4af5-90e4-35260bcd97df} = s 'CFS Drive'
+							ForceRemove val {f70a8770-1f4b-4af5-90e4-35260bcd97df} = s 'CDM Drive'
 						}
 					}
 				}
