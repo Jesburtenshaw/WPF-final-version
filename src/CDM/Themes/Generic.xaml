@@ -1,0 +1,625 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converter="clr-namespace:CDM.Converters">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/CDM;component/Themes/LightStyle.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!--<Style x:Key="DGCustomizedHeaderStyle"
+           TargetType="DataGridColumnHeader">
+        <EventSetter Event="Click"
+                     Handler="{Binding RecentHeaderCommand}" />
+    </Style>-->
+
+    <!--<converter:ArrowPathConverter x:Key="ArrowPathConverter" />-->
+
+    <Style x:Key="FolderMenuItemStyle" TargetType="MenuItem">
+        <Setter Property="Background"
+                Value="red" />
+        <Setter Property="Foreground"
+                Value="red" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="Red" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="FolderCMStyle" TargetType="ContextMenu">
+        <Setter Property="OverridesDefaultStyle"
+                Value="True" />
+        <Setter Property="SnapsToDevicePixels"
+                Value="True" />
+        <Setter Property="Grid.IsSharedSizeScope"
+                Value="true" />
+        <Setter Property="HasDropShadow"
+                Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContextMenu">
+                    <Border x:Name="Border"
+                            CornerRadius="10"
+                            Background="#B0B0B0"
+                            SnapsToDevicePixels="True"
+                            BorderThickness="0">
+                        <StackPanel ClipToBounds="True"
+                                    IsItemsHost="True"
+                                    KeyboardNavigation.DirectionalNavigation="Cycle"
+                                    Orientation="Vertical" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="btnSearch"
+           TargetType="Button">
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderBrush"
+                Value="Transparent" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="Height"
+                Value="40" />
+        <Setter Property="Width"
+                Value="40" />
+        <Setter Property="Padding"
+                Value="10 5" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+                            CornerRadius="0 3 3 0">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource OnSearchBtnMouseHover}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="backBtnStyle"
+           TargetType="Button">
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderBrush"
+                Value="Transparent" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="Height"
+                Value="40" />
+        <Setter Property="Width"
+                Value="40" />
+        <Setter Property="Padding"
+                Value="10 5" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+                            CornerRadius="3">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource OnNavigationBtnMouseHover}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="TextBox"
+           x:Key="txtSearchBoxStyle">
+        <Setter Property="Foreground"
+                Value="Black" />
+        <Setter Property="FontSize"
+                Value="15" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="Margin"
+                Value="25 0 0 0" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Center" />
+        <Setter Property="Height"
+                Value="40" />
+        <Setter Property="MinWidth"
+                Value="250" />
+        <Setter Property="HorizontalAlignment"
+                Value="Stretch" />
+        <!--<Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border Name="border">
+                        <ContentPresenter SnapsToDevicePixels="True"
+                                          TextBlock.Foreground="{TemplateBinding Foreground}"
+                                          Margin="10 0 0 0"
+                                          VerticalAlignment="Center"
+                                          Content="{TemplateBinding Text}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>-->
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="False" />
+            <Trigger Property="FocusVisualStyle"
+                     Value="{x:Null}" />
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="TabItemStyle"
+           TargetType="TabItem">
+        <Setter Property="FontSize"
+                Value="20" />
+        <Setter Property="FontWeight"
+                Value="Bold" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource WindowForegroundColor}" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="Padding"
+                Value="20 10" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Grid Name="Panel">
+                        <Border Name="border"
+                                BorderThickness="0 0 0 2">
+                            <ContentPresenter x:Name="TabContents"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              ContentSource="Header"
+                                              Margin="20 10"
+                                              Cursor="Hand" />
+                        </Border>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected"
+                                 Value="True">
+                            <Setter TargetName="border"
+                                    Property="BorderBrush"
+                                    Value="#1b72d1" />
+                            <Setter Property="Cursor"
+                                    Value="Hand" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="border"
+                                    Property="BorderBrush"
+                                    Value="#1b72d1" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DGStyle"
+           TargetType="DataGrid">
+        <Setter Property="FontSize"
+                Value="15" />
+        <Setter Property="Margin"
+                Value="5" />
+        <Setter Property="CanUserResizeColumns"
+                Value="False"/>
+        <Setter Property="CanUserReorderColumns"
+                Value="False"/>
+        <Setter Property="CanUserResizeRows"
+                Value="False"/>
+        <Setter Property="SelectionMode"
+                Value="Single" />
+        <Setter Property="GridLinesVisibility"
+                Value="None" />
+        <Setter Property="BorderBrush"
+                Value="Transparent" />
+        <Setter Property="ScrollViewer.CanContentScroll"
+                Value="True" />
+        <Setter Property="AutoGenerateColumns"
+                Value="False" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
+                Value="Hidden" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
+                Value="Hidden" />
+        <Setter Property="IsReadOnly"
+                Value="True" />
+        <Setter Property="HeadersVisibility"
+                Value="Column" />
+        <Setter Property="CanUserAddRows"
+                Value="False" />
+        <Setter Property="CanUserDeleteRows"
+                Value="False" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderThickness"
+                Value="0 0.5 0.5 0" />
+    </Style>
+
+    <Style x:Key="DGCellStyle"
+           TargetType="DataGridCell">
+        <Setter Property="Margin"
+                Value="0 5 0 5" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border BorderThickness="0"
+                            BorderBrush="Gray"
+                            Padding="10 0 0 0">
+                        <ContentPresenter />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="BorderBrush"
+                Value="Gray" />
+        <Setter Property="BorderThickness"
+                Value="1 0 0 0" />
+        <Setter Property="Height"
+                Value="40" />
+        <Style.Triggers>
+            <Trigger Property="IsSelected"
+                     Value="True">
+
+                <Setter Property="Foreground"
+                        Value="{DynamicResource WindowForegroundColor}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="DGRowStyle"
+           TargetType="DataGridRow">
+        <Setter Property="BorderBrush"
+                Value="#6b6b6b" />
+        <Setter Property="BorderThickness"
+                Value="0 0.5" />
+        <Setter Property="FontWeight"
+                Value="Regular" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#616161" />
+                <Setter Property="Foreground"
+                        Value="{DynamicResource WindowForegroundColor}" />
+            </Trigger>
+            <Trigger Property="IsSelected"
+                     Value="True">
+
+                <Setter Property="Foreground"
+                        Value="{DynamicResource WindowForegroundColor}" />
+
+                <Setter Property="Background"
+                        Value="#616161" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="DGHeaderStyle"
+           TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="FontSize"
+                Value="15" />
+        <Setter Property="HorizontalContentAlignment"
+                Value="Left" />
+        <Setter Property="BorderBrush"
+                Value="Gray" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource WindowForegroundColor}" />
+        <Setter Property="Height"
+                Value="40" />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Margin"
+                Value="0 5" />
+        <Setter Property="Padding"
+                Value="10 0" />
+    </Style>
+
+    <Style x:Key="tbtn"
+           TargetType="{x:Type ToggleButton}">
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Content">
+            <Setter.Value>
+
+                <Path Data="M409.862,148.561L265.052,3.75c-5.001-5-13.099-5-18.099,0L102.133,148.561c-5.001,5-5.001,13.099,0,18.099
+c5,5.001,13.099,5.001,18.099,0L243.198,43.703v455.492c0,7.074,5.726,12.8,12.8,12.8c7.074,0,12.8-5.726,12.8-12.8V43.703
+l122.965,122.965c5,5,13.099,5,18.099,0C414.863,161.66,414.863,153.57,409.862,148.561z"
+                      Height="30"
+                      Width="30"
+                      Stretch="Fill" />
+
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsChecked"
+                     Value="True">
+                <Setter Property="Content">
+                    <Setter.Value>
+
+                        <Path Data="M50.5,19.881c-1.104,0-2,0.896-2,2V72.17L33.193,56.609c-0.781-0.781-1.922-0.781-2.703,0
+		c-0.781,0.78-0.719,2.047,0.062,2.828l18.883,18.857c0.375,0.375,0.899,0.586,1.43,0.586s1.047-0.211,1.422-0.586l18.857-18.857
+		c0.781-0.781,0.783-2.048,0.002-2.828c-0.781-0.781-2.296-0.781-3.077,0L52.5,71.933V21.881C52.5,20.776,51.604,19.881,50.5,19.881
+		z"
+                              Height="30"
+                              Width="30"
+                              Stretch="Fill" />
+
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Centering"
+           TargetType="{x:Type TextBlock}">
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource WindowForegroundColor}" />
+    </Style>
+
+    <Style x:Key="driveListViewItemStyle"
+           TargetType="ListViewItem">
+        <!-- Change background color on mouse over -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListViewItem">
+                    <Border CornerRadius="3"
+                            Name="border">
+                        <ContentPresenter HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Top" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <DataTemplate x:Key="DriveTemplateStyle">
+        <Border Name="border"
+                Margin="0 12 32 12"
+                BorderThickness="1"
+                BorderBrush="#6b6b6b"
+                CornerRadius="3"
+                Width="440"
+                Height="80"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch"
+                Background="Transparent">
+                <!--Width="429"-->
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20*" />
+                    <ColumnDefinition Width="80*" />
+                </Grid.ColumnDefinitions>
+
+                <Path Data="M10.43,62.14V53.69H46.55A15.38,15.38,0,0,1,57,43.38V34.61H2.85A2.87,2.87,0,0,1,0,31.76V2.8a2.84,2.84,0,0,1,.84-2A2.89,2.89,0,0,1,2.33,0H120.54a2.88,2.88,0,0,1,1.5.79,2.84,2.84,0,0,1,.84,2v29a2.84,2.84,0,0,1-.84,2,2.88,2.88,0,0,1-2,.84H65.44v8.77A15.38,15.38,0,0,1,75.88,53.69h39.31v8.45H76a15.32,15.32,0,0,1-29.55,0ZM100.77,9.06a8.56,8.56,0,1,1-8.56,8.56,8.57,8.57,0,0,1,8.56-8.56ZM35,8h7.14V26.59H35V8ZM53.46,8H60.6V26.59H53.46V8ZM16.54,8h7.13V26.59H16.54V8ZM66.07,53.25a6.87,6.87,0,1,0,2,4.85,6.82,6.82,0,0,0-2-4.85Z"
+                      Grid.Row="0"
+                      Stretch="Fill"
+                      Grid.Column="0"
+                      Height="40"
+                      Width="45"
+                      Margin="5"
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      Fill="{DynamicResource DriveIcnPathFillColor}"
+                      Grid.RowSpan="2" />
+
+                <TextBlock Grid.Row="0"
+                           Grid.Column="1"
+                           FontSize="15"
+                           Foreground="{DynamicResource WindowForegroundColor}"
+                           VerticalAlignment="Bottom"
+                           Padding="10 0"
+                           FontWeight="Bold"
+                           Text="{Binding DriveName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock Grid.Row="1"
+                           Grid.Column="1"
+                           FontSize="15"
+                           Foreground="{DynamicResource WindowForegroundColor}"
+                           VerticalAlignment="Top"
+                           Text="{Binding DriveDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                           Padding="10 0" />
+            </Grid>
+        </Border>
+        <DataTemplate.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter TargetName="border"
+                        Property="Background"
+                        Value="{DynamicResource OnDriveBtnHoverBackground}" />
+                <Setter TargetName="border"
+                        Property="BorderBrush"
+                        Value="{DynamicResource OnDriveBtnHoverBorderBrush}" />
+                <Setter TargetName="border"
+                        Property="BorderThickness"
+                        Value="2" />
+            </Trigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <Style x:Key="QuickAccessListViewItemStyle"
+           TargetType="ListViewItem">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListViewItem">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            CornerRadius="3"
+                            VerticalAlignment="Top"
+                            TextBlock.Foreground="{DynamicResource WindowForegroundColor}"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Top" />
+                    </Border>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <DataTemplate x:Key="QuickAccessTemplateStyle">
+        <Border Name="border"
+                BorderThickness="1"
+                CornerRadius="3"
+                Height="60">
+            <Button Grid.Row="5"
+                    Style="{DynamicResource sidebarBtnStyle }">
+                <Button.Content>
+                    <StackPanel HorizontalAlignment="Stretch"
+                                Orientation="Horizontal">
+                        <Image Width="30"
+                               Height="30"
+                               Margin="5,0, 10,0"
+                               Source="Resources/icnDrive.png" />
+                        <TextBlock FontSize="15"
+                                   Foreground="{DynamicResource WindowForegroundColor}"
+                                   VerticalAlignment="Center"
+                                   Text="Test.user@gmail.com" />
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </Border>
+        <DataTemplate.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="true">
+                <Setter TargetName="border"
+                        Property="Background"
+                        Value="red" />
+            </Trigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <Style x:Key="driveBtnStyle"
+           TargetType="Button">
+        <Setter Property="Height"
+                Value="Auto" />
+        <Setter Property="Width"
+                Value="Auto" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="btnBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="Transparent"
+                            BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Left"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#5c5c5c" />
+                <Setter Property="BorderBrush"
+                        Value="White" />
+                <Setter Property="BorderThickness"
+                        Value="1" />
+            </Trigger>
+            <Trigger Property="IsPressed"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#b0b0b0" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="Border"
+           x:Key="SidebarBorder">
+        <Setter Property="Height"
+                Value="60" />
+        <Setter Property="CornerRadius"
+                Value="3" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#5c5c5c" />
+                <Setter Property="BorderBrush"
+                        Value="White" />
+                <Setter Property="BorderThickness"
+                        Value="1" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="sidebarBtnStyle"
+           TargetType="Button">
+        <Setter Property="Height"
+                Value="58" />
+        <Setter Property="Width"
+                Value="Auto" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="btnBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="Transparent"
+                            BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Left"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource OnSideBarBtnHoverBackground}" />
+                <Setter Property="BorderBrush"
+                        Value="{DynamicResource OnSideBarBtnHoverBorderBrush}" />
+                <Setter Property="BorderThickness"
+                        Value="1" />
+            </Trigger>
+            <Trigger Property="IsPressed"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource OnSideBarBtnPressedBackgroundcolor}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="IcnPathStyle"
+           TargetType="Path">
+        <Setter Property="Stretch"
+                Value="Fill" />
+        <Setter Property="Fill"
+                Value="{DynamicResource PathIcnFillColor}" />
+    </Style>
+</ResourceDictionary>

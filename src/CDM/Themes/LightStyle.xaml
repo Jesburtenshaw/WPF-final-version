@@ -1,0 +1,52 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="WindowBackgroundColor"
+                     Color="White" />
+    <SolidColorBrush x:Key="WindowForegroundColor"
+                     Color="#444444" />
+    <SolidColorBrush x:Key="BackBtnNavigationColor"
+                     Color="White" />
+    <SolidColorBrush x:Key="SeachBoxBorderColor"
+                     Color="#5c5c5c" />
+    <SolidColorBrush x:Key="SeachBoxBackgroundColor"
+                     Color="White" />
+    <SolidColorBrush x:Key="SeachBoxPlaceHolderColor"
+                     Color="Black" />
+    <SolidColorBrush x:Key="PathIcnFillColor"
+                     Color="#444444" />
+    <SolidColorBrush x:Key="DriveIcnPathFillColor"
+                     Color="#444444" />
+    <SolidColorBrush x:Key="OnSearchBtnMouseHover"
+                     Color="WhiteSmoke" />
+
+    <!--sidebarbtn-->
+    <SolidColorBrush x:Key="OnSideBarBtnHoverBackground"
+                     Color="White" />
+    <SolidColorBrush x:Key="OnSideBarBtnHoverBorderBrush"
+                     Color="Black" />
+
+    <SolidColorBrush x:Key="OnSideBarBtnPressedBackgroundcolor"
+                     Color="#5c5c5c" />
+
+
+    <SolidColorBrush x:Key="OnDGHoverColor"
+                     Color="#616161" />
+
+
+    <!--drivebtn-->
+    <SolidColorBrush x:Key="OnDriveBtnHoverBackground"
+                     Color="White" />
+    <SolidColorBrush x:Key="OnDriveBtnHoverBorderBrush"
+                     Color="#5c5c5c" />
+
+    <!--NavigationBtn-->
+    <SolidColorBrush x:Key="OnNavigationBtnMouseHover"
+                     Color="WhiteSmoke" />
+
+    <SolidColorBrush x:Key="DriveNavigationBtnBackgrounfColor"
+                     Color="Transparent" />
+    <SolidColorBrush x:Key="DriveNavigationBtnIcnPath"
+                     Color="Black" />
+
+
+</ResourceDictionary>

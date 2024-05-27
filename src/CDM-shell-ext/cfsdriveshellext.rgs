@@ -1,0 +1,57 @@
+HKCR
+{
+	NoRemove CLSID
+	{
+		ForceRemove {f70a8770-1f4b-4af5-90e4-35260bcd97df} = s 'CFS Drive'
+		{
+			ForceRemove val SortOrderIndex = d '&H00000042'
+			ForceRemove val System.IsPinnedToNamespaceTree = d '&H00000001'
+			InprocServer32 = s '%MODULE%'
+			{
+				ForceRemove val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{09614f9a-0000-4e87-89e9-873111e4597a}'
+			Version = s '1.0'
+			ForceRemove val InfoTip = s 'CFS Drive'
+			ForceRemove DefaultIcon = s '%MODULE%,0'
+			ForceRemove ShellFolder
+			{
+				ForceRemove val Attributes = d '&Hf080004d'
+				ForceRemove val FolderValueFlags = d '&H00000028'
+			}
+		}
+	}
+}
+
+HKCU
+{
+	NoRemove Software
+	{
+		NoRemove Microsoft
+		{
+			NoRemove Windows
+			{
+				NoRemove CurrentVersion
+				{
+					NoRemove Explorer
+					{
+						NoRemove Desktop
+						{
+							NoRemove NameSpace
+							{
+								ForceRemove {f70a8770-1f4b-4af5-90e4-35260bcd97df} = s 'CFS Drive'
+							}
+						}
+					}
+					NoRemove 'Shell Extensions'
+					{
+						NoRemove Approved
+						{
+							ForceRemove val {f70a8770-1f4b-4af5-90e4-35260bcd97df} = s 'CFS Drive'
+						}
+					}
+				}
+			}
+		}
+	}
+}

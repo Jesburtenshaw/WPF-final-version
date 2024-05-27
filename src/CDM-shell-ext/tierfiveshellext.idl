@@ -1,0 +1,77 @@
+// CDM-shell-ext.idl : IDL source for CDM-shell-ext
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (tierfiveshellext.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(AC80FE12-31FD-4374-9E71-A6ED7D605FA0),
+	dual,
+	nonextensible,
+	helpstring("IAmShellPlugin Interface"),
+	pointer_default(unique)
+]
+interface IFSShellPlugin : IDispatch
+{
+	[id(1), helpstring("Init function")]
+	HRESULT Init();
+
+	[id(2), helpstring("Done function")]
+	HRESULT Done();
+
+	[id(3), helpstring("GetRootWindow function")]
+	HRESULT GetRootWindow([in] HWND hwndOwner, [out, retval] HWND* phwnd);
+};
+
+[
+	object,
+	uuid(b203cd4b-9f89-4949-9aa2-8ffe7ac02de9),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface ICfsDriveShellExt : IUnknown
+{
+};
+
+[
+	object,
+	uuid(252BA8FF-F9DC-4758-B72C-17C05D53BC72),
+
+	helpstring("ICfsDriveShellView Interface"),
+	pointer_default(unique)
+]
+interface ICfsDriveShellView : IUnknown
+{
+};
+
+[
+	uuid(09614f9a-0000-4e87-89e9-873111e4597a),
+	version(1.0),
+]
+library tierfiveshellextLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(f70a8770-1f4b-4af5-90e4-35260bcd97df)
+	]
+	coclass CfsDriveShellExt
+	{
+		[default] interface ICfsDriveShellExt;
+	};
+
+	[
+		uuid(61963ADC-3165-404C-9381-32C21CD3C754),
+		helpstring("FsDriveShellView Class")
+	]
+	coclass FsDriveShellView
+	{
+		[default] interface ICfsDriveShellView;
+	};
+};
+
+import "shobjidl.idl";
