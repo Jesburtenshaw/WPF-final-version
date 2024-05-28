@@ -8,6 +8,11 @@ namespace CDM.Common
 {
     public static class ShortcutHelper
     {
+        /// <summary>
+        /// This method return file location based on shortcut
+        /// </summary>
+        /// <param name="lnkPath"></param>
+        /// <returns></returns>
         public static string GetLnkTarget(string lnkPath)
         {
             try
@@ -31,7 +36,13 @@ namespace CDM.Common
                 return null;
             }
         }
-
+        /// <summary>
+        /// This method create shortcut based on supply path at
+        /// target path location.
+        /// </summary>
+        /// <param name="lnkPath"></param>
+        /// <param name="targetPath"></param>
+        /// <returns></returns>
         public static bool CreateLnk(string lnkPath, string targetPath)
         {
             try

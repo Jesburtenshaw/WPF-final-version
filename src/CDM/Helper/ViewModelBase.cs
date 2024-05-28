@@ -9,8 +9,11 @@ namespace CDM.Helper
 {
     class ViewModelBase : INotifyPropertyChanged
     {
+        #region :: Event Variables ::
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler CanExecuteChanged;
+        #endregion
+        #region :: Methods ::
         public void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -23,5 +26,6 @@ namespace CDM.Helper
         {
             throw new Exception();
         }
+        #endregion
     }
 }

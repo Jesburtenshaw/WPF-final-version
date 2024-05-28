@@ -12,6 +12,14 @@ namespace CDM.Helper
 {
     internal class ResourceDictionaryManager
     {
+        #region :: Methods ::
+        /// <summary>
+        /// This method used to Update or merge Dictionary of resources
+        /// </summary>
+        /// <param name="resourceLookup"></param>
+        /// <param name="newResourceUri"></param>
+        /// <param name="uc"></param>
+        /// <returns></returns>
         public static bool UpdateDictionary(string resourceLookup, Uri newResourceUri,UserControl uc)
         {
             Collection<ResourceDictionary> applicationDictionaries = GetApplicationMergedDictionaries(uc);
@@ -42,16 +50,25 @@ namespace CDM.Helper
 
             return false;
         }
-
+        /// <summary>
+        /// This method merge dictionaries
+        /// </summary>
+        /// <param name="uc"></param>
+        /// <returns></returns>
         private static Collection<ResourceDictionary> GetApplicationMergedDictionaries(UserControl uc)
         {
             return uc.Resources.MergedDictionaries;
             //return Application.Current.Resources.MergedDictionaries;
         }
-
+        /// <summary>
+        /// This method is used to update dictionary
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <param name="value"></param>
         public static void UpdateResourceColor(string resourceName, object value)
         {
             Application.Current.Resources[resourceName] = value;
         }
+        #endregion
     }
 }

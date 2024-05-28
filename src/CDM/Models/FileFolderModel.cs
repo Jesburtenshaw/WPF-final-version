@@ -10,6 +10,7 @@ namespace CDM.Models
 {
     public class FileFolderModel : INotifyPropertyChanged
     {
+        #region :: Properties ::
         public string Path { get; set; }
         public DateTime LastModifiedDateTime { get; set; }
         public BitmapSource IconSource { get; set; }
@@ -73,12 +74,17 @@ namespace CDM.Models
                 OnPropertyChanged(nameof(isDefault));
             }
         }
-
+        #endregion
+        #region :: Event Handler ::
         public event PropertyChangedEventHandler PropertyChanged;
-
+        /// <summary>
+        /// This method will execute when poperty change
+        /// </summary>
+        /// <param name="propertyName"></param>
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }

@@ -10,6 +10,7 @@ namespace CDM.Models
 {
     public class FilterConditionModel : INotifyPropertyChanged
     {
+        #region :: Properties ::
         public string Code { get; set; }
         public string Name { get; set; }
 
@@ -26,7 +27,12 @@ namespace CDM.Models
                 OnPropertyChanged(nameof(IsSelected));
             }
         }
-
+        public static ObservableCollection<FilterConditionModel> Types { get; set; }
+        public static ObservableCollection<FilterConditionModel> GlobalLocations { get; set; }
+        public static ObservableCollection<FilterConditionModel> DirveLocations { get; set; }
+        public static ObservableCollection<FilterConditionModel> DirectoryLocations { get; set; }
+        #endregion
+        #region :: Constructor ::
         static FilterConditionModel()
         {
             Types = new ObservableCollection<FilterConditionModel>();
@@ -46,17 +52,17 @@ namespace CDM.Models
             DirectoryLocations.Add(new FilterConditionModel { Code = "CurDrive", Name = "This drive" });
             DirectoryLocations.Add(new FilterConditionModel { Code = "CurDir", Name = "This directory" });
         }
-
-        public static ObservableCollection<FilterConditionModel> Types { get; set; }
-        public static ObservableCollection<FilterConditionModel> GlobalLocations { get; set; }
-        public static ObservableCollection<FilterConditionModel> DirveLocations { get; set; }
-        public static ObservableCollection<FilterConditionModel> DirectoryLocations { get; set; }
-
+        #endregion
+        #region :: Event Handler ::
         public event PropertyChangedEventHandler PropertyChanged;
-
+        /// <summary>
+        /// This method will execute when property change
+        /// </summary>
+        /// <param name="propertyName"></param>
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }

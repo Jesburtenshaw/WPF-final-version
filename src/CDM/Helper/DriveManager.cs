@@ -14,9 +14,15 @@ namespace CDM.Helper
 {
     public static class DriveManager
     {
+        #region ::Variables::
         public static ObservableCollection<DriveModel> DriveList = new ObservableCollection<DriveModel>();
         public static ObservableCollection<FilterConditionModel> Drives = new ObservableCollection<FilterConditionModel>();
-
+        #endregion
+        #region ::Methods::
+        /// <summary>
+        /// This method return as tuple of Drive Items based on available in current system
+        /// </summary>
+        /// <returns></returns>
         public static Tuple<ObservableCollection<DriveModel>, ObservableCollection<FilterConditionModel>> GetDrivesItem()
         {
             var fcm = new FilterConditionModel
@@ -62,7 +68,35 @@ namespace CDM.Helper
             }
             return new Tuple<ObservableCollection<DriveModel>, ObservableCollection<FilterConditionModel>>(DriveList, Drives);
         }
-
+        public static async Task Check(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                await Task.Delay(1000);
+                if (ct.IsCancellationRequested)
+                {
+                    break;
+                }
+                DriveInfo[] _drives = DriveInfo.GetDrives().Where(item => item.DriveType == DriveType.Network).ToArray();
+                var _driveNameList = _drives.Select(item => item.Name).ToList();
+                var result = true;
+                foreach (var drive in DriveList)
+                {
+                    result = result && _driveNameList.Contains(drive.DriveName);
+                    if (!result)
+                    {
+                        DrivesStateChanged?.Invoke(null, false);
+                        break;
+                    }
+                }
+                if (result)
+                {
+                    DrivesStateChanged?.Invoke(null, true);
+                }
+            }
+        }
+        #endregion
+        #region ::Events::
         public static event EventHandler DriveIsSelectedChanged;
 
         private static void FilterConditionModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -101,33 +135,6 @@ namespace CDM.Helper
         }
 
         public static event EventHandler<bool> DrivesStateChanged;
-
-        public static async Task Check(CancellationToken ct)
-        {
-            while (!ct.IsCancellationRequested)
-            {
-                await Task.Delay(1000);
-                if (ct.IsCancellationRequested)
-                {
-                    break;
-                }
-                DriveInfo[] _drives = DriveInfo.GetDrives().Where(item => item.DriveType == DriveType.Network).ToArray();
-                var _driveNameList = _drives.Select(item => item.Name).ToList();
-                var result = true;
-                foreach (var drive in DriveList)
-                {
-                    result = result && _driveNameList.Contains(drive.DriveName);
-                    if (!result)
-                    {
-                        DrivesStateChanged?.Invoke(null, false);
-                        break;
-                    }
-                }
-                if (result)
-                {
-                    DrivesStateChanged?.Invoke(null, true);
-                }
-            }
-        }
+        #endregion
     }
 }

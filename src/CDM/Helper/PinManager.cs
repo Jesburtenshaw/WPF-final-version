@@ -14,11 +14,14 @@ namespace CDM.Helper
 {
     public static class PinManager
     {
+        #region :: Variables ::
         // Path to the Taskbar pinned items folder
         private static string pinFolder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
 
         public static ObservableCollection<FileFolderModel> PinnedItemList = new ObservableCollection<FileFolderModel>();
+        #endregion
 
+        #region :: Methods ::
         public static ObservableCollection<FileFolderModel> GetPinnedItems()
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -128,5 +131,6 @@ namespace CDM.Helper
             PinnedItemList.Remove(item);
             CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
         }
+        #endregion
     }
 }

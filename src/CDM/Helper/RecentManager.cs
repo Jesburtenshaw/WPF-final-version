@@ -14,10 +14,13 @@ namespace CDM.Helper
 {
     public static class RecentManager
     {
+        #region :: Variables ::
         private static string recentFolder = Environment.GetFolderPath(Environment.SpecialFolder.Recent);
 
         public static ObservableCollection<FileFolderModel> RecentItemList = new ObservableCollection<FileFolderModel>();
+        #endregion
 
+        #region :: Methods ::
         public static ObservableCollection<FileFolderModel> GetRecentItems()
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -110,5 +113,6 @@ namespace CDM.Helper
             RecentItemList.Remove(item);
             CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
         }
+        #endregion
     }
 }

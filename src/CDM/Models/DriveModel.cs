@@ -9,6 +9,7 @@ namespace CDM.Models
 {
     public class DriveModel : INotifyPropertyChanged
     {
+        #region :: Properties ::
         public string DriveName { get; set; }
         public string DriveDescription { get; set; }
         public string Type { get; set; } = "Drive";
@@ -26,12 +27,17 @@ namespace CDM.Models
                 OnPropertyChanged(nameof(IsPined));
             }
         }
-
+        #endregion
+        #region :: Event Handler ::
         public event PropertyChangedEventHandler PropertyChanged;
-
+        /// <summary>
+        /// This method will execute when property change
+        /// </summary>
+        /// <param name="propertyName"></param>
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }

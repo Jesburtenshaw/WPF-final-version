@@ -9,6 +9,7 @@ namespace CDM.Models
 {
     public class DragDropTaskModel : INotifyPropertyChanged
     {
+        #region :: Properties ::
         private bool fromLocalToCDM;
         public bool FromLocalToCDM
         {
@@ -92,12 +93,13 @@ namespace CDM.Models
                 OnPropertyChanged(nameof(ProcessedPercent100));
             }
         }
-
+        #endregion
         public event PropertyChangedEventHandler PropertyChanged;
-
+        #region :: Methods ::
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }

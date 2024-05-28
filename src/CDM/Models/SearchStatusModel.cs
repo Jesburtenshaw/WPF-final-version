@@ -9,6 +9,7 @@ namespace CDM.Models
 {
     public class SearchStatusModel : INotifyPropertyChanged
     {
+        #region :: Properties ::
         private string title;
         public string Title
         {
@@ -162,12 +163,17 @@ namespace CDM.Models
                 OnPropertyChanged(nameof(IsLoadingItems));
             }
         }
-
+        #endregion
+        #region :: Event Handler ::
         public event PropertyChangedEventHandler PropertyChanged;
-
+        /// <summary>
+        /// This method will execute when property changed
+        /// </summary>
+        /// <param name="propertyName"></param>
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }
