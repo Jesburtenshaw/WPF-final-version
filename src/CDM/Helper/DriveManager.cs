@@ -38,7 +38,7 @@ namespace CDM.Helper
 
             try
             {
-                DriveInfo[] drives = DriveInfo.GetDrives().Where(item => item.DriveType == DriveType.Network).ToArray();
+                DriveInfo[] drives = DriveInfo.GetDrives().Where(item => item.DriveType == DriveType.Network || item.DriveType == DriveType.Fixed).ToArray();
                 foreach (DriveInfo drive in drives)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
@@ -77,7 +77,7 @@ namespace CDM.Helper
                 {
                     break;
                 }
-                DriveInfo[] _drives = DriveInfo.GetDrives().Where(item => item.DriveType == DriveType.Network).ToArray();
+                DriveInfo[] _drives = DriveInfo.GetDrives().Where(item => item.DriveType == DriveType.Network || item.DriveType == DriveType.Fixed).ToArray();
                 var _driveNameList = _drives.Select(item => item.Name).ToList();
                 var result = true;
                 foreach (var drive in DriveList)

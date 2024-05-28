@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Management;
 using System.Text;
@@ -22,6 +23,7 @@ using System.Windows.Threading;
 using CDM.Common;
 using CDM.Helper;
 using CDM.ViewModels;
+using Microsoft.VisualBasic.FileIO;
 using Microsoft.Win32;
 
 namespace CDM.UserControls
@@ -120,16 +122,32 @@ namespace CDM.UserControls
         }
         private void UserControl_Drop(object sender, DragEventArgs e)
         {
-            var allowDragAndDrop = ConfigurationManager.AppSettings["AllowDragAndDrop"] == "true";
-            if (!allowDragAndDrop) return;
+            //var allowDragAndDrop = ConfigurationManager.AppSettings["AllowDragAndDrop"] == "true";
+            //if (!allowDragAndDrop) return;
 
             e.Handled = true;
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                foreach (string file in files)
+                string destinationPath = vm.CurFolder.Path == null ? vm.CurrentDrivePath : vm.CurFolder.Path;
+                if (!string.IsNullOrEmpty(destinationPath))
                 {
-                    // Do something with the file (e.g., display the file path in the TextBox)
+                    bool isDirectory = false;
+                    string fileName = "";
+                    foreach (string file in files)
+                    {
+                        isDirectory = !System.IO.Path.HasExtension(file);
+                        fileName = System.IO.Path.GetFileName(file);
+                        if (isDirectory)
+                        {
+                            FileSystem.CopyDirectory(file, destinationPath + "\\" + fileName, UIOption.AllDialogs, UICancelOption.DoNothing);                            
+                        }
+                        else
+                        {
+                            FileSystem.CopyFile(file, destinationPath + fileName, UIOption.AllDialogs, UICancelOption.DoNothing);
+                        }
+                    }
+                    vm.NavigateToFolder(destinationPath);
                 }
             }
             else if (e.Data.GetDataPresent("Shell IDList Array"))
@@ -157,6 +175,10 @@ namespace CDM.UserControls
         }
         #endregion
         #region :: Methods ::
+        //private void RefreshList(List<currentLocation>)
+        //{
+        //    CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
+        //}
         private void ProcessShellObjects(System.Runtime.InteropServices.ComTypes.IDataObject shellObjects)
         {
             // Implementation for processing shell objects
