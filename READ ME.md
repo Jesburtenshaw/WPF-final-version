@@ -6,11 +6,11 @@ CDM.dll
 CDMWrapper.dll 
 Microsoft.Expression.Interactions.dll 
 System.Windows.Interactivity.dll 
-tierfive-shell-ext.dll
+CDM-shell-ext.dll
 
 src\_bin\output
 &
-src\tierfive-shell-ext
+src\CDM-shell-ext
 
 3. Register extension 
 
@@ -19,11 +19,11 @@ src\tierfive-shell-ext
 
 Register
 --------
-regsvr32 tierfive-shell-ext.dll
+regsvr32 CDM-shell-ext.dll
 
 Unregister
 -----------
-regsvr32 /u tierfive-shell-ext.dll
+regsvr32 /u CDM-shell-ext.dll
 
 
-Latest Path: ..\src\_bin\output\tierfive-shell-ext.dll
+Latest Path: ..\src\_bin\output\CDM-shell-ext.dll
