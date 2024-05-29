@@ -195,4 +195,10 @@
     <None Include="Resources\Image1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetDir)\Microsoft.Expression.Interactions.dll" "D:\Projects\tierfive\WPF-final-version\src\_bin\output\" /Y /I /R /D
+xcopy "$(TargetDir)\System.Windows.Interactivity.dll" "D:\Projects\tierfive\WPF-final-version\src\_bin\output\" /Y /I /R /D
+xcopy "$(TargetDir)\Microsoft.VisualBasic.dll" "D:\Projects\tierfive\WPF-final-version\src\_bin\output\" /Y /I /R /D
+xcopy "$(TargetDir)\CDM.dll" "D:\Projects\tierfive\WPF-final-version\src\_bin\output\" /Y /I /R /D</PostBuildEvent>
+  </PropertyGroup>
 </Project>
