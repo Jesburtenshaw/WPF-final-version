@@ -1,29 +1,29 @@
 #include "pch.h"
-#include "fsdriveshellview.h"
+#include "CDMDriveShellView.h"
 
-UINT CfsDriveShellView::sm_uListID = 101;
+UINT CDMDriveShellView::sm_uListID = 101;
 
-CfsDriveShellView::CfsDriveShellView()
+CDMDriveShellView::CDMDriveShellView()
 	: m_uUIState(SVUIA_DEACTIVATE),
 	m_hwndParent(nullptr),
 	m_hMenu(nullptr),
 	m_pContainingFolder(nullptr)
 {
-	LOGINFO(_MainApplication->GetLogger(), L"CfsDriveShellView constructor called");
+	LOGINFO(_MainApplication->GetLogger(), L"CDMDriveShellView constructor called");
 }
 
-CfsDriveShellView::~CfsDriveShellView()
+CDMDriveShellView::~CDMDriveShellView()
 {
-	LOGINFO(_MainApplication->GetLogger(), L"CfsDriveShellView destructor called");
+	LOGINFO(_MainApplication->GetLogger(), L"CDMDriveShellView destructor called");
 }
 
-HRESULT CfsDriveShellView::FinalConstruct()
+HRESULT CDMDriveShellView::FinalConstruct()
 {
 	LOGINFO(_MainApplication->GetLogger(), L"FinalConstruct called");
 	return S_OK;
 }
 
-void CfsDriveShellView::FinalRelease()
+void CDMDriveShellView::FinalRelease()
 {
 	LOGINFO(_MainApplication->GetLogger(), L"FinalRelease called. Release the container folder");
 	m_pContainingFolder.Release();
@@ -31,7 +31,7 @@ void CfsDriveShellView::FinalRelease()
 }
 
 
-IFACEMETHODIMP CfsDriveShellView::GetWindow(_Out_ HWND* phwnd)
+IFACEMETHODIMP CDMDriveShellView::GetWindow(_Out_ HWND* phwnd)
 {
 	try
 	{
@@ -46,7 +46,7 @@ IFACEMETHODIMP CfsDriveShellView::GetWindow(_Out_ HWND* phwnd)
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::ContextSensitiveHelp(_In_ BOOL fEnterMode)
+IFACEMETHODIMP CDMDriveShellView::ContextSensitiveHelp(_In_ BOOL fEnterMode)
 {
 	try
 	{
@@ -87,7 +87,7 @@ HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant params[]
 	return S_OK;
 }
 
-void CfsDriveShellView::LoadCDM(HWND hWnd)
+void CDMDriveShellView::LoadCDM(HWND hWnd)
 {
 	m_pCLRLoader = std::make_unique<CCLRLoaderSimple>();
 	HRESULT hr = m_pCLRLoader->CreateInstance(L"CDMWrapper", L"CDMWrapper.CDMWrapper", &m_cdmPtr);
@@ -106,7 +106,7 @@ void CfsDriveShellView::LoadCDM(HWND hWnd)
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::CreateViewWindow(_In_ LPSHELLVIEW pPrevious, _In_ LPCFOLDERSETTINGS pfs, _In_ LPSHELLBROWSER psb, _In_ LPRECT prcView, _Out_ HWND* phWnd)
+IFACEMETHODIMP CDMDriveShellView::CreateViewWindow(_In_ LPSHELLVIEW pPrevious, _In_ LPCFOLDERSETTINGS pfs, _In_ LPSHELLBROWSER psb, _In_ LPRECT prcView, _Out_ HWND* phWnd)
 {
 	try
 	{
@@ -137,7 +137,7 @@ IFACEMETHODIMP CfsDriveShellView::CreateViewWindow(_In_ LPSHELLVIEW pPrevious, _
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::DestroyViewWindow()
+IFACEMETHODIMP CDMDriveShellView::DestroyViewWindow()
 {
 	try
 	{
@@ -159,7 +159,7 @@ IFACEMETHODIMP CfsDriveShellView::DestroyViewWindow()
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::GetCurrentInfo(_Out_ LPFOLDERSETTINGS pfs)
+IFACEMETHODIMP CDMDriveShellView::GetCurrentInfo(_Out_ LPFOLDERSETTINGS pfs)
 {
 	try
 	{
@@ -174,7 +174,7 @@ IFACEMETHODIMP CfsDriveShellView::GetCurrentInfo(_Out_ LPFOLDERSETTINGS pfs)
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::Refresh()
+IFACEMETHODIMP CDMDriveShellView::Refresh()
 {
 	try
 	{
@@ -188,7 +188,7 @@ IFACEMETHODIMP CfsDriveShellView::Refresh()
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::UIActivate(_In_ UINT uState)
+IFACEMETHODIMP CDMDriveShellView::UIActivate(_In_ UINT uState)
 {
 	try
 	{
@@ -210,7 +210,7 @@ IFACEMETHODIMP CfsDriveShellView::UIActivate(_In_ UINT uState)
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::AddPropertySheetPages(_In_ DWORD dwReserved, _In_ LPFNSVADDPROPSHEETPAGE pfn, _In_ LPARAM lparam)
+IFACEMETHODIMP CDMDriveShellView::AddPropertySheetPages(_In_ DWORD dwReserved, _In_ LPFNSVADDPROPSHEETPAGE pfn, _In_ LPARAM lparam)
 {
 	try
 	{
@@ -224,7 +224,7 @@ IFACEMETHODIMP CfsDriveShellView::AddPropertySheetPages(_In_ DWORD dwReserved, _
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::EnableModeless(_In_ BOOL fEnable)
+IFACEMETHODIMP CDMDriveShellView::EnableModeless(_In_ BOOL fEnable)
 {
 	try
 	{
@@ -238,7 +238,7 @@ IFACEMETHODIMP CfsDriveShellView::EnableModeless(_In_ BOOL fEnable)
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::GetItemObject(_In_ UINT uItem, _In_ REFIID riid, _Out_ LPVOID* ppv)
+IFACEMETHODIMP CDMDriveShellView::GetItemObject(_In_ UINT uItem, _In_ REFIID riid, _Out_ LPVOID* ppv)
 {
 	try
 	{
@@ -252,7 +252,7 @@ IFACEMETHODIMP CfsDriveShellView::GetItemObject(_In_ UINT uItem, _In_ REFIID rii
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::SaveViewState()
+IFACEMETHODIMP CDMDriveShellView::SaveViewState()
 {
 	try
 	{
@@ -266,7 +266,7 @@ IFACEMETHODIMP CfsDriveShellView::SaveViewState()
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::SelectItem(_In_ PCUITEMID_CHILD pidlItem, _In_ SVSIF uFlags)
+IFACEMETHODIMP CDMDriveShellView::SelectItem(_In_ PCUITEMID_CHILD pidlItem, _In_ SVSIF uFlags)
 {
 	try
 	{
@@ -280,7 +280,7 @@ IFACEMETHODIMP CfsDriveShellView::SelectItem(_In_ PCUITEMID_CHILD pidlItem, _In_
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::TranslateAccelerator(LPMSG msg)
+IFACEMETHODIMP CDMDriveShellView::TranslateAccelerator(LPMSG msg)
 {
 	try
 	{
@@ -294,7 +294,7 @@ IFACEMETHODIMP CfsDriveShellView::TranslateAccelerator(LPMSG msg)
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::QueryStatus(_In_ const GUID* pguidCmdGroup, _In_ ULONG cCmds, _In_ OLECMD prgCmds[], _Out_ OLECMDTEXT* pCmdText)
+IFACEMETHODIMP CDMDriveShellView::QueryStatus(_In_ const GUID* pguidCmdGroup, _In_ ULONG cCmds, _In_ OLECMD prgCmds[], _Out_ OLECMDTEXT* pCmdText)
 {
 	try
 	{
@@ -351,7 +351,7 @@ IFACEMETHODIMP CfsDriveShellView::QueryStatus(_In_ const GUID* pguidCmdGroup, _I
 	}
 }
 
-IFACEMETHODIMP CfsDriveShellView::Exec(_In_ const GUID* pguidCmdGroup, _In_ DWORD nCmdID, _In_ DWORD nCmdexecopt, _In_ VARIANT* pvaIn, _Out_ VARIANT* pvaOut)
+IFACEMETHODIMP CDMDriveShellView::Exec(_In_ const GUID* pguidCmdGroup, _In_ DWORD nCmdID, _In_ DWORD nCmdexecopt, _In_ VARIANT* pvaIn, _Out_ VARIANT* pvaOut)
 {
 	try
 	{
@@ -392,7 +392,7 @@ IFACEMETHODIMP CfsDriveShellView::Exec(_In_ const GUID* pguidCmdGroup, _In_ DWOR
 	}
 }
 
-LRESULT CfsDriveShellView::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CDMDriveShellView::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	try
 	{
@@ -420,7 +420,7 @@ LRESULT CfsDriveShellView::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	}
 }
 
-LRESULT CfsDriveShellView::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CDMDriveShellView::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	try
 	{
@@ -438,7 +438,7 @@ LRESULT CfsDriveShellView::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	}
 }
 
-LRESULT CfsDriveShellView::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CDMDriveShellView::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	try
 	{
@@ -458,7 +458,7 @@ LRESULT CfsDriveShellView::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	}
 }
 
-LRESULT CfsDriveShellView::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CDMDriveShellView::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	try
 	{
@@ -472,13 +472,13 @@ LRESULT CfsDriveShellView::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam
 	}
 }
 
-void CfsDriveShellView::Init(CComPtr<IShellFolder>& pContainingFolder)
+void CDMDriveShellView::Init(CComPtr<IShellFolder>& pContainingFolder)
 {
 	m_pContainingFolder = pContainingFolder;
 }
 
 
-void CfsDriveShellView::_HandleActivate(UINT uState)
+void CDMDriveShellView::_HandleActivate(UINT uState)
 {
 	LOGINFO(_MainApplication->GetLogger(), L"Undo our previous changes to the menu");
 	_HandleDeactivate();
@@ -496,7 +496,7 @@ void CfsDriveShellView::_HandleActivate(UINT uState)
 	m_uUIState = uState;
 }
 
-void CfsDriveShellView::_HandleDeactivate()
+void CDMDriveShellView::_HandleDeactivate()
 {
 	if (SVUIA_DEACTIVATE != m_uUIState)
 	{

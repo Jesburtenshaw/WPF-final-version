@@ -4,7 +4,7 @@
 #include "pch.h"
 #include "framework.h"
 #include "resource.h"
-#include "tierfiveshellext_i.h"
+#include "cdmshellext_i.h"
 #include "dllmain.h"
 #include "xdlldata.h"
 

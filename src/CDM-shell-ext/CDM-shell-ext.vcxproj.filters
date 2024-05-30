@@ -34,9 +34,6 @@
     <ClInclude Include="xdlldata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tierfiveshellext_i.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -70,13 +67,16 @@
     <ClInclude Include="shellhelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cfsdriveshellext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="fsdriveshellview.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="clrloadersimple.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CDMShellExt_i.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CDMDriveShellView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CDMDriveShellExt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -90,9 +90,6 @@
     <ClCompile Include="xdlldata.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tierfiveshellext_i.c">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -102,13 +99,16 @@
     <ClCompile Include="clrloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cfsdriveshellext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fsdriveshellview.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="clrloadersimple.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CDMShellExt_i.c">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CDMDriveShellView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CDMDriveShellExt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -124,17 +124,17 @@
     <None Include="CDM-shell-ext.def">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="cfsdriveshellext.rgs">
+    <None Include="CDMDriveShellExt.rgs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="tierfiveshellext.idl">
+    <Midl Include="CDMShellExt.idl">
       <Filter>Source Files</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\CFSMain.ico">
+    <Image Include="res\CDMMain.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

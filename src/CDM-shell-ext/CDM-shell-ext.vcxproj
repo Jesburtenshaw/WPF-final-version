@@ -96,11 +96,11 @@
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <HeaderFileName>tierfiveshellext_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName>tierfiveshellext_i.c</InterfaceIdentifierFileName>
-      <ProxyFileName>tierfiveshellext_p.c</ProxyFileName>
+      <HeaderFileName>CDMShellExt_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName>CDMShellExt_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>CDMShellExt_p.c</ProxyFileName>
       <GenerateStublessProxies>true</GenerateStublessProxies>
-      <TypeLibraryName>$(IntDir)tierfiveshellext.tlb</TypeLibraryName>
+      <TypeLibraryName>$(IntDir)CDMShellExt.tlb</TypeLibraryName>
       <DllDataFileName />
       <ValidateAllParameters>true</ValidateAllParameters>
     </Midl>
@@ -199,11 +199,11 @@
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <HeaderFileName>tierfiveshellext_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName>tierfiveshellext_i.c</InterfaceIdentifierFileName>
-      <ProxyFileName>tierfiveshellext_p.c</ProxyFileName>
+      <HeaderFileName>CDMShellExt_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName>CDMShellExt_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>CDMShellExt_p.c</ProxyFileName>
       <GenerateStublessProxies>true</GenerateStublessProxies>
-      <TypeLibraryName>$(IntDir)tierfiveshellext.tlb</TypeLibraryName>
+      <TypeLibraryName>$(IntDir)CDMShellExt.tlb</TypeLibraryName>
       <DllDataFileName />
       <ValidateAllParameters>true</ValidateAllParameters>
     </Midl>
@@ -223,13 +223,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
-    <ClInclude Include="cfsdriveshellext.h" />
+    <ClInclude Include="CDMDriveShellExt.h" />
+    <ClInclude Include="CDMDriveShellView.h" />
+    <ClInclude Include="CDMShellExt_i.h" />
     <ClInclude Include="clrloader.h" />
     <ClInclude Include="clrloadersimple.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="errorsignaling.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="fsdriveshellview.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="pathinfo.h" />
     <ClInclude Include="pch.h" />
@@ -238,14 +239,22 @@
     <ClInclude Include="singleton.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="threading.h" />
-    <ClInclude Include="tierfiveshellext_i.h" />
     <ClInclude Include="tstring.h" />
     <ClInclude Include="xdlldata.h" />
     <ClInclude Include="_atlcontrols.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
-    <ClCompile Include="cfsdriveshellext.cpp" />
+    <ClCompile Include="CDMDriveShellExt.cpp" />
+    <ClCompile Include="CDMDriveShellView.cpp" />
+    <ClCompile Include="CDMShellExt_i.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="clrloader.cpp" />
     <ClCompile Include="clrloadersimple.cpp" />
     <ClCompile Include="dllmain.cpp">
@@ -262,7 +271,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="fsdriveshellview.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -270,20 +278,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="CDM-shell-ext.cpp" />
-    <ClCompile Include="tierfiveshellext_i.c">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="xdlldata.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -299,20 +293,29 @@
     <ResourceCompile Include="CDM-shell-ext.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cfsdriveshellext.rgs" />
+    <None Include="CDMDriveShellExt.rgs" />
     <None Include="CDM-shell-ext.def" />
     <None Include="CDM-shell-ext.rgs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Midl Include="tierfiveshellext.idl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\CFSMain.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CDMWrapper\CDMWrapper.csproj">
       <Project>{29b8be3d-e817-4544-bd8f-2422aed317e2}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="CDMShellExt.idl">
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CDMShellExt_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CDMShellExt_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CDMShellExt_p.c</ProxyFileName>
+      <TypeLibraryName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)CDMShellExt.tlb</TypeLibraryName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CDMShellExt_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CDMShellExt_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CDMShellExt_p.c</ProxyFileName>
+      <TypeLibraryName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)CDMShellExt.tlb</TypeLibraryName>
+    </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\CDMMain.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

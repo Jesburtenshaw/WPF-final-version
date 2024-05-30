@@ -3,11 +3,11 @@
 #include "pch.h"
 #include "framework.h"
 #include "resource.h"
-#include "tierfiveshellext_i.h"
+#include "cdmshellext_i.h"
 #include "dllmain.h"
 #include "xdlldata.h"
 
-CtierfiveshellextModule _AtlModule;
+CCDMShellExtModule _AtlModule;
 
 // DLL Entry Point
 extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)

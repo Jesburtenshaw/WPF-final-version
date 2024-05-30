@@ -3,7 +3,7 @@
 //
 // Copyright (c) 2021
 //
-// Company	: Tierfive
+// Company	: CDM
 //
 // File     : errorsignaling.h
 //

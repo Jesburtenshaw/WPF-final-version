@@ -3,14 +3,14 @@
 
 CApplicationSingleton _MainApplication;
 
-static LPCWSTR szPluginAssemblyName = L"cfsdrive.plugin";
-static LPCWSTR szPluginClassName = L"cfsdrive.plugin.ComPlugin";
+static LPCWSTR szPluginAssemblyName = L"cdmdrive.plugin";
+static LPCWSTR szPluginClassName = L"cdmdrive.plugin.ComPlugin";
 
 CApplication::CApplication() 
 	: m_bIsInitialized(FALSE)
 {
 	m_pLogger = auto_ptr<utilities::diagnostics::CLogger<utilities::threading::CIntraProcessLock>>(new utilities::diagnostics::CLogger<utilities::threading::CIntraProcessLock>(
-		utilities::diagnostics::log_level::Info, _T("cfsdrive-shell-namespace")));
+		utilities::diagnostics::log_level::Info, _T("cdmdrive-shell-namespace")));
 
 	m_pLogger->AddOutputStream(new std::wofstream(BuildLogFileName()), true);
 	LOGINFO(m_pLogger, L"Initialized the Logger");
@@ -61,7 +61,7 @@ HWND CApplication::CreateViewHostInstance(HWND hwndOwner)
 
 void CApplication::InitilaizeShellPlugin()
 {
-	HRESULT hr = m_pCLRLoader->CreateInstance(szPluginAssemblyName, szPluginClassName, __uuidof(IFSShellPlugin), reinterpret_cast<void**>(&m_pShellPlugin));
+	HRESULT hr = m_pCLRLoader->CreateInstance(szPluginAssemblyName, szPluginClassName, __uuidof(ICDMShellPlugin), reinterpret_cast<void**>(&m_pShellPlugin));
 	LOGINFO(m_pLogger, L"The %s assembly was loaded and class %s was created %s", szPluginAssemblyName, szPluginClassName, FAILED(hr) ? L"failed" : L"successfully");
 	if (m_pShellPlugin.p != NULL)
 	{

@@ -5,7 +5,7 @@
 #include "threading.h"
 #include "log.h"
 #include "clrloader.h"
-#include "tierfiveshellext_i.h"
+#include "cdmshellext_i.h"
 
 class CApplication
 {
@@ -28,7 +28,7 @@ private:
 	auto_ptr<utilities::diagnostics::CLogger<utilities::threading::CIntraProcessLock>>	m_pLogger;
 	auto_ptr<CCLRLoader>	m_pCLRLoader;
 
-	CComPtr<IFSShellPlugin>	m_pShellPlugin;
+	CComPtr<ICDMShellPlugin>	m_pShellPlugin;
 	BOOL					m_bIsInitialized;
 
 	// builds the log file name based on instance's folder and custom file name

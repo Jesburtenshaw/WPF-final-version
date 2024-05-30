@@ -3,10 +3,10 @@
 // Used by CDM-shell-ext.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_TIERFIVESHELLEXT            101
-#define IDR_CFSDRIVESHELLEXT            106
+#define IDR_CDMSHELLEXT					101
+#define IDR_CDMDRIVESHELLEXT            106
 #define IDI_ICON1                       201
-#define IDI_CFSMAIN                     201
+#define IDI_CDMMAIN                     201
 
 // Next default values for new objects
 // 
