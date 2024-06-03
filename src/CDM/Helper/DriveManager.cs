@@ -31,35 +31,35 @@ namespace CDM.Helper
                 Name = "All drives"
             };
             fcm.PropertyChanged += FilterConditionModel_PropertyChanged;
-            Application.Current.Dispatcher.Invoke(() =>
-            {
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
                 Drives.Add(fcm);
-            });
+            //});
 
             try
             {
                 DriveInfo[] drives = DriveInfo.GetDrives().Where(item => item.DriveType == DriveType.Network || item.DriveType == DriveType.Fixed).ToArray();
                 foreach (DriveInfo drive in drives)
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
+                    //Application.Current.Dispatcher.Invoke(() =>
+                    //{
                         DriveList.Add(new DriveModel()
                         {
                             DriveName = drive.Name,//.TrimEnd('\\'),
                             DriveDescription = drive.VolumeLabel,
                             IsPined = PinManager.IsPined(drive.Name)
                         });
-                    });
+                    //});
                     fcm = new FilterConditionModel
                     {
                         Code = drive.Name,
                         Name = drive.Name
                     };
                     fcm.PropertyChanged += FilterConditionModel_PropertyChanged;
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
+                    //Application.Current.Dispatcher.Invoke(() =>
+                    //{
                         Drives.Add(fcm);
-                    });
+                    //});
                 }
             }
             catch (Exception ex)

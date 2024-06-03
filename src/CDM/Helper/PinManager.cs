@@ -24,10 +24,10 @@ namespace CDM.Helper
         #region :: Methods ::
         public static ObservableCollection<FileFolderModel> GetPinnedItems()
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                PinnedItemList.Clear();
-            });
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
+            PinnedItemList.Clear();
+            //});
 
             // Get all files in the pinned items folder
             string[] pinnedFiles = Directory.GetFiles(pinFolder);
@@ -46,37 +46,37 @@ namespace CDM.Helper
                 {
                     FileInfo fileInfo = new FileInfo(file);
                     FileAttributes f = File.GetAttributes(file);
-                    Application.Current.Dispatcher.Invoke(() =>
+                    //Application.Current.Dispatcher.Invoke(() =>
+                    //{
+                    PinnedItemList.Add(new FileFolderModel()
                     {
-                        PinnedItemList.Add(new FileFolderModel()
-                        {
-                            Name = fileInfo.Name,
-                            LastModifiedDateTime = fileInfo.LastWriteTime,
-                            Path = fileInfo.FullName,
-                            IconSource = IconHelper.GetIcon(fileInfo.FullName),
-                            OriginalPath = pinnedFile,
-                            IsPined = true,
-                            Type = "File"
-                        });
+                        Name = fileInfo.Name,
+                        LastModifiedDateTime = fileInfo.LastWriteTime,
+                        Path = fileInfo.FullName,
+                        IconSource = IconHelper.GetIcon(fileInfo.FullName),
+                        OriginalPath = pinnedFile,
+                        IsPined = true,
+                        Type = "File"
                     });
+                    //});
                 }
                 else if (Directory.Exists(file))
                 {
                     DirectoryInfo dirInfo = new DirectoryInfo(file);
-                    Application.Current.Dispatcher.Invoke(() =>
+                    //Application.Current.Dispatcher.Invoke(() =>
+                    //{
+                    PinnedItemList.Add(new FileFolderModel()
                     {
-                        PinnedItemList.Add(new FileFolderModel()
-                        {
-                            Name = dirInfo.Name,
-                            LastModifiedDateTime = dirInfo.LastWriteTime,
-                            Path = dirInfo.FullName,
-                            IconSource = IconHelper.GetIcon(dirInfo.FullName),
-                            OriginalPath = pinnedFile,
-                            IsPined = true,
-                            IsDefault = StarManager.IsDefault(dirInfo.FullName),
-                            Type = "Dir"
-                        });
+                        Name = dirInfo.Name,
+                        LastModifiedDateTime = dirInfo.LastWriteTime,
+                        Path = dirInfo.FullName,
+                        IconSource = IconHelper.GetIcon(dirInfo.FullName),
+                        OriginalPath = pinnedFile,
+                        IsPined = true,
+                        IsDefault = StarManager.IsDefault(dirInfo.FullName),
+                        Type = "Dir"
                     });
+                    //});
                 }
 
             }

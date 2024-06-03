@@ -37,6 +37,8 @@ namespace CDM.Common
         /// <param name="caption"></param>
         public static void ShowErrorMessage(Exception ex, string desc = "Error Occured", string caption = "Error")
         {
+            MessageBox.Show(ex.ToString());
+
             MessageBox.Show($"{desc} {Environment.NewLine}{Environment.NewLine} {ex.GetEndMessage()}",
                 caption,
                 MessageBoxButton.OK,

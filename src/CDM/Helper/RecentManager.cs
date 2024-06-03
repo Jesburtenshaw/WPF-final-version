@@ -23,10 +23,10 @@ namespace CDM.Helper
         #region :: Methods ::
         public static ObservableCollection<FileFolderModel> GetRecentItems()
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
                 RecentItemList.Clear();
-            });
+            //});
 
             // Get all files in the Recent folder
             string[] recentFiles = Directory.GetFiles(recentFolder);
@@ -41,8 +41,8 @@ namespace CDM.Helper
                 {
                     FileInfo fileInfo = new FileInfo(file);
                     FileAttributes f = File.GetAttributes(file);
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
+                    //Application.Current.Dispatcher.Invoke(() =>
+                    //{
                         RecentItemList.Add(new FileFolderModel()
                         {
 
@@ -54,13 +54,13 @@ namespace CDM.Helper
                             IsPined = PinManager.IsPined(fileInfo.FullName),
                             Type = "File"
                         });
-                    });
+                    //});
                 }
                 else if (Directory.Exists(file))
                 {
                     DirectoryInfo dirInfo = new DirectoryInfo(file);
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
+                    //Application.Current.Dispatcher.Invoke(() =>
+                    //{
                         RecentItemList.Add(new FileFolderModel()
                         {
                             Name = dirInfo.Name,
@@ -72,7 +72,7 @@ namespace CDM.Helper
                             IsDefault = StarManager.IsDefault(dirInfo.FullName),
                             Type = "Dir"
                         });
-                    });
+                    //});
                 }
             }
             // Get all folders in the Recent folder

@@ -514,40 +514,40 @@ namespace CDM.ViewModels
             Drives = DriveManager.Drives;
             Types = FilterConditionModel.Types;
 
-            Task.Run(() =>
+            //Task.Run(() =>
+            //{
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
+            CurSearchStatus.IsLoading = true;
+            CurSearchStatus.IsLoadingDrives = true;
+            CurSearchStatus.IsLoadingPinned = true;
+            CurSearchStatus.IsLoadingRecent = true;
+            //});
+            PinManager.GetPinnedItems();
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
+            CurFilterStatus.PinnedCount = PinnedItemList.Count;
+            CurSearchStatus.IsLoadingPinned = false;
+            //});
+            RecentManager.GetRecentItems();
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
+            CurFilterStatus.RecentCount = RecentItemList.Count;
+            CurSearchStatus.IsLoadingRecent = false;
+            //});
+            DriveManager.GetDrivesItem();
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
+            CurFilterStatus.DrivesCount = DriveList.Count;
+            if (CurFilterStatus.DrivesCount > 0)
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    CurSearchStatus.IsLoading = true;
-                    CurSearchStatus.IsLoadingDrives = true;
-                    CurSearchStatus.IsLoadingPinned = true;
-                    CurSearchStatus.IsLoadingRecent = true;
-                });
-                PinManager.GetPinnedItems();
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    CurFilterStatus.PinnedCount = PinnedItemList.Count;
-                    CurSearchStatus.IsLoadingPinned = false;
-                });
-                RecentManager.GetRecentItems();
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    CurFilterStatus.RecentCount = RecentItemList.Count;
-                    CurSearchStatus.IsLoadingRecent = false;
-                });
-                DriveManager.GetDrivesItem();
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    CurFilterStatus.DrivesCount = DriveList.Count;
-                    if (CurFilterStatus.DrivesCount > 0)
-                    {
-                        CurDrivesPagesIndex = 1;
-                    }
+                CurDrivesPagesIndex = 1;
+            }
 
-                    CurSearchStatus.IsLoading = false;
-                    CurSearchStatus.IsLoadingDrives = false;
-                });
-            });
+            CurSearchStatus.IsLoading = false;
+            CurSearchStatus.IsLoadingDrives = false;
+            //});
+            //});
         }
 
         private void PrevDrives(object sender)
@@ -1013,10 +1013,10 @@ namespace CDM.ViewModels
 
             //Navigate to previous directory
             directoryHistory.Pop();
-            Task.Run(() =>
-            {
+            //Task.Run(() =>
+            //{
                 NavigateToFolder(directoryHistory.Peek());
-            });
+            //});
 
             TxtSearchBoxItem = string.Empty;
             IsSearchBoxPlaceholderVisible = Visibility.Visible;
@@ -1037,19 +1037,19 @@ namespace CDM.ViewModels
                     var defaultFolderPath = StarManager.GetDefault(item.DriveName, out string driveStarFile);
                     if (!string.IsNullOrEmpty(defaultFolderPath))
                     {
-                        Task.Run(() =>
-                        {
+                        //Task.Run(() =>
+                        //{
                             NavigateToFolder(defaultFolderPath);
-                        });
+                        //});
                         directoryHistory.Push(item.DriveName);
                         directoryHistory.Push(defaultFolderPath);
                     }
                     else
                     {
-                        Task.Run(() =>
-                        {
+                        //Task.Run(() =>
+                        //{
                             NavigateToFolder(item.DriveName);
-                        });
+                        //});
                         directoryHistory.Push(item.DriveName);
                     }
 
@@ -1103,8 +1103,8 @@ namespace CDM.ViewModels
                     {
                         if (DirectoryHelper.GetDirectoryName(subFolder).IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
                         {
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
+                            //Application.Current.Dispatcher.Invoke(() =>
+                            //{
                                 FoldersItemList.Add(new FileFolderModel
                                 {
                                     Path = subFolderInfo.FullName,
@@ -1115,7 +1115,7 @@ namespace CDM.ViewModels
                                     IsDefault = StarManager.IsDefault(subFolder),
                                     IsPined = PinManager.IsPined(subFolder)
                                 });
-                            });
+                            //});
                         }
                         DeepSearch(subFolder, keyword, ct);
                     }
@@ -1147,8 +1147,8 @@ namespace CDM.ViewModels
                 !fileInfo.Attributes.ToString().Contains(FileAttributes.NotContentIndexed.ToString()) &&
                 !fileInfo.Attributes.ToString().Contains(FileAttributes.ReparsePoint.ToString()))
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
+                        //Application.Current.Dispatcher.Invoke(() =>
+                        //{
                             FoldersItemList.Add(new FileFolderModel()
                             {
                                 Path = fileInfo.FullName,
@@ -1159,7 +1159,7 @@ namespace CDM.ViewModels
                                 IsDefault = StarManager.IsDefault(file),
                                 IsPined = PinManager.IsPined(file)
                             });
-                        });
+                        //});
                     }
                 }
             }
@@ -1197,8 +1197,8 @@ namespace CDM.ViewModels
                     ctsSearch = null;
                     ctsSearch = new CancellationTokenSource();
 
-                    Task.Run(() =>
-                    {
+                    //Task.Run(() =>
+                    //{
                         List<string> dests = new List<string>();
                         if (SelectedLocation.Code == "CurDir")
                         {
@@ -1219,15 +1219,15 @@ namespace CDM.ViewModels
                         {
                             DeepSearch(dest, TxtSearchBoxItem, ctsSearch.Token);
                         }
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
+                        //Application.Current.Dispatcher.Invoke(() =>
+                        //{
                             CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
                             CurFilterStatus.ItemsCount = FoldersItemList.Count;
                             CurSearchStatus.IsLoadingItems = false;
                             CurSearchStatus.IsDoing = false;
                             CurSearchStatus.Searched = true;
-                        });
-                    });
+                        //});
+                    //});
                 }
                 else
                 {
@@ -1249,15 +1249,15 @@ namespace CDM.ViewModels
                 //}
                 if (!string.IsNullOrEmpty(curNavigatingFolderPath))
                 {
-                    Task.Run(() =>
-                    {
+                    //Task.Run(() =>
+                    //{
                         NavigateToFolder(curNavigatingFolderPath);
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
+                        //Application.Current.Dispatcher.Invoke(() =>
+                        //{
                             ResetFilter(sender);
                             CurSearchStatus.IsDoing = false;
-                        });
-                    });
+                        //});
+                    //});
                 }
                 else
                 {
@@ -1362,10 +1362,10 @@ namespace CDM.ViewModels
                 if (Directory.Exists(path))
                 {
                     directoryHistory.Push(path);
-                    Task.Run(() =>
-                    {
+                    //Task.Run(() =>
+                    //{
                         NavigateToFolder(path);
-                    });
+                    //});
 
                     //TxtSearchBoxItem = string.Empty;
                     //IsSearchBoxPlaceholderVisible = Visibility.Visible;
@@ -1423,8 +1423,8 @@ namespace CDM.ViewModels
         public void NavigateToFolder(string folderPath)
         {
             var isRoot = IsRootFolder(folderPath);
-            Application.Current.Dispatcher.Invoke(() =>
-            {
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
                 HideAllPopups();
                 CurSearchStatus.IsLoading = true;
                 CurSearchStatus.IsLoadingItems = true;
@@ -1436,7 +1436,7 @@ namespace CDM.ViewModels
                 TxtSearchBoxItem = "";
                 Locations = isRoot ? FilterConditionModel.DirveLocations : FilterConditionModel.DirectoryLocations;
                 SelectedLocation = Locations.Last();
-            });
+            //});
 
             if (!string.IsNullOrEmpty(folderPath))
             {
@@ -1446,8 +1446,8 @@ namespace CDM.ViewModels
                     if (!isRoot)
                     {
                         var curDir = new DirectoryInfo(folderPath);
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
+                        //Application.Current.Dispatcher.Invoke(() =>
+                        //{
                             CurFolder = new FileFolderModel
                             {
                                 Path = curDir.FullName,
@@ -1458,7 +1458,7 @@ namespace CDM.ViewModels
                                 IsPined = PinManager.IsPined(folderPath),
                                 IsDefault = StarManager.IsDefault(folderPath)
                             };
-                        });
+                        //});
                     }
 
                     try
@@ -1473,8 +1473,8 @@ namespace CDM.ViewModels
                        !subFolderInfo.Attributes.ToString().Contains(FileAttributes.ReparsePoint.ToString()))
                             {
 
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
+                                //Application.Current.Dispatcher.Invoke(() =>
+                                //{
                                     FoldersItemList.Add(new FileFolderModel
                                     {
                                         Path = subFolderInfo.FullName,
@@ -1485,7 +1485,7 @@ namespace CDM.ViewModels
                                         IsDefault = StarManager.IsDefault(subFolder),
                                         IsPined = PinManager.IsPined(subFolder)
                                     });
-                                });
+                                //});
                             }
                         }
                     }
@@ -1503,8 +1503,8 @@ namespace CDM.ViewModels
                         !fileInfo.Attributes.ToString().Contains(FileAttributes.NotContentIndexed.ToString()) &&
                         !fileInfo.Attributes.ToString().Contains(FileAttributes.ReparsePoint.ToString()))
                             {
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
+                                //Application.Current.Dispatcher.Invoke(() =>
+                                //{
                                     FoldersItemList?.Add(new FileFolderModel()
                                     {
                                         Path = fileInfo.FullName,
@@ -1515,7 +1515,7 @@ namespace CDM.ViewModels
                                         IsDefault = StarManager.IsDefault(file),
                                         IsPined = PinManager.IsPined(file)
                                     });
-                                });
+                                //});
                             }
                         }
                     }
@@ -1527,15 +1527,15 @@ namespace CDM.ViewModels
                 }
             }
 
-            Application.Current.Dispatcher.Invoke(() =>
-            {
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
                 CurSearchStatus.IsLoading = false;
                 CurSearchStatus.IsLoadingItems = false;
                 TxtSearchBoxItem = string.Empty;
                 IsSearchBoxPlaceholderVisible = Visibility.Visible;
                 CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
                 CurFilterStatus.ItemsCount = FoldersItemList.Count;
-            });
+            //});
         }
 
         private bool IsRootFolder(string path)

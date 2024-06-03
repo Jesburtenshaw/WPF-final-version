@@ -42,9 +42,9 @@ namespace CDM.UserControls
         #region :: Constructor ::
         public CDMUserControl()
         {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-            Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
+            //Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
 
             InitializeComponent();
             vm = new CDMViewModel();
@@ -93,8 +93,8 @@ namespace CDM.UserControls
         }
         private void DriveManager_DrivesStateChanged(object sender, bool e)
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
                 if (vm.Offline == e)
                 {
                     vm.Offline = !e;
@@ -103,7 +103,7 @@ namespace CDM.UserControls
                         vm.CancelSearch(this);
                     }
                 }
-            });
+            //});
         }
         private void UserControl_DragEnter(object sender, DragEventArgs e)
         {
