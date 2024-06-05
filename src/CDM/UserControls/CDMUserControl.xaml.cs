@@ -47,7 +47,7 @@ namespace CDM.UserControls
             //Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
 
             InitializeComponent();
-            vm = new CDMViewModel();
+            vm = new CDMViewModel(this);
             this.DataContext = vm;
             SetInitialTheme();
 
@@ -93,8 +93,8 @@ namespace CDM.UserControls
         }
         private void DriveManager_DrivesStateChanged(object sender, bool e)
         {
-            //Application.Current.Dispatcher.Invoke(() =>
-            //{
+            this.Dispatcher.Invoke(() =>
+            {
                 if (vm.Offline == e)
                 {
                     vm.Offline = !e;
@@ -103,7 +103,7 @@ namespace CDM.UserControls
                         vm.CancelSearch(this);
                     }
                 }
-            //});
+            });
         }
         private void UserControl_DragEnter(object sender, DragEventArgs e)
         {
