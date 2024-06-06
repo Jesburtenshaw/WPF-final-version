@@ -238,5 +238,10 @@ namespace CDM.UserControls
             }
         }
         #endregion
+
+        private void DataGridTextColumn_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }
