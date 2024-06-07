@@ -87,24 +87,35 @@ HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant params[]
 	return S_OK;
 }
 
-void CfsDriveShellView::LoadCDM(HWND hWnd)
+void CfsDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent)
 {
+	// Create a unique pointer to a CCLRLoaderSimple object
 	m_pCLRLoader = std::make_unique<CCLRLoaderSimple>();
+
+	// Attempt to create an instance of the COM object with the specified ProgID
 	HRESULT hr = m_pCLRLoader->CreateInstance(L"CDMWrapper", L"CDMWrapper.CDMWrapper", &m_cdmPtr);
+
+	// If the instance creation failed, exit the function
 	if (FAILED(hr))
 	{
 		return;
 	}
 
+	// Prepare the parameters to be passed to the COM method
 	CComVariant v1((UINT64)hWnd);
+	CComVariant v2((UINT64)hWndParent);
+	CComVariant params[]{ v1, v2 }, result;
 
-	CComVariant params[]{ v1 }, result;
-	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", params, 1, result);
+	// Call the "showCDM" method on the COM object with the prepared parameters
+	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", params, 2, result);
+
+	// If the method call failed, exit the function
 	if (FAILED(hr))
 	{
 		return;
 	}
 }
+
 
 IFACEMETHODIMP CfsDriveShellView::CreateViewWindow(_In_ LPSHELLVIEW pPrevious, _In_ LPCFOLDERSETTINGS pfs, _In_ LPSHELLBROWSER psb, _In_ LPRECT prcView, _Out_ HWND* phWnd)
 {
@@ -127,7 +138,29 @@ IFACEMETHODIMP CfsDriveShellView::CreateViewWindow(_In_ LPSHELLVIEW pPrevious, _
 
 		LOGINFO(_MainApplication->GetLogger(), L"Return our window handle to the browser.");
 		*phWnd = m_hWnd;
-		LoadCDM(m_hWnd);
+		LoadCDM(m_hWnd, m_hwndParent);
+		HWND hwndButton;
+
+		RECT rect;
+		if (::GetClientRect(m_hwndParent ,&rect)) {
+			int width = rect.right - rect.left;
+			int height = rect.bottom - rect.top;
+			hwndButton = CreateWindow(
+				_T("BUTTON"),           // Predefined class; Unicode assumed
+				_T("Click Me!"),        // Button text
+				WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles
+				0,         // x position
+				0,         // y position
+				width,        // Button width
+				height,         // Button height
+				m_hWnd,       // Parent window
+				0,   // Control identifier
+				0,
+				NULL);      // Pointer not needed
+		}
+		else {
+			std::cerr << "Failed to get window dimensions." << std::endl;
+		}
 		return S_OK;
 	}
 	catch (...)
