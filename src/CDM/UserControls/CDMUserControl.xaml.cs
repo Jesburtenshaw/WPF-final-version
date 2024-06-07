@@ -239,9 +239,18 @@ namespace CDM.UserControls
         }
         #endregion
 
-        private void DataGridTextColumn_MouseDown(object sender, MouseButtonEventArgs e)
+        private void ListOfDriveItems_Sorting(object sender, DataGridSortingEventArgs e)
         {
+            e.Handled = true; // Prevent the default sort from occurring
 
+            if (e.Column.SortMemberPath == "Name")
+            {
+                vm.SortByName();
+            }
+            else if (e.Column.SortMemberPath == "DateModified")
+            {
+                vm.SortByDateModified();
+            }
         }
     }
 }
