@@ -86,6 +86,6 @@ private:
 	void _HandleActivate(UINT uState);
 	void _HandleDeactivate();
 	void _FillList();
-	void LoadCDM(HWND hWnd);
+	void LoadCDM(HWND hWnd, HWND hWndParent);
 };
 
