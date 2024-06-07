@@ -1606,8 +1606,8 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                               SelectedItem="{Binding SelectedFileFolderItem,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                               ColumnHeaderStyle="{StaticResource DGHeaderStyle}"
                               RowStyle="{StaticResource DGRowStyle}"
-                              CellStyle="{StaticResource DGCellStyle}"
-                              Style="{StaticResource DGStyle}"
+                              CellStyle="{StaticResource DGCellStyle}" 
+                              Style="{StaticResource DGStyle}" Sorting="ListOfDriveItems_Sorting"
                               SelectionMode="Single"
                               SelectionUnit="FullRow"
                               AllowDrop="True">
@@ -1651,35 +1651,44 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
 
                             <!--ElementStyle="{StaticResource Centering}"-->
                             <DataGridTextColumn Width="*"
-                                                MinWidth="250"
-                                                x:Name="sort"
-                                                Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                MinWidth="250" SortMemberPath="Name"
+                                                Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
                                 <DataGridTextColumn.Header>
-                                    <StackPanel Orientation="Horizontal"
-                                                MouseDown="DataGridTextColumn_MouseDown">
+                                    <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="Name"
                                                    VerticalAlignment="Center"
                                                    Margin="0,0,10,0" />
                                         <Path x:Name="SortArrow"
-                                              Width="10"
-                                              Height="10"
-                                              Data="M 0 10 L 5 0 L 10 10 Z"
-                                              Fill="Black"
-                                              VerticalAlignment="Center" />
+                                                      Width="16"
+                                                  Height="16" Stretch="Fill"
+                                                      Fill="Black"
+                                                      VerticalAlignment="Center" >
+
+                                            <Path.Style>
+                                                <Style TargetType="Path">
+                                                    <Setter Property="Data" Value="M3.95 314.94 240.74 7.7c1.02-1.39 2.24-2.65 3.67-3.75 8.27-6.39 20.17-4.87 26.56 3.41l236.11 306.4c3.06 3.37 4.92 7.84 4.92 12.75 0 10.49-8.51 19-19 19H18.93v-.06a18.9 18.9 0 0 1-11.57-3.95c-8.28-6.39-9.8-18.29-3.41-26.56z" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridNameAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                                            <Setter Property="Data" Value="M42.47.01 469.5 0C492.96 0 512 19.04 512 42.5c0 11.07-4.23 21.15-11.17 28.72L294.18 320.97c-14.93 18.06-41.7 20.58-59.76 5.65-1.8-1.49-3.46-3.12-4.97-4.83L10.43 70.39C-4.97 52.71-3.1 25.86 14.58 10.47 22.63 3.46 32.57.02 42.47.01z" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
                                         <Button Grid.Column="3"
-                                                Command="{Binding ResetFilterCommand}"
+                                                Command="{Binding DataContext.ResetFilterCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                                 Background="Transparent"
-                                                FontSize="20"
+                                                            FontSize="20"
                                                 BorderThickness="1"
-                                                Cursor="Hand"
+                                                Cursor="Hand" FocusVisualStyle="{x:Null}"
                                                 VerticalAlignment="Center"
                                                 Margin="10,0,0,0"
                                                 Foreground="{DynamicResource WindowForegroundColor}">
                                             <Button.Template>
                                                 <ControlTemplate>
                                                     <TextBlock Text="↺"
-                                                               FontSize="25"
-                                                               FontWeight="Thin" />
+                                                      FontSize="25"
+                                                      FontWeight="Thin" />
                                                 </ControlTemplate>
                                             </Button.Template>
                                         </Button>
@@ -1812,9 +1821,34 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
 
                             <DataGridTextColumn Width="Auto"
                                                 MinWidth="250"
-                                                Header="Date modified"
+                                                 SortMemberPath="DateModified"
                                                 ElementStyle="{StaticResource Centering}"
-                                                Binding="{Binding LastModifiedDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                Binding="{Binding LastModifiedDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                                <DataGridTextColumn.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Date Modified"
+                                              VerticalAlignment="Center"
+                                              Margin="0,0,10,0" />
+                                        <Path x:Name="SortDateArrow"
+               Width="16"
+           Height="16" Stretch="Fill"
+               Fill="Black"
+               VerticalAlignment="Center" >
+
+                                            <Path.Style>
+                                                <Style TargetType="Path">
+                                                    <Setter Property="Data" Value="M3.95 314.94 240.74 7.7c1.02-1.39 2.24-2.65 3.67-3.75 8.27-6.39 20.17-4.87 26.56 3.41l236.11 306.4c3.06 3.37 4.92 7.84 4.92 12.75 0 10.49-8.51 19-19 19H18.93v-.06a18.9 18.9 0 0 1-11.57-3.95c-8.28-6.39-9.8-18.29-3.41-26.56z" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridDateAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                                            <Setter Property="Data" Value="M42.47.01 469.5 0C492.96 0 512 19.04 512 42.5c0 11.07-4.23 21.15-11.17 28.72L294.18 320.97c-14.93 18.06-41.7 20.58-59.76 5.65-1.8-1.49-3.46-3.12-4.97-4.83L10.43 70.39C-4.97 52.71-3.1 25.86 14.58 10.47 22.63 3.46 32.57.02 42.47.01z" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                    </StackPanel>
+                                </DataGridTextColumn.Header>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
                         <DataGrid.ContextMenu>
                             <ContextMenu StaysOpen="False">
