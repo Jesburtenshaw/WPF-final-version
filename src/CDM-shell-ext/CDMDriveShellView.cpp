@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "CDMDriveShellView.h"
+#include <sstream>
 
 UINT CDMDriveShellView::sm_uListID = 101;
 
@@ -140,7 +141,45 @@ IFACEMETHODIMP CDMDriveShellView::CreateViewWindow(_In_ LPSHELLVIEW pPrevious, _
 
 		LOGINFO(_MainApplication->GetLogger(), L"Return our window handle to the browser.");
 		*phWnd = m_hWnd;
-		LoadCDM(m_hWnd, m_hwndParent);
+
+		// Assume m_pShellBrowser is already initialized
+		CComPtr<IShellView> pShellView;
+		HRESULT hr = m_pShellBrowser->QueryActiveShellView(&pShellView);
+		if (FAILED(hr) || !pShellView)
+		{
+			// Handle error
+		}
+
+		HWND hwndView;
+		hr = pShellView->GetWindow(&hwndView);
+		if (FAILED(hr) || !hwndView)
+		{
+			// Handle error
+		}
+
+		RECT rect;
+		if (::GetWindowRect(hwndView, &rect))
+		{
+			// Now rect contains the rectangle of the window
+		}
+		else
+		{
+			// Handle error
+		}
+		// Convert RECT data to a string
+		std::ostringstream oss;
+		oss << "RECT Data:\n";
+		oss << "Left: " << rect.left << "\n";
+		oss << "Top: " << rect.top << "\n";
+		oss << "Right: " << rect.right << "\n";
+		oss << "Bottom: " << rect.bottom;
+
+		std::string rectData = oss.str();
+
+		// Display the string in a message box
+		MessageBoxA(m_hWnd, rectData.c_str(), "Rectangle Data", MB_OK);
+
+		LoadCDM(m_hWnd, hwndView);
 		return S_OK;
 	}
 	catch (...)
