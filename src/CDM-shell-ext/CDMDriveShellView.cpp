@@ -8,7 +8,9 @@ CDMDriveShellView::CDMDriveShellView()
 	: m_uUIState(SVUIA_DEACTIVATE),
 	m_hwndParent(nullptr),
 	m_hMenu(nullptr),
-	m_pContainingFolder(nullptr)
+	m_pContainingFolder(nullptr),
+	m_pDropTarget(nullptr), 
+	m_dwDropTargetRegister(0)
 {
 	LOGINFO(_MainApplication->GetLogger(), L"CDMDriveShellView constructor called");
 }
@@ -16,6 +18,14 @@ CDMDriveShellView::CDMDriveShellView()
 CDMDriveShellView::~CDMDriveShellView()
 {
 	LOGINFO(_MainApplication->GetLogger(), L"CDMDriveShellView destructor called");
+	if (m_dwDropTargetRegister) {
+		RevokeDragDrop(m_hWnd);
+		m_dwDropTargetRegister = 0;
+	}
+	if (m_pDropTarget) {
+		m_pDropTarget->Release();
+		m_pDropTarget = nullptr;
+	}
 }
 
 HRESULT CDMDriveShellView::FinalConstruct()
@@ -89,13 +99,43 @@ HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant params[]
 }
 
 
+//void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent, int width, int height)
+//{
+//	// Create a unique pointer to a CCLRLoaderSimple object
+//	m_pCLRLoader = std::make_unique<CCLRLoaderSimple>();
+//
+//	// Attempt to create an instance of the COM object with the specified ProgID
+//	HRESULT hr = m_pCLRLoader->CreateInstance(L"CDMWrapper", L"CDMWrapper.CDMWrapper", &m_cdmPtr);
+//
+//	// If the instance creation failed, exit the function
+//	if (FAILED(hr))
+//	{
+//		return;
+//	}
+//
+//	// Prepare the parameters to be passed to the COM method
+//	CComVariant v1((UINT64)hWnd);
+//	CComVariant v2((UINT64)hWndParent);
+//	CComVariant v3(width);
+//	CComVariant v4(height);
+//	CComVariant params[]{ v1, v2, v3, v4 }, result;
+//
+//	// Call the "showCDM" method on the COM object with the prepared parameters
+//	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", params, 4, result);
+//
+//	// If the method call failed, exit the function
+//	if (FAILED(hr))
+//	{
+//		return;
+//	}
+//}
 void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent, int width, int height)
 {
 	// Create a unique pointer to a CCLRLoaderSimple object
 	m_pCLRLoader = std::make_unique<CCLRLoaderSimple>();
 
 	// Attempt to create an instance of the COM object with the specified ProgID
-	HRESULT hr = m_pCLRLoader->CreateInstance(L"CDMWrapper", L"CDMWrapper.CDMWrapper", &m_cdmPtr);
+	HRESULT hr = m_pCLRLoader->CreateInstance(L"CDMWrapper.CDMWrapper", L"CDMWrapper.CDMWrapper", &m_cdmPtr);
 
 	// If the instance creation failed, exit the function
 	if (FAILED(hr))
@@ -104,14 +144,20 @@ void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent, int width, int heigh
 	}
 
 	// Prepare the parameters to be passed to the COM method
-	CComVariant v1((UINT64)hWnd);
-	CComVariant v2((UINT64)hWndParent);
+	CComVariant v1(reinterpret_cast<ULONG_PTR>(hWnd));
+	CComVariant v2(reinterpret_cast<ULONG_PTR>(hWndParent));
 	CComVariant v3(width);
 	CComVariant v4(height);
-	CComVariant params[]{ v1, v2, v3, v4 }, result;
+	CComVariant params[] = { v1, v2, v3, v4 }, result;
 
-	// Call the "showCDM" method on the COM object with the prepared parameters
-	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", params, 4, result);
+	// Set the variant types
+	v1.vt = VT_UI8;
+	v2.vt = VT_UI8;
+	v3.vt = VT_I4;
+	v4.vt = VT_I4;
+
+	// Call the "ShowCDM" method on the COM object with the prepared parameters
+	hr = CallIDispatchMethod(m_cdmPtr, L"ShowCDM", params, 4, result);
 
 	// If the method call failed, exit the function
 	if (FAILED(hr))
@@ -444,7 +490,20 @@ LRESULT CDMDriveShellView::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 				m_wndHost.ShowWindow(SW_SHOW);
 			}
 		}
+		    // Initialize the drop target
+    m_pDropTarget = new CMyDropTarget(m_hWnd);
+    if (!m_pDropTarget) {
+        return E_OUTOFMEMORY;
+    }
 
+    HRESULT hr = RegisterDragDrop(m_hWnd, m_pDropTarget);
+    if (FAILED(hr)) {
+        delete m_pDropTarget;
+        m_pDropTarget = nullptr;
+        return hr;
+    }
+
+    m_dwDropTargetRegister = 1;  // Mark that the drop target is registered
 		return 0;
 	}
 	catch (...)

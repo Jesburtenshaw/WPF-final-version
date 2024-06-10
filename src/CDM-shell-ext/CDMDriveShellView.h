@@ -5,7 +5,57 @@
 #include <memory>
 #include "clrloadersimple.h"
 
+class CMyDropTarget : public IDropTarget {
+public:
+	CMyDropTarget(HWND hWnd) : m_hWnd(hWnd), m_refCount(1) {}
 
+	// Implement IUnknown methods
+	STDMETHODIMP QueryInterface(REFIID riid, void** ppv) override {
+		if (riid == IID_IUnknown || riid == IID_IDropTarget) {
+			*ppv = static_cast<IDropTarget*>(this);
+			AddRef();
+			return S_OK;
+		}
+		*ppv = nullptr;
+		return E_NOINTERFACE;
+	}
+
+	STDMETHODIMP_(ULONG) AddRef() override {
+		return InterlockedIncrement(&m_refCount);
+	}
+
+	STDMETHODIMP_(ULONG) Release() override {
+		ULONG count = InterlockedDecrement(&m_refCount);
+		if (count == 0) {
+			delete this;
+		}
+		return count;
+	}
+
+	// Implement IDropTarget methods
+	HRESULT STDMETHODCALLTYPE DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override {
+		*pdwEffect = DROPEFFECT_COPY;
+		return S_OK;
+	}
+
+	HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override {
+		*pdwEffect = DROPEFFECT_COPY;
+		return S_OK;
+	}
+
+	HRESULT STDMETHODCALLTYPE DragLeave() override {
+		return S_OK;
+	}
+
+	HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override {
+		*pdwEffect = DROPEFFECT_COPY;
+		return S_OK;
+	}
+
+private:
+	HWND m_hWnd;
+	LONG m_refCount;
+};
 
 class ATL_NO_VTABLE CDMDriveShellView :
 	public CComObjectRootEx<CComSingleThreadModel>,
@@ -85,6 +135,8 @@ private:
 	CWindow							m_wndHost;
 	std::unique_ptr<CCLRLoaderSimple> m_pCLRLoader;
 	IDispatchPtr m_cdmPtr;
+	CMyDropTarget* m_pDropTarget;
+	DWORD m_dwDropTargetRegister;
 
 	void _HandleActivate(UINT uState);
 	void _HandleDeactivate();
