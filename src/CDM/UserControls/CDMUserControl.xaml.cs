@@ -45,7 +45,22 @@ namespace CDM.UserControls
             //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             //Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
+            InitializeComponent();
+            vm = new CDMViewModel(this);
+            this.DataContext = vm;
+            SetInitialTheme();
 
+            // Subscribe to system theme changes
+            Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
+            //IsSystemInDarkMode();
+        }
+        public CDMUserControl(int width, int height)
+        {
+            //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            //Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
+            this.Width = width;
+            this.Height = height;
             InitializeComponent();
             vm = new CDMViewModel(this);
             this.DataContext = vm;

@@ -1,12 +1,15 @@
 ﻿using CDM.Common;
 using CDM.Helper;
 using CDM.Models;
+using Microsoft.VisualBasic.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -455,6 +458,19 @@ namespace CDM.ViewModels
                 OnPropertyChanged(nameof(CurRenameStatus));
             }
         }
+
+        //private bool _isAscending = true;
+        //public bool IsAscending
+        //{
+        //    get => _isAscending;
+        //    set
+        //    {
+        //        _isAscending = value;
+        //        OnPropertyChanged(nameof(IsAscending));
+        //    }
+        //}
+
+
         private bool _isDriveItemsGridNameAscending = true;
         public bool IsDriveItemsGridNameAscending
         {
@@ -482,16 +498,6 @@ namespace CDM.ViewModels
                 OnPropertyChanged(nameof(IsDriveItemsGridDateAscending));
             }
         }
-        //private bool _isAscending = true;
-        //public bool IsAscending
-        //{
-        //    get => _isAscending;
-        //    set
-        //    {
-        //        _isAscending = value;
-        //        OnPropertyChanged(nameof(IsAscending));
-        //    }
-        //}
 
         #endregion
 
@@ -1041,10 +1047,8 @@ namespace CDM.ViewModels
 
             //Navigate to previous directory
             directoryHistory.Pop();
-            _userControl.Dispatcher.Invoke(() =>
-            {
-                NavigateToFolder(directoryHistory.Peek());
-            });
+            NavigateToFolder(directoryHistory.Peek());
+
 
             TxtSearchBoxItem = string.Empty;
             IsSearchBoxPlaceholderVisible = Visibility.Visible;
@@ -1065,19 +1069,16 @@ namespace CDM.ViewModels
                     var defaultFolderPath = StarManager.GetDefault(item.DriveName, out string driveStarFile);
                     if (!string.IsNullOrEmpty(defaultFolderPath))
                     {
-                        _userControl.Dispatcher.Invoke(() =>
-                        {
-                            NavigateToFolder(defaultFolderPath);
-                        });
+                        //Logger.LogNow("Opening Star File or DefaultFolderPath", true);
+
+                        NavigateToFolder(defaultFolderPath);
                         directoryHistory.Push(item.DriveName);
                         directoryHistory.Push(defaultFolderPath);
                     }
                     else
                     {
-                        _userControl.Dispatcher.Invoke(() =>
-                        {
-                            NavigateToFolder(item.DriveName);
-                        });
+                        //Logger.LogNow("Opening Drive", true);
+                        NavigateToFolder(item.DriveName);
                         directoryHistory.Push(item.DriveName);
                     }
 
@@ -1098,7 +1099,8 @@ namespace CDM.ViewModels
             //CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
         }
 
-        private void DeepSearch(string folderPath, string keyword, CancellationToken ct)
+
+        private async void DeepSearch(string folderPath, string keyword, CancellationToken ct, bool isIntermediate = false)
         {
             if (ct.IsCancellationRequested || !Directory.Exists(folderPath))
             {
@@ -1107,8 +1109,9 @@ namespace CDM.ViewModels
 
             try
             {
+                var processDirectories = await Task.Run(() => Directory.GetDirectories(folderPath));
                 // Process subdirectories
-                foreach (var subFolder in Directory.GetDirectories(folderPath))
+                foreach (var subFolder in processDirectories)
                 {
                     if (ct.IsCancellationRequested)
                     {
@@ -1123,12 +1126,13 @@ namespace CDM.ViewModels
                         {
                             AddToFolderItemList(subFolderInfo, "Dir");
                         }
-                        DeepSearch(subFolder, keyword, ct);
+                        DeepSearch(subFolder, keyword, ct, true);
                     }
                 }
 
+                var processedFiles = await Task.Run(() => Directory.GetFiles(folderPath));
                 // Process files
-                foreach (var file in Directory.GetFiles(folderPath))
+                foreach (var file in processedFiles)
                 {
                     if (ct.IsCancellationRequested)
                     {
@@ -1145,7 +1149,16 @@ namespace CDM.ViewModels
             }
             catch (Exception ex)
             {
-                // Handle exception (log if necessary)
+                //Logger.LogNow(ex.Message);
+                //Logger.LogNow(ex.StackTrace);
+            }
+            if (!isIntermediate)
+            {
+                CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
+                CurFilterStatus.ItemsCount = FoldersItemList.Count;
+                CurSearchStatus.IsLoadingItems = false;
+                CurSearchStatus.IsDoing = false;
+                CurSearchStatus.Searched = true;
             }
         }
 
@@ -1167,54 +1180,79 @@ namespace CDM.ViewModels
 
         private void AddToFolderItemList(FileSystemInfo info, string type)
         {
-            _userControl.Dispatcher.Invoke(() =>
+            try
             {
-                FoldersItemList.Add(new FileFolderModel
+                //await Task.Run(() => { });
+
+                _userControl.Dispatcher.Invoke(() =>
                 {
-                    Path = info.FullName,
-                    Name = info.Name,
-                    LastModifiedDateTime = info.LastWriteTime,
-                    IconSource = IconHelper.GetIcon(info.FullName),
-                    Type = type,
-                    IsDefault = StarManager.IsDefault(info.FullName),
-                    IsPined = PinManager.IsPined(info.FullName)
+                    FoldersItemList.Add(new FileFolderModel
+                    {
+                        Path = info.FullName,
+                        Name = info.Name,
+                        LastModifiedDateTime = info.LastWriteTime,
+                        IconSource = IconHelper.GetIcon(info.FullName),
+                        Type = type,
+                        IsDefault = StarManager.IsDefault(info.FullName),
+                        IsPined = PinManager.IsPined(info.FullName)
+                    });
                 });
-            });
+                //await Task.Delay(10);
+
+            }
+            catch (Exception ex)
+            {
+                //Logger.LogNow(ex.Message);
+                //Logger.LogNow(ex.StackTrace);
+            }
         }
 
-        private void DoSearch(object sender)
+        private async void DoSearch(object sender)
         {
-            if (!CurSearchStatus.CanSearch)
+            try
             {
-                return;
-            }
-
-            CurSearchStatus.IsDoing = true;
-            CurSearchStatus.IsError = false;
-            CurSearchStatus.Searched = false;
-            CurSearchStatus.Desc = "";
-            if (!string.IsNullOrEmpty(TxtSearchBoxItem))
-            {
-                IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
-                if (TxtSearchBoxItem.Length > 256)
+                if (!CurSearchStatus.CanSearch)
                 {
-                    CurSearchStatus.IsError = true;
-                    CurSearchStatus.Desc = "Search items have a maximum limit of 256 characters.";
                     return;
                 }
-                //if (FoldersItemList.Count > 0)
-                if (!string.IsNullOrEmpty(curNavigatingFolderPath))
+
+                _userControl.Dispatcher.Invoke(() =>
                 {
-                    CurFolder = nullFolder;
-                    FoldersItemList.Clear();
-                    CurSearchStatus.IsLoadingItems = true;
+                    CurSearchStatus.IsDoing = true;
+                    CurSearchStatus.IsError = false;
+                    CurSearchStatus.Searched = false;
+                    CurSearchStatus.Desc = "";
+                });
 
-                    ctsSearch?.Cancel();
-                    ctsSearch = null;
-                    ctsSearch = new CancellationTokenSource();
+                await Task.Run(() =>
+                {
 
-                    _userControl.Dispatcher.Invoke(() =>
+                });
+                await Task.Delay(10);
+
+                if (!string.IsNullOrEmpty(TxtSearchBoxItem))
+                {
+                    IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
+                    if (TxtSearchBoxItem.Length > 256)
                     {
+
+                        CurSearchStatus.IsError = true;
+                        CurSearchStatus.Desc = "Search items have a maximum limit of 256 characters.";
+                        return;
+                    }
+                    //if (FoldersItemList.Count > 0)
+                    if (!string.IsNullOrEmpty(curNavigatingFolderPath))
+                    {
+                        CurFolder = nullFolder;
+                        FoldersItemList = new ObservableCollection<FileFolderModel>();
+                        CurSearchStatus.IsLoadingItems = true;
+
+                        ctsSearch?.Cancel();
+                        ctsSearch = null;
+                        ctsSearch = new CancellationTokenSource();
+
+                        //_userControl.Dispatcher.Invoke(() =>
+                        //{
                         List<string> dests = new List<string>();
                         if (SelectedLocation.Code == "CurDir")
                         {
@@ -1235,56 +1273,60 @@ namespace CDM.ViewModels
                         {
                             DeepSearch(dest, TxtSearchBoxItem, ctsSearch.Token);
                         }
+
+
                         //_userControl.Dispatcher.Invoke(() =>
                         //{
-                            CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
-                            CurFilterStatus.ItemsCount = FoldersItemList.Count;
-                            CurSearchStatus.IsLoadingItems = false;
-                            CurSearchStatus.IsDoing = false;
-                            CurSearchStatus.Searched = true;
+                        //CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
+                        //CurFilterStatus.ItemsCount = FoldersItemList.Count;
+                        //CurSearchStatus.IsLoadingItems = false;
+                        //CurSearchStatus.IsDoing = false;
+                        //CurSearchStatus.Searched = true;
                         //});
-                    });
+                        //});
+                    }
+                    else
+                    {
+                        CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(RecentItemList);
+                        view.Filter = searchItemFilter;
+                        CurFilterStatus.RecentCount = view.Count;
+                        view = (CollectionView)CollectionViewSource.GetDefaultView(PinnedItemList);
+                        view.Filter = searchItemFilter;
+                        CurFilterStatus.PinnedCount = view.Count;
+                        CurSearchStatus.IsDoing = false;
+                    }
                 }
                 else
                 {
-                    CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(RecentItemList);
-                    view.Filter = searchItemFilter;
-                    CurFilterStatus.RecentCount = view.Count;
-                    view = (CollectionView)CollectionViewSource.GetDefaultView(PinnedItemList);
-                    view.Filter = searchItemFilter;
-                    CurFilterStatus.PinnedCount = view.Count;
-                    CurSearchStatus.IsDoing = false;
-                }
-            }
-            else
-            {
-                IsSearchBoxPlaceholderVisible = Visibility.Visible;
-                //if (FoldersItemList.Count > 0)
-                //{
-                //    CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
-                //}
-                if (!string.IsNullOrEmpty(curNavigatingFolderPath))
-                {
-                    _userControl.Dispatcher.Invoke(() =>
+                    IsSearchBoxPlaceholderVisible = Visibility.Visible;
+                    //if (FoldersItemList.Count > 0)
+                    //{
+                    //    CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
+                    //}
+                    if (!string.IsNullOrEmpty(curNavigatingFolderPath))
                     {
                         NavigateToFolder(curNavigatingFolderPath);
-                        _userControl.Dispatcher.Invoke(() =>
-                        {
-                            ResetFilter(sender);
-                            CurSearchStatus.IsDoing = false;
-                        });
-                    });
+                        ResetFilter(sender);
+                        CurSearchStatus.IsDoing = false;
+                    }
+                    else
+                    {
+                        CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
+                        CurFilterStatus.RecentCount = RecentItemList.Count;
+                        CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
+                        CurFilterStatus.PinnedCount = PinnedItemList.Count;
+                        ResetFilter(sender);
+                        CurSearchStatus.IsDoing = false;
+                    }
                 }
-                else
-                {
-                    CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
-                    CurFilterStatus.RecentCount = RecentItemList.Count;
-                    CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
-                    CurFilterStatus.PinnedCount = PinnedItemList.Count;
-                    ResetFilter(sender);
-                    CurSearchStatus.IsDoing = false;
-                }
+                //Logger.LogNow("DoSearch Method Completed Internal", true);
             }
+            catch (Exception ex)
+            {
+                //Logger.LogNow(ex.Message);
+                //Logger.LogNow(ex.StackTrace);
+            }
+
         }
 
         public void CancelSearch(object sender)
@@ -1375,20 +1417,22 @@ namespace CDM.ViewModels
                 string path = SelectedFileFolderItem.Path;
 
                 // Check if the path exist and path is folder
-                if (Directory.Exists(SelectedFileFolderItem.Path))
+                if (Directory.Exists(path))
                 {
                     directoryHistory.Push(path);
-                    _userControl.Dispatcher.Invoke(() =>
-                    {
-                        NavigateToFolder(path);
-                    });
+                    //_userControl.Dispatcher.Invoke(() =>
+                    //{
+                    //    NavigateToFolder(path);
+                    //});
+
+                    NavigateToFolder(path);
 
                     //TxtSearchBoxItem = string.Empty;
                     //IsSearchBoxPlaceholderVisible = Visibility.Visible;
                     //CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
                 }
                 // Check if the path exist and path is file
-                else if (File.Exists(SelectedFileFolderItem.Path))
+                else if (File.Exists(path))
                 {
                     try
                     {
@@ -1436,23 +1480,23 @@ namespace CDM.ViewModels
             }
         }
 
-        public void NavigateToFolder(string folderPath)
+
+        public async void NavigateToFolder(string folderPath)
         {
             var isRoot = IsRootFolder(folderPath);
-            _userControl.Dispatcher.Invoke(() =>
-            {
-                HideAllPopups();
-                CurSearchStatus.IsLoading = true;
-                CurSearchStatus.IsLoadingItems = true;
-                CurSearchStatus.Title = folderPath;
-                CurSearchStatus.Searched = false;
-                curNavigatingFolderPath = folderPath;
-                ResetFilter(null);
-                FoldersItemList.Clear();
-                TxtSearchBoxItem = "";
-                Locations = isRoot ? FilterConditionModel.DirveLocations : FilterConditionModel.DirectoryLocations;
-                SelectedLocation = Locations.Last();
-            });
+
+            HideAllPopups();
+            //IsLoading = true;
+            CurSearchStatus.IsLoading = true;
+            CurSearchStatus.IsLoadingItems = true;
+            CurSearchStatus.Title = folderPath;
+            CurSearchStatus.Searched = false;
+            curNavigatingFolderPath = folderPath;
+            ResetFilter(null);
+            FoldersItemList = new ObservableCollection<FileFolderModel>();
+            TxtSearchBoxItem = "";
+            Locations = isRoot ? FilterConditionModel.DirveLocations : FilterConditionModel.DirectoryLocations;
+            SelectedLocation = Locations.Last();
 
             if (!string.IsNullOrEmpty(folderPath))
             {
@@ -1462,25 +1506,24 @@ namespace CDM.ViewModels
                     if (!isRoot)
                     {
                         var curDir = new DirectoryInfo(folderPath);
-                        _userControl.Dispatcher.Invoke(() =>
+
+                        CurFolder = new FileFolderModel
                         {
-                            CurFolder = new FileFolderModel
-                            {
-                                Path = curDir.FullName,
-                                Name = curDir.Name,
-                                LastModifiedDateTime = curDir.LastWriteTime,
-                                IconSource = IconHelper.GetIcon(curDir.FullName),
-                                Type = "Dir",
-                                IsPined = PinManager.IsPined(folderPath),
-                                IsDefault = StarManager.IsDefault(folderPath)
-                            };
-                        });
+                            Path = curDir.FullName,
+                            Name = curDir.Name,
+                            LastModifiedDateTime = curDir.LastWriteTime,
+                            IconSource = IconHelper.GetIcon(curDir.FullName),
+                            Type = "Dir",
+                            IsPined = PinManager.IsPined(folderPath),
+                            IsDefault = StarManager.IsDefault(folderPath)
+                        };
+
                     }
 
                     try
                     {
                         //Get subfolders
-                        string[] subDirectories = Directory.GetDirectories(folderPath);
+                        string[] subDirectories = await Task.Run(() => Directory.GetDirectories(folderPath));
                         foreach (string subFolder in subDirectories)
                         {
                             DirectoryInfo subFolderInfo = new DirectoryInfo(subFolder);
@@ -1488,19 +1531,18 @@ namespace CDM.ViewModels
                        !subFolderInfo.Attributes.ToString().Contains(FileAttributes.NotContentIndexed.ToString()) &&
                        !subFolderInfo.Attributes.ToString().Contains(FileAttributes.ReparsePoint.ToString()))
                             {
-                                _userControl.Dispatcher.Invoke(() =>
+
+                                FoldersItemList.Add(new FileFolderModel
                                 {
-                                    FoldersItemList.Add(new FileFolderModel
-                                    {
-                                        Path = subFolderInfo.FullName,
-                                        Name = subFolderInfo.Name,
-                                        LastModifiedDateTime = subFolderInfo.LastWriteTime,
-                                        IconSource = IconHelper.GetIcon(subFolderInfo.FullName),
-                                        Type = "Dir",
-                                        IsDefault = StarManager.IsDefault(subFolder),
-                                        IsPined = PinManager.IsPined(subFolder)
-                                    });
+                                    Path = subFolderInfo.FullName,
+                                    Name = subFolderInfo.Name,
+                                    LastModifiedDateTime = subFolderInfo.LastWriteTime,
+                                    IconSource = IconHelper.GetIcon(subFolderInfo.FullName),
+                                    Type = "Dir",
+                                    IsDefault = StarManager.IsDefault(subFolder),
+                                    IsPined = PinManager.IsPined(subFolder)
                                 });
+
                             }
                         }
                     }
@@ -1509,7 +1551,7 @@ namespace CDM.ViewModels
                     try
                     {
                         //Get files
-                        string[] files = Directory.GetFiles(folderPath);
+                        string[] files = await Task.Run(() => Directory.GetFiles(folderPath));
                         foreach (string file in files)
                         {
                             FileInfo fileInfo = new FileInfo(file);
@@ -1518,18 +1560,15 @@ namespace CDM.ViewModels
                         !fileInfo.Attributes.ToString().Contains(FileAttributes.NotContentIndexed.ToString()) &&
                         !fileInfo.Attributes.ToString().Contains(FileAttributes.ReparsePoint.ToString()))
                             {
-                                _userControl.Dispatcher.Invoke(() =>
+                                FoldersItemList?.Add(new FileFolderModel()
                                 {
-                                    FoldersItemList?.Add(new FileFolderModel()
-                                    {
-                                        Path = fileInfo.FullName,
-                                        Name = fileInfo.Name,
-                                        LastModifiedDateTime = fileInfo.LastWriteTime,
-                                        IconSource = IconHelper.GetIcon(fileInfo.FullName),
-                                        Type = "File",
-                                        IsDefault = StarManager.IsDefault(file),
-                                        IsPined = PinManager.IsPined(file)
-                                    });
+                                    Path = fileInfo.FullName,
+                                    Name = fileInfo.Name,
+                                    LastModifiedDateTime = fileInfo.LastWriteTime,
+                                    IconSource = IconHelper.GetIcon(fileInfo.FullName),
+                                    Type = "File",
+                                    IsDefault = StarManager.IsDefault(file),
+                                    IsPined = PinManager.IsPined(file)
                                 });
                             }
                         }
@@ -1542,16 +1581,24 @@ namespace CDM.ViewModels
                 }
             }
 
-            _userControl.Dispatcher.Invoke(() =>
-            {
-                CurSearchStatus.IsLoading = false;
-                CurSearchStatus.IsLoadingItems = false;
-                TxtSearchBoxItem = string.Empty;
-                IsSearchBoxPlaceholderVisible = Visibility.Visible;
-                CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
-                CurFilterStatus.ItemsCount = FoldersItemList.Count;
-            });
+            //IsLoading = false;
+            CurSearchStatus.IsLoading = false;
+            CurSearchStatus.IsLoadingItems = false;
+            TxtSearchBoxItem = string.Empty;
+            IsSearchBoxPlaceholderVisible = Visibility.Visible;
+            CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
+            CurFilterStatus.ItemsCount = FoldersItemList.Count;
+
         }
+
+        //public async void UpdateIsloading(bool _isloadingValue)
+        //{
+        //   await Task.Run(Task.Run(() =>
+        //    {
+        //        IsLoading = _isloadingValue;
+
+        //    }));
+        //}
 
         private bool IsRootFolder(string path)
         {
@@ -1642,6 +1689,49 @@ namespace CDM.ViewModels
             DoFilter(obj);
         }
 
+        public void SortByName()
+        {
+
+            if (IsDriveItemsGridNameAscending)
+            {
+                FoldersItemList = new ObservableCollection<FileFolderModel>(
+                    FoldersItemList.OrderBy(f => f.IsDefault)
+                    .ThenBy(f => f.IsPined)
+                    .ThenBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
+                    .ToList());
+            }
+            else
+            {
+                FoldersItemList = new ObservableCollection<FileFolderModel>(FoldersItemList.OrderByDescending(f => f.IsDefault)
+                    .ThenByDescending(f => f.IsPined)
+                    .ThenByDescending(f => f.Name, StringComparer.OrdinalIgnoreCase)
+                    .ToList());
+            }
+            IsDriveItemsGridNameAscending = !IsDriveItemsGridNameAscending;
+
+
+        }
+
+        public void SortByDateModified()
+        {
+            if (IsDriveItemsGridDateAscending)
+            {
+                FoldersItemList = new ObservableCollection<FileFolderModel>(
+                    FoldersItemList.OrderBy(f => f.IsDefault)
+                    .ThenBy(f => f.IsPined)
+                    .ThenBy(f => f.LastModifiedDateTime.ToString(), StringComparer.OrdinalIgnoreCase)
+                    .ToList());
+            }
+            else
+            {
+                FoldersItemList = new ObservableCollection<FileFolderModel>(FoldersItemList.OrderByDescending(f => f.IsDefault)
+                    .ThenByDescending(f => f.IsPined)
+                    .ThenByDescending(f => f.LastModifiedDateTime.ToString(), StringComparer.OrdinalIgnoreCase)
+                    .ToList());
+            }
+            IsDriveItemsGridDateAscending = !IsDriveItemsGridDateAscending;
+        }
+
         // File icon set
         //private string SetIcon(string extension)
         //{
@@ -1703,48 +1793,7 @@ namespace CDM.ViewModels
         //{
         //    IsAscending = !IsAscending;
         //}
-        public void SortByName()
-        {
 
-            if (IsDriveItemsGridNameAscending)
-            {
-                FoldersItemList = new ObservableCollection<FileFolderModel>(
-                    FoldersItemList.OrderBy(f => f.IsDefault)
-                    .ThenBy(f => f.IsPined)
-                    .ThenBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
-                    .ToList());
-            }
-            else
-            {
-                FoldersItemList = new ObservableCollection<FileFolderModel>(FoldersItemList.OrderByDescending(f => f.IsDefault)
-                    .ThenByDescending(f => f.IsPined)
-                    .ThenByDescending(f => f.Name, StringComparer.OrdinalIgnoreCase)
-                    .ToList());
-            }
-            IsDriveItemsGridNameAscending = !IsDriveItemsGridNameAscending;
-
-
-        }
-
-        public void SortByDateModified()
-        {
-            if (IsDriveItemsGridDateAscending)
-            {
-                FoldersItemList = new ObservableCollection<FileFolderModel>(
-                    FoldersItemList.OrderBy(f => f.IsDefault)
-                    .ThenBy(f => f.IsPined)
-                    .ThenBy(f => f.LastModifiedDateTime.ToString(), StringComparer.OrdinalIgnoreCase)
-                    .ToList());
-            }
-            else
-            {
-                FoldersItemList = new ObservableCollection<FileFolderModel>(FoldersItemList.OrderByDescending(f => f.IsDefault)
-                    .ThenByDescending(f => f.IsPined)
-                    .ThenByDescending(f => f.LastModifiedDateTime.ToString(), StringComparer.OrdinalIgnoreCase)
-                    .ToList());
-            }
-            IsDriveItemsGridDateAscending = !IsDriveItemsGridDateAscending;
-        }
         #endregion
 
         #region :: Events ::
@@ -1802,4 +1851,50 @@ namespace CDM.ViewModels
         }
         #endregion
     }
+
+    //public static class Logger
+    //{
+    //    private static readonly string logFilePath = "C:\\Users\\Lenovo\\Documents\\cdm_log\\log.txt";
+    //    private static readonly string infoFilePath = "C:\\Users\\Lenovo\\Documents\\cdm_log\\info.txt";
+
+    //    static Logger()
+    //    {
+    //        // Optional: Initialize log file if needed
+    //        if (!File.Exists(logFilePath))
+    //        {
+    //            using (File.Create(logFilePath)) { }
+    //        }
+
+    //        // Optional: Initialize log file if needed
+    //        if (!File.Exists(infoFilePath))
+    //        {
+    //            using (File.Create(infoFilePath)) { }
+    //        }
+    //    }
+
+    //    public static void LogNow(string message, bool isInfo = false)
+    //    {
+
+    //        string logMessage = $"{DateTime.Now}: {message}";
+    //        Console.WriteLine(logMessage);
+    //        LogToFile(logMessage, isInfo);
+
+    //    }
+
+    //    private static void LogToFile(string message, bool isInfo = false)
+    //    {
+    //        try
+    //        {
+    //            using (StreamWriter writer = new StreamWriter(isInfo ? infoFilePath : logFilePath, true))
+    //            {
+    //                writer.WriteLine(message);
+    //            }
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Console.WriteLine($"Failed to log message to file: {ex.Message}");
+    //        }
+    //    }
+    //}
+
 }

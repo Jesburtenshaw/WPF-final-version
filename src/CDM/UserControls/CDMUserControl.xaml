@@ -314,14 +314,14 @@
                                        Margin="8 0 0 0"
                                        FontSize="20"></TextBlock>
                             <TextBlock Text="Loading..."
-                                       Visibility="{Binding CurSearchStatus.IsLoading,Converter={StaticResource BoolVisibilityConverter}}"
+                                       Visibility="{Binding CurSearchStatus.IsLoading,Converter={StaticResource BoolVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                        Foreground="{DynamicResource WindowForegroundColor}"
                                        VerticalAlignment="Center"
                                        Margin="8 0 0 0"
-                                       FontSize="12"
-                                       FontWeight="Thin"></TextBlock>
+                                       FontSize="16" FontWeight="Normal" ></TextBlock>
                         </StackPanel>
-
+ 
+                        
                         <Grid Grid.Column="3">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition></ColumnDefinition>
@@ -708,11 +708,12 @@ S381.9,104.65,381.9,203.25z"
                         <TextBlock Text="Searching..."
                                    Margin="5,0,0,0"
                                    VerticalAlignment="Center"
-                                   Visibility="{Binding CurSearchStatus.IsDoing, Converter={StaticResource BoolVisibilityConverter}}"
+                                       FontSize="16" FontWeight="Normal" 
+                                   Visibility="{Binding CurSearchStatus.IsDoing, Converter={StaticResource BoolVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                    Foreground="{DynamicResource WindowForegroundColor}">
                         </TextBlock>
                         <Button Margin="5,0,0,0"
-                                Visibility="{Binding CurSearchStatus.IsDoing, Converter={StaticResource BoolVisibilityConverter}}"
+                                Visibility="{Binding CurSearchStatus.IsDoing, Converter={StaticResource BoolVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                 Command="{Binding CancelSearchCommand}"
                                 Background="Transparent"
                                 VerticalAlignment="Center"
@@ -723,9 +724,8 @@ S381.9,104.65,381.9,203.25z"
                                 <ControlTemplate>
                                     <TextBlock VerticalAlignment="Center"
                                                Text="Cancel"
-                                               FontSize="12"
-                                               Foreground="#A0B8EC"
-                                               FontWeight="Thin">
+                                       FontSize="16" FontWeight="Normal" 
+                                               Foreground="#A0B8EC">
                                     </TextBlock>
                                 </ControlTemplate>
                             </Button.Template>
@@ -2040,5 +2040,7 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                  Opacity="0.5" />
             </Grid.Background>
         </Grid>
+
+        
     </Grid>
 </UserControl>
