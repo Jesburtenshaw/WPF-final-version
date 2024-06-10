@@ -89,7 +89,7 @@ HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant params[]
 }
 
 
-void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent)
+void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent, int width, int height)
 {
 	// Create a unique pointer to a CCLRLoaderSimple object
 	m_pCLRLoader = std::make_unique<CCLRLoaderSimple>();
@@ -106,10 +106,12 @@ void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent)
 	// Prepare the parameters to be passed to the COM method
 	CComVariant v1((UINT64)hWnd);
 	CComVariant v2((UINT64)hWndParent);
-	CComVariant params[]{ v1, v2 }, result;
+	CComVariant v3(width);
+	CComVariant v4(height);
+	CComVariant params[]{ v1, v2, v3, v4 }, result;
 
 	// Call the "showCDM" method on the COM object with the prepared parameters
-	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", params, 2, result);
+	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", params, 4, result);
 
 	// If the method call failed, exit the function
 	if (FAILED(hr))
@@ -117,7 +119,6 @@ void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent)
 		return;
 	}
 }
-
 
 
 IFACEMETHODIMP CDMDriveShellView::CreateViewWindow(_In_ LPSHELLVIEW pPrevious, _In_ LPCFOLDERSETTINGS pfs, _In_ LPSHELLBROWSER psb, _In_ LPRECT prcView, _Out_ HWND* phWnd)
@@ -147,39 +148,20 @@ IFACEMETHODIMP CDMDriveShellView::CreateViewWindow(_In_ LPSHELLVIEW pPrevious, _
 		HRESULT hr = m_pShellBrowser->QueryActiveShellView(&pShellView);
 		if (FAILED(hr) || !pShellView)
 		{
-			// Handle error
+			return E_FAIL;
 		}
 
 		HWND hwndView;
 		hr = pShellView->GetWindow(&hwndView);
 		if (FAILED(hr) || !hwndView)
 		{
-			// Handle error
+			return E_FAIL;
 		}
 
 		RECT rect;
-		if (::GetWindowRect(hwndView, &rect))
-		{
-			// Now rect contains the rectangle of the window
-		}
-		else
-		{
-			// Handle error
-		}
-		// Convert RECT data to a string
-		std::ostringstream oss;
-		oss << "RECT Data:\n";
-		oss << "Left: " << rect.left << "\n";
-		oss << "Top: " << rect.top << "\n";
-		oss << "Right: " << rect.right << "\n";
-		oss << "Bottom: " << rect.bottom;
-
-		std::string rectData = oss.str();
-
-		// Display the string in a message box
-		MessageBoxA(m_hWnd, rectData.c_str(), "Rectangle Data", MB_OK);
-
-		LoadCDM(m_hWnd, hwndView);
+		::GetWindowRect(hwndView, &rect);
+			
+		LoadCDM(m_hWnd, hwndView, rect.right - rect.left, rect.bottom - rect.top);
 		return S_OK;
 	}
 	catch (...)
@@ -476,6 +458,13 @@ LRESULT CDMDriveShellView::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 {
 	try
 	{
+		if (hScrollBar)
+		{
+			RECT rect;
+			::GetClientRect(m_hWnd, &rect);
+			::MoveWindow(hScrollBar, rect.right - 20, rect.top, 20, rect.bottom - rect.top, TRUE);
+		}
+
 		LOGINFO(_MainApplication->GetLogger(), L"Resize the list control to the same size as the container window.");
 
 		if (m_wndHost.IsWindow())
