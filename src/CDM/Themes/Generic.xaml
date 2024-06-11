@@ -286,9 +286,9 @@
     <Style x:Key="DGRowStyle"
            TargetType="DataGridRow">
         <Setter Property="BorderBrush"
-                Value="#6b6b6b" />
+                Value="{StaticResource LineColor}" />
         <Setter Property="BorderThickness"
-                Value="0 0.5" />
+                Value="0 1 0 0" />
         <Setter Property="FontWeight"
                 Value="Regular" />
         <Setter Property="Background"

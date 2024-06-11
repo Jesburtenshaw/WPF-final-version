@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Management;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -105,6 +106,7 @@ namespace CDM.UserControls
             DriveManager.DrivesStateChanged += DriveManager_DrivesStateChanged;
             cts = new CancellationTokenSource();
             _ = DriveManager.Check(cts.Token);
+            vm.SortByName();
         }
         private void DriveManager_DrivesStateChanged(object sender, bool e)
         {
@@ -155,7 +157,7 @@ namespace CDM.UserControls
                         fileName = System.IO.Path.GetFileName(file);
                         if (isDirectory)
                         {
-                            FileSystem.CopyDirectory(file, destinationPath + "\\" + fileName, UIOption.AllDialogs, UICancelOption.DoNothing);                            
+                            FileSystem.CopyDirectory(file, destinationPath + "\\" + fileName, UIOption.AllDialogs, UICancelOption.DoNothing);
                         }
                         else
                         {
@@ -265,6 +267,109 @@ namespace CDM.UserControls
             else if (e.Column.SortMemberPath == "DateModified")
             {
                 vm.SortByDateModified();
+            }
+        }
+
+        private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+        {
+
+            if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem))
+            {
+                vm.IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
+            }
+
+            if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem) && vm.TxtSearchBoxItem.Length > 256)
+            {
+                vm.TxtSearchBoxItem = vm.TxtSearchBoxItem.Substring(0, 256);
+                vm.CurSearchStatus.IsError = true;
+                vm.CurSearchStatus.Desc = "Search items have a maximum limit of 256 characters.";
+                return;
+            }
+            else if (string.IsNullOrEmpty(vm.TxtSearchBoxItem) || (vm.TxtSearchBoxItem.Length < 256))
+            {
+                vm.CurSearchStatus.IsError = false;
+                vm.CurSearchStatus.Desc = "";
+            }
+
+            var tmp = vm.CurrentDrivePath;
+            DataGrid dataGrid;
+            if (tmp == null && TabView1.SelectedIndex == 0)
+            {
+                dataGrid = ListOfRecentItems;
+            }
+            else if (tmp == null && TabView1.SelectedIndex == 1)
+            {
+                dataGrid = ListOfPinnedItems;
+            }
+            else
+            {
+                dataGrid = ListOfDriveItems;
+            }
+            this.Dispatcher.Invoke(() =>
+        {
+            Regex regex = null;
+
+            if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem))
+            {
+                regex = new Regex($"({Regex.Escape(vm.TxtSearchBoxItem)})", RegexOptions.IgnoreCase);
+            }
+            FindDataGridItem(dataGrid, regex);
+        });
+
+        }
+        public void FindDataGridItem(DependencyObject obj, Regex regex)
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+
+                if (child is DataGridRow dataGridRow)
+                {
+                    HighlightText(dataGridRow, regex);
+                }
+                else
+                {
+                    FindDataGridItem(child, regex);
+                }
+            }
+        }
+
+        private void HighlightText(DependencyObject obj, Regex regex)
+        {
+            if (obj is TextBlock textBlock)
+            {
+                string originalText = textBlock.Text;
+                textBlock.Inlines.Clear();
+
+                if (regex == null)
+                {
+                    textBlock.Inlines.Add(new Run(originalText));
+                    return;
+                }
+
+                string[] substrings = regex.Split(originalText);
+                foreach (var substring in substrings)
+                {
+                    if (regex.IsMatch(substring))
+                    {
+                        Run highlightRun = new Run(substring)
+                        {
+                            FontWeight = FontWeights.Bold
+                        };
+                        textBlock.Inlines.Add(highlightRun);
+                    }
+                    else
+                    {
+                        textBlock.Inlines.Add(new Run(substring));
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+                {
+                    HighlightText(VisualTreeHelper.GetChild(obj, i), regex);
+                }
             }
         }
     }

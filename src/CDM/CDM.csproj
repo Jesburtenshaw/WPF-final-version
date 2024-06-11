@@ -63,6 +63,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\AnimatedCircle.cs" />
     <Compile Include="Common\DirectoryHelper.cs" />
     <Compile Include="Common\ExceptionHelper.cs" />
     <Compile Include="Common\IconHelper.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Converters\DirFileTypeVisibilityConverter.cs" />
     <Compile Include="Converters\EmptyStringVisibilityConverter.cs" />
     <Compile Include="Converters\EmptyStringVisibilityInverseConverter.cs" />
+    <Compile Include="Converters\HighlightTextConverter.cs" />
     <Compile Include="Converters\ZeroIntVisibilityConverter.cs" />
     <Compile Include="Converters\ZeroIntVisibilityInverseConverter.cs" />
     <Compile Include="Helper\DriveManager.cs" />

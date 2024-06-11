@@ -4,6 +4,8 @@
                      Color="White" />
     <SolidColorBrush x:Key="WindowForegroundColor"
                      Color="#444444" />
+    <SolidColorBrush x:Key="SecondaryWindowForegroundColor"
+                     Color="#2F2F2F" />
     <SolidColorBrush x:Key="BackBtnNavigationColor"
                      Color="White" />
     <SolidColorBrush x:Key="SeachBoxBorderColor"
@@ -47,6 +49,18 @@
                      Color="Transparent" />
     <SolidColorBrush x:Key="DriveNavigationBtnIcnPath"
                      Color="Black" />
+
+    <SolidColorBrush x:Key="BorderBrushContextMenu"
+                     Color="#4F4F4F" />
+
+    <SolidColorBrush x:Key="HoverBrushContextMenu"
+                     Color="#E7E7E7" />
+
+    <SolidColorBrush x:Key="BackgroundBrushContextMenu"
+                     Color="#FFFFFF" />
+
+    <SolidColorBrush x:Key="LineColor"
+                     Color="#C7C7C7" />
 
 
 </ResourceDictionary>

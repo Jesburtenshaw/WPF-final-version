@@ -27,7 +27,7 @@ namespace CDM.ViewModels
             _userControl = cdmUserControl ?? throw new ArgumentNullException(nameof(cdmUserControl));
             DoubleClickCommand = new RelayCommand(DoubleDriveClick);
             BackWindowCommand = new RelayCommand(BackNavigationClick);
-            SearchBoxTextChangedCommand = new RelayCommand(searchBoxTextChanged);
+            //SearchBoxTextChangedCommand = new RelayCommand(searchBoxTextChanged);
             FolderItemDoubleClickCommand = new RelayCommand(FolderItemDoubleClick);
             RecentItemDoubleClickCommand = new RelayCommand(RecentItemDoubleClick);
             PinnedItemDoubleClickCommand = new RelayCommand(PinnedItemDoubleClick);
@@ -168,6 +168,7 @@ namespace CDM.ViewModels
             {
                 _txtSearchBoxItem = value;
                 OnPropertyChanged(nameof(TxtSearchBoxItem));
+                //searchBoxTextChanged();
             }
         }
 
@@ -505,7 +506,7 @@ namespace CDM.ViewModels
 
         public RelayCommand BackWindowCommand { get; set; }
         public RelayCommand DoubleClickCommand { get; set; }
-        public RelayCommand SearchBoxTextChangedCommand { get; set; }
+        //public RelayCommand SearchBoxTextChangedCommand { get; set; }
         public RelayCommand TxtSearchGotFocusCommand { get; set; }
         public RelayCommand TxtSearchLostFocusCommand { get; set; }
         public RelayCommand FolderItemDoubleClickCommand { get; set; }
@@ -861,7 +862,7 @@ namespace CDM.ViewModels
             }
             else
             {
-                Directory.Delete(item.Path);
+                Directory.Delete(item.Path, true);
             }
 
             var t = RecentItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
@@ -947,6 +948,7 @@ namespace CDM.ViewModels
                 return;
             }
             TxtSearchBoxItem = "";
+            DoSearch(null);
         }
 
         private void ClearSearchError(object obj)
@@ -1100,7 +1102,7 @@ namespace CDM.ViewModels
         }
 
 
-        private async void DeepSearch(string folderPath, string keyword, CancellationToken ct, bool isIntermediate = false)
+        private async Task DeepSearch(string folderPath, string keyword, CancellationToken ct, bool isIntermediate = false)
         {
             if (ct.IsCancellationRequested || !Directory.Exists(folderPath))
             {
@@ -1126,7 +1128,7 @@ namespace CDM.ViewModels
                         {
                             AddToFolderItemList(subFolderInfo, "Dir");
                         }
-                        DeepSearch(subFolder, keyword, ct, true);
+                        await DeepSearch(subFolder, keyword, ct, true);
                     }
                 }
 
@@ -1152,13 +1154,16 @@ namespace CDM.ViewModels
                 //Logger.LogNow(ex.Message);
                 //Logger.LogNow(ex.StackTrace);
             }
-            if (!isIntermediate)
+            finally
             {
-                CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
-                CurFilterStatus.ItemsCount = FoldersItemList.Count;
-                CurSearchStatus.IsLoadingItems = false;
-                CurSearchStatus.IsDoing = false;
-                CurSearchStatus.Searched = true;
+                if (!isIntermediate)
+                {
+                    CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
+                    CurFilterStatus.ItemsCount = FoldersItemList.Count;
+                    CurSearchStatus.IsLoadingItems = false;
+                    CurSearchStatus.IsDoing = false;
+                    CurSearchStatus.Searched = true;
+                }
             }
         }
 
@@ -1218,6 +1223,10 @@ namespace CDM.ViewModels
 
                 _userControl.Dispatcher.Invoke(() =>
                 {
+                    if (TxtSearchBoxItem.Length > 256)
+                    {
+                        TxtSearchBoxItem = TxtSearchBoxItem.Substring(0, 256);
+                    }
                     CurSearchStatus.IsDoing = true;
                     CurSearchStatus.IsError = false;
                     CurSearchStatus.Searched = false;
@@ -1233,13 +1242,13 @@ namespace CDM.ViewModels
                 if (!string.IsNullOrEmpty(TxtSearchBoxItem))
                 {
                     IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
-                    if (TxtSearchBoxItem.Length > 256)
-                    {
+                    //if (TxtSearchBoxItem.Length > 256)
+                    //{
 
-                        CurSearchStatus.IsError = true;
-                        CurSearchStatus.Desc = "Search items have a maximum limit of 256 characters.";
-                        return;
-                    }
+                    //    CurSearchStatus.IsError = true;
+                    //    CurSearchStatus.Desc = "Search items have a maximum limit of 256 characters.";
+                    //    return;
+                    //}
                     //if (FoldersItemList.Count > 0)
                     if (!string.IsNullOrEmpty(curNavigatingFolderPath))
                     {
@@ -1334,16 +1343,27 @@ namespace CDM.ViewModels
             ctsSearch?.Cancel();
         }
 
-        private void searchBoxTextChanged(object sender)
+        private void searchBoxTextChanged()
         {
-            CurSearchStatus.IsError = false;
-            CurSearchStatus.Desc = "";
+
+            if (!string.IsNullOrEmpty(TxtSearchBoxItem))
+            {
+                IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
+            }
+
             if (!string.IsNullOrEmpty(TxtSearchBoxItem) && TxtSearchBoxItem.Length > 256)
             {
+                TxtSearchBoxItem = TxtSearchBoxItem.Substring(0, 256);
                 CurSearchStatus.IsError = true;
                 CurSearchStatus.Desc = "Search items have a maximum limit of 256 characters.";
                 return;
             }
+            else if (string.IsNullOrEmpty(TxtSearchBoxItem) || (TxtSearchBoxItem.Length < 256))
+            {
+                CurSearchStatus.IsError = false;
+                CurSearchStatus.Desc = "";
+            }
+
             /*
             CurSearchStatus.IsDoing = false;
             if (!string.IsNullOrEmpty(TxtSearchBoxItem))
