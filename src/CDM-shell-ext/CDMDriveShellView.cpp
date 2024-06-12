@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "CDMDriveShellView.h"
 #include <sstream>
+#import "CDMWrapper.tlb"
+
+
 
 UINT CDMDriveShellView::sm_uListID = 101;
 
@@ -99,71 +102,25 @@ HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant params[]
 }
 
 
-//void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent, int width, int height)
-//{
-//	// Create a unique pointer to a CCLRLoaderSimple object
-//	m_pCLRLoader = std::make_unique<CCLRLoaderSimple>();
-//
-//	// Attempt to create an instance of the COM object with the specified ProgID
-//	HRESULT hr = m_pCLRLoader->CreateInstance(L"CDMWrapper", L"CDMWrapper.CDMWrapper", &m_cdmPtr);
-//
-//	// If the instance creation failed, exit the function
-//	if (FAILED(hr))
-//	{
-//		return;
-//	}
-//
-//	// Prepare the parameters to be passed to the COM method
-//	CComVariant v1((UINT64)hWnd);
-//	CComVariant v2((UINT64)hWndParent);
-//	CComVariant v3(width);
-//	CComVariant v4(height);
-//	CComVariant params[]{ v1, v2, v3, v4 }, result;
-//
-//	// Call the "showCDM" method on the COM object with the prepared parameters
-//	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", params, 4, result);
-//
-//	// If the method call failed, exit the function
-//	if (FAILED(hr))
-//	{
-//		return;
-//	}
-//}
+
 void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent, int width, int height)
 {
-	// Create a unique pointer to a CCLRLoaderSimple object
-	m_pCLRLoader = std::make_unique<CCLRLoaderSimple>();
+		CoInitialize(nullptr);
 
-	// Attempt to create an instance of the COM object with the specified ProgID
-	HRESULT hr = m_pCLRLoader->CreateInstance(L"CDMWrapper.CDMWrapper", L"CDMWrapper.CDMWrapper", &m_cdmPtr);
+		CDMWrapper::IMyInterfacePtr spCSharpObj;
+		HRESULT hr = spCSharpObj.CreateInstance(__uuidof(CDMWrapper::MyClass));
+		if (SUCCEEDED(hr))
+		{
+			long hwndAsLong = reinterpret_cast<long>(hWnd);
+			spCSharpObj->showCDM(hwndAsLong, width, height);
+		}
+		else
+		{
+			// Handle error
+		}
 
-	// If the instance creation failed, exit the function
-	if (FAILED(hr))
-	{
-		return;
-	}
+		CoUninitialize();
 
-	// Prepare the parameters to be passed to the COM method
-	CComVariant v1(reinterpret_cast<ULONG_PTR>(hWnd));
-	CComVariant v2(reinterpret_cast<ULONG_PTR>(hWndParent));
-	CComVariant v3(width);
-	CComVariant v4(height);
-	CComVariant params[] = { v1, v2, v3, v4 }, result;
-
-	// Set the variant types
-	v1.vt = VT_UI8;
-	v2.vt = VT_UI8;
-	v3.vt = VT_I4;
-	v4.vt = VT_I4;
-
-	// Call the "ShowCDM" method on the COM object with the prepared parameters
-	hr = CallIDispatchMethod(m_cdmPtr, L"ShowCDM", params, 4, result);
-
-	// If the method call failed, exit the function
-	if (FAILED(hr))
-	{
-		return;
-	}
 }
 
 
