@@ -23,6 +23,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using CDM.Common;
 using CDM.Helper;
+using CDM.Models;
 using CDM.ViewModels;
 using Microsoft.VisualBasic.FileIO;
 using Microsoft.Win32;
@@ -106,7 +107,7 @@ namespace CDM.UserControls
             DriveManager.DrivesStateChanged += DriveManager_DrivesStateChanged;
             cts = new CancellationTokenSource();
             _ = DriveManager.Check(cts.Token);
-            vm.SortByName();
+            vm.SortByName(true);
         }
         private void DriveManager_DrivesStateChanged(object sender, bool e)
         {
@@ -270,53 +271,54 @@ namespace CDM.UserControls
             }
         }
 
-        private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
-        {
+        //private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+        //{
 
-            if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem))
-            {
-                vm.IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
-            }
+        //    if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem))
+        //    {
+        //        vm.IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
+        //    }
 
-            if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem) && vm.TxtSearchBoxItem.Length > 256)
-            {
-                vm.TxtSearchBoxItem = vm.TxtSearchBoxItem.Substring(0, 256);
-                vm.CurSearchStatus.IsError = true;
-                vm.CurSearchStatus.Desc = "Search items have a maximum limit of 256 characters.";
-                return;
-            }
-            else if (string.IsNullOrEmpty(vm.TxtSearchBoxItem) || (vm.TxtSearchBoxItem.Length < 256))
-            {
-                vm.CurSearchStatus.IsError = false;
-                vm.CurSearchStatus.Desc = "";
-            }
+        //    if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem) && vm.TxtSearchBoxItem.Length > 256)
+        //    {
+        //        vm.TxtSearchBoxItem = vm.TxtSearchBoxItem.Substring(0, 256);
+        //        vm.CurSearchStatus.IsError = true;
+        //        vm.CurSearchStatus.Desc = "Search items have a maximum limit of 256 characters.";
+        //        return;
+        //    }
+        //    else if (string.IsNullOrEmpty(vm.TxtSearchBoxItem) || (vm.TxtSearchBoxItem.Length < 256))
+        //    {
+        //        vm.CurSearchStatus.IsError = false;
+        //        vm.CurSearchStatus.Desc = "";
+        //    }
 
-            var tmp = vm.CurrentDrivePath;
-            DataGrid dataGrid;
-            if (tmp == null && TabView1.SelectedIndex == 0)
-            {
-                dataGrid = ListOfRecentItems;
-            }
-            else if (tmp == null && TabView1.SelectedIndex == 1)
-            {
-                dataGrid = ListOfPinnedItems;
-            }
-            else
-            {
-                dataGrid = ListOfDriveItems;
-            }
-            this.Dispatcher.Invoke(() =>
-        {
-            Regex regex = null;
+        //    var tmp = vm.CurrentDrivePath;
+        //    DataGrid dataGrid;
+        //    if (tmp == null && TabView1.SelectedIndex == 0)
+        //    {
+        //        dataGrid = ListOfRecentItems;
+        //    }
+        //    else if (tmp == null && TabView1.SelectedIndex == 1)
+        //    {
+        //        dataGrid = ListOfPinnedItems;
+        //    }
+        //    else
+        //    {
+        //        dataGrid = ListOfDriveItems;
+        //    }
+        //    this.Dispatcher.Invoke(() =>
+        //{
+        //    Regex regex = null;
 
-            if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem))
-            {
-                regex = new Regex($"({Regex.Escape(vm.TxtSearchBoxItem)})", RegexOptions.IgnoreCase);
-            }
-            FindDataGridItem(dataGrid, regex);
-        });
+        //    if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem))
+        //    {
+        //        regex = new Regex($"({Regex.Escape(vm.TxtSearchBoxItem)})", RegexOptions.IgnoreCase);
+        //    }
+        //    FindDataGridItem(dataGrid, regex);
+        //});
 
-        }
+        //}
+
         public void FindDataGridItem(DependencyObject obj, Regex regex)
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
@@ -372,5 +374,66 @@ namespace CDM.UserControls
                 }
             }
         }
+
+        private void txtSearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        private void txtSearchBox_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+
+            //Highlight searched text
+            var tmp = vm.CurrentDrivePath;
+            DataGrid dataGrid;
+            if (tmp == null && TabView1.SelectedIndex == 0)
+            {
+                dataGrid = ListOfRecentItems;
+            }
+            else if (tmp == null && TabView1.SelectedIndex == 1)
+            {
+                dataGrid = ListOfPinnedItems;
+            }
+            else
+            {
+                dataGrid = ListOfDriveItems;
+            }
+            this.Dispatcher.Invoke(() =>
+            {
+                Regex regex = null;
+
+                if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem))
+                {
+                    regex = new Regex($"({Regex.Escape(vm.TxtSearchBoxItem)})", RegexOptions.IgnoreCase);
+                }
+                FindDataGridItem(dataGrid, regex);
+            });
+        }
+
+        private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+        {
+
+            if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem))
+            {
+                vm.IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
+            }
+
+            if (!string.IsNullOrEmpty(vm.TxtSearchBoxItem) && vm.TxtSearchBoxItem.Length > 256)
+            {
+                vm.TxtSearchBoxItem = vm.TxtSearchBoxItem.Substring(0, 256);
+                txtSearchBox.CaretIndex = vm.TxtSearchBoxItem.Length;   //set cursor to end
+                vm.CurSearchStatus.IsError = true;
+                vm.CurSearchStatus.Desc = "Search items have a maximum limit of 256 characters.";
+                return;
+            }
+            else if (string.IsNullOrEmpty(vm.TxtSearchBoxItem) || (vm.TxtSearchBoxItem.Length < 256))
+            {
+                vm.CurSearchStatus.IsError = false;
+                vm.CurSearchStatus.Desc = "";
+                //isHighlightAllow = true;
+            }
+
+        }
+
     }
 }

@@ -18,7 +18,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/CDM;component\Themes\Generic.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/CDM;component\Themes\Generic.xaml"  />
             </ResourceDictionary.MergedDictionaries>
             <!--<converter:ArrowPathConverter x:Key="ArrowPathConverter" />-->
             <converter:BoolVisibilityConverter x:Key="BoolVisibilityConverter" />
@@ -79,6 +79,24 @@
                         <Setter Property="Background" Value="{StaticResource HoverBrushContextMenu}"/>
                     </Trigger>
                 </Style.Triggers>
+            </Style>
+
+            <!--NoMouseOverButton-->
+            <Style x:Key="NoMouseOverButton" TargetType="Button">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Name="border">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="{StaticResource WindowBackgroundColor}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
         </Grid.Resources>
@@ -291,19 +309,14 @@
 
                         <!--Style="{StaticResource MultiplyBtnStyle}"-->
                         <Button Grid.Column="0"
-                                Style="{StaticResource backBtnStyle}"
+                                Style="{StaticResource backBtnStyle}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                                 Command="{Binding BackWindowCommand}">
-                            <Path Data="M12 3C12.2652 3 12.5196 3.10536 12.7071 3.29289L19.7071 10.2929C20.0976 10.6834 20.0976 11.3166 19.7071 11.7071C19.3166 12.0976 18.6834 12.0976 18.2929 11.7071L13 6.41421V20C13 20.5523 12.5523 21 12 21C11.4477 21 11 20.5523 11 20V6.41421L5.70711 11.7071C5.31658 12.0976 4.68342 12.0976 4.29289 11.7071C3.90237 11.3166 3.90237 10.6834 4.29289 10.2929L11.2929 3.29289C11.4804 3.10536 11.7348 3 12 3Z"
-                                  Height="40"
-                                  Width="40"
+                            <Path Data="{StaticResource UpBackwardArrow}"
+                                  Height="24"
+                                  Width="24"
                                   Style="{DynamicResource IcnPathStyle}"
-                                  Margin="9 9 0 0"
+                                  Margin="0" Stretch="Uniform"
                                   Fill="#666666" />
-                            <!--<Image Height="30"
-                                   Width="30"
-                                   Source="Resources/icnUpArrow.png"
-                                   VerticalAlignment="Stretch"
-                                   HorizontalAlignment="Stretch" />-->
                         </Button>
 
                         <Grid Grid.Column="1"
@@ -384,26 +397,11 @@
                                         Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
                                         Visibility="{Binding CurFolder.IsDefault, Converter={StaticResource BoolVisibilityInverseConverter}}"
                                         BorderThickness="0"
-                                        Margin="0 0 5 0"
-                                        Width="20"
+                                        Margin="0 0 5 0" Style="{StaticResource NoMouseOverButton}"
+                                        Width="20" 
                                         Height="20">
-                                    <Path Data="M98 193 c-8 -17 -25 -30 -45 -35 -38 -10 -41 -18 -12 -43 14 -13 19
--29 17 -50 -3 -27 0 -30 22 -27 31 3 49 3 80 0 22 -3 25 0 22 27 -2 21 3 37
-17 50 29 25 26 33 -11 43 -21 5 -38 18 -46 35 -7 15 -17 27 -22 27 -5 0 -15
--12 -22 -27z m37 -23 c3 -11 17 -23 31 -26 24 -6 24 -7 8 -25 -11 -12 -14 -27
--10 -45 6 -23 5 -25 -11 -19 -10 4 -25 8 -33 8 -8 0 -23 -4 -33 -8 -16 -6 -17
--4 -11 19 4 18 1 33 -10 45 -16 18 -16 19 8 25 14 3 28 15 31 26 3 11 10 20
-15 20 5 0 12 -9 15 -20z"
-                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                          Height="20"
-                                          Width="20"
-                                          Stretch="Uniform">
-                                        <Path.RenderTransform>
-                                            <RotateTransform Angle="45"
-                                                             CenterX="8"
-                                                             CenterY="10"></RotateTransform>
-                                        </Path.RenderTransform>
-                                    </Path>
+                                    <Path Data="{StaticResource StarGeometry}"  Style="{StaticResource PinStarPathIconStyle}" />
+
                                 </Button>
                                 <Button x:Name="btnUnstar"
                                         ToolTip="Unset this item as default"
@@ -413,23 +411,9 @@
                                         Visibility="{Binding CurFolder.IsDefault, Converter={StaticResource BoolVisibilityConverter}}"
                                         BorderThickness="0"
                                         Margin="0 0 5 0"
-                                        Width="20"
+                                        Width="20"  Style="{StaticResource NoMouseOverButton}"
                                         Height="20">
-                                    <Path Data="M293 588 c-4 -7 -20 -46 -34 -88 l-26 -75 -85 -3 c-134 -4 -144 -43
--32 -125 49 -36 64 -53 59 -65 -3 -9 -16 -49 -27 -89 -18 -59 -19 -74 -9 -87
-22 -26 43 -19 114 35 l67 52 67 -52 c71 -54 92 -61 114 -35 10 13 9 28 -9 87
--11 40 -24 80 -27 89 -5 12 10 29 59 65 112 82 102 121 -32 125 l-85 3 -26 75
-c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
-                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                          Height="20"
-                                          Width="20"
-                                          Stretch="Uniform">
-                                        <Path.RenderTransform>
-                                            <RotateTransform Angle="45"
-                                                             CenterX="8"
-                                                             CenterY="10"></RotateTransform>
-                                        </Path.RenderTransform>
-                                    </Path>
+                                    <Path Data="{StaticResource FilledStarGeometry}"  Style="{StaticResource PinStarPathIconStyle}" />
                                 </Button>
                             </Grid>
                             <Grid Grid.Column="0"
@@ -444,22 +428,8 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                         Margin="0 0 5 0"
                                         Width="20"
                                         Height="20">
-                                    <Path Data="M124 212 c-6 -4 -19 -22 -28 -39 -9 -18 -22 -33 -29 -33 -6 0 -19 -4
-             -27 -10 -12 -7 -11 -12 5 -29 18 -21 18 -22 -5 -46 -30 -32 -17 -45 15 -15 24
-             23 25 23 46 5 17 -16 22 -17 29 -5 6 8 10 21 10 28 0 7 16 20 35 29 55 26 55
-             58 -1 102 -29 23 -34 24 -50 13z m50 -41 c32 -33 29 -43 -13 -61 -17 -7 -33
-             -21 -37 -32 -6 -19 -7 -18 -35 8 -28 27 -29 29 -11 37 11 5 26 24 35 43 9 19
-             20 34 25 34 5 0 21 -13 36 -29z"
-                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                          Height="20"
-                                          Width="20"
-                                          Stretch="Uniform">
-                                        <Path.RenderTransform>
-                                            <RotateTransform Angle="270"
-                                                             CenterX="9"
-                                                             CenterY="10"></RotateTransform>
-                                        </Path.RenderTransform>
-                                    </Path>
+                                    <Path Data="{StaticResource PinGeometry}"  Style="{StaticResource PinStarPathIconStyle}" />
+
                                 </Button>
                                 <Button x:Name="btnUnpin"
                                         ToolTip="Unpin this item from the list"
@@ -471,12 +441,8 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                         Margin="0 0 5 0"
                                         Width="20"
                                         Height="20">
-                                    <Path Data="M 1.5,1.5 C 11.426,9.75698 20.7593,18.757 29.5,28.5C 28.9984,29.521 28.3317,29.6877 27.5,29C 24.6667,26.1667 21.8333,23.3333 19,20.5C 18.2881,22.8474 17.1214,24.8474 15.5,26.5C 13.8333,25.1667 12.1667,23.8333 10.5,22.5C 2.5,29.1667 1.83333,28.5 8.5,20.5C 7.16667,18.8333 5.83333,17.1667 4.5,15.5C 6.15263,13.8786 8.15263,12.7119 10.5,12C 6.89259,8.90231 3.89259,5.40231 1.5,1.5 Z M 11.5,14.5 C 16.469,15.7763 17.469,18.443 14.5,22.5C 12.1667,20.8333 10.1667,18.8333 8.5,16.5C 9.60164,15.8243 10.6016,15.1577 11.5,14.5 Z
-               M 15.5,3.5 C 16.8734,3.34332 18.2068,3.50999 19.5,4C 22,6.5 24.5,9 27,11.5C 27.8234,15.1992 26.3234,17.5325 22.5,18.5C 21.6919,18.1924 21.0253,17.6924 20.5,17C 22.0614,16.059 23.3947,14.8924 24.5,13.5C 22.4519,10.2568 19.7852,8.09009 16.5,7C 15.7894,8.25471 14.956,9.42138 14,10.5C 13.6667,10.1667 13.3333,9.83333 13,9.5C 12.9717,7.21343 13.805,5.21343 15.5,3.5 Z"
-                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                          Height="20"
-                                          Width="20"
-                                          Stretch="Uniform" />
+                                    <Path Data="{StaticResource UnPinGeometry}"  Style="{StaticResource PinStarPathIconStyle}" />
+
                                 </Button>
                             </Grid>
                         </Grid>
@@ -503,19 +469,19 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                             </Grid.ColumnDefinitions>
 
                             <Grid>
-                                <TextBlock Text="Search"
+                                <TextBlock Text="Search" 
              Visibility="{Binding IsSearchBoxPlaceholderVisible,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
              VerticalAlignment="Center" Margin="26 0 0 0" FontSize="16"
     Foreground="{DynamicResource SeachBoxPlaceHolderColor}" />
                                 <!--Foreground="#444444"-->
 
-                                <TextBox x:Name="txtSearchBox"
-                                    CaretBrush="Black" TextChanged="OnSearchTextChanged"
+                                <TextBox x:Name="txtSearchBox" 
+                                    CaretBrush="Black" TextChanged="OnSearchTextChanged" PreviewKeyDown="txtSearchBox_PreviewKeyDown" PreviewKeyUp="txtSearchBox_PreviewKeyUp"
                                     IsEnabled="{Binding CurSearchStatus.CanSearch}"
-                                    Text="{Binding TxtSearchBoxItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Text="{Binding TxtSearchBoxItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                     Style="{StaticResource txtSearchBoxStyle}">
                                     <i:Interaction.Triggers>
-                                      
+
                                         <i:EventTrigger EventName="GotFocus">
                                             <i:InvokeCommandAction Command="{Binding TxtSearchGotFocusCommand}" />
                                         </i:EventTrigger>
@@ -579,7 +545,7 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                     <Button.Template>
                                         <ControlTemplate>
                                             <Path Stretch="Uniform" Stroke="#1C1C1C" Fill="#1C1C1C" Height="14"
-                                                    Data="M5 5.70801L0.854492 9.85352C0.756836 9.95117 0.639648 10 0.50293 10C0.359701 10 0.239258 9.9528 0.141602 9.8584C0.0472005 9.76074 0 9.6403 0 9.49707C0 9.36035 0.0488281 9.24316 0.146484 9.14551L4.29199 5L0.146484 0.854492C0.0488281 0.756836 0 0.638021 0 0.498047C0 0.429688 0.0130208 0.364583 0.0390625 0.302734C0.0651042 0.240885 0.100911 0.188802 0.146484 0.146484C0.192057 0.100911 0.245768 0.0651042 0.307617 0.0390625C0.369466 0.0130208 0.43457 0 0.50293 0C0.639648 0 0.756836 0.0488281 0.854492 0.146484L5 4.29199L9.14551 0.146484C9.24316 0.0488281 9.36198 0 9.50195 0C9.57031 0 9.63379 0.0130208 9.69238 0.0390625C9.75423 0.0651042 9.80794 0.100911 9.85352 0.146484C9.89909 0.192057 9.9349 0.245768 9.96094 0.307617C9.98698 0.366211 10 0.429688 10 0.498047C10 0.638021 9.95117 0.756836 9.85352 0.854492L5.70801 5L9.85352 9.14551C9.95117 9.24316 10 9.36035 10 9.49707C10 9.56543 9.98698 9.63053 9.96094 9.69238C9.9349 9.75423 9.89909 9.80794 9.85352 9.85352C9.8112 9.89909 9.75911 9.9349 9.69727 9.96094C9.63542 9.98698 9.57031 10 9.50195 10C9.36198 10 9.24316 9.95117 9.14551 9.85352L5 5.70801Z" />
+                                                    Data="{StaticResource CloseGeometry}" />
                                         </ControlTemplate>
                                     </Button.Template>
                                 </Button>
@@ -589,10 +555,7 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                        Command="{Binding DoSearchCommand}"
                                        Style="{StaticResource btnSearch}">
 
-                                    <Path Data="M0,203.25c0,112.1,91.2,203.2,203.2,203.2c51.6,0,98.8-19.4,134.7-51.2l129.5,129.5c2.4,2.4,5.5,3.6,8.7,3.6
-                                                s6.3-1.2,8.7-3.6c4.8-4.8,4.8-12.5,0-17.3l-129.6-129.5c31.8-35.9,51.2-83,51.2-134.7c0-112.1-91.2-203.2-203.2-203.2
-                                                S0,91.15,0,203.25z M381.9,203.25c0,98.5-80.2,178.7-178.7,178.7s-178.7-80.2-178.7-178.7s80.2-178.7,178.7-178.7
-                                                S381.9,104.65,381.9,203.25z"
+                                    <Path Data="{StaticResource SearchGlassGeometry}"
                       Stretch="Uniform"
                       Height="14" Fill="#1C1C1C" Stroke="#1C1C1C"/>
                                 </Button>
@@ -601,10 +564,7 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                     Command="{Binding DoSearchCommand}"  Visibility="{Binding IsDriveFoldersVisible}"
                                     Style="{StaticResource btnSearch}" >
 
-                                    <Path Data="M0,203.25c0,112.1,91.2,203.2,203.2,203.2c51.6,0,98.8-19.4,134.7-51.2l129.5,129.5c2.4,2.4,5.5,3.6,8.7,3.6
-                                            s6.3-1.2,8.7-3.6c4.8-4.8,4.8-12.5,0-17.3l-129.6-129.5c31.8-35.9,51.2-83,51.2-134.7c0-112.1-91.2-203.2-203.2-203.2
-                                            S0,91.15,0,203.25z M381.9,203.25c0,98.5-80.2,178.7-178.7,178.7s-178.7-80.2-178.7-178.7s80.2-178.7,178.7-178.7
-                                            S381.9,104.65,381.9,203.25z"
+                                    <Path Data="{StaticResource SearchGlassGeometry}"
                                       Stretch="Uniform"
                                       Height="14" Fill="#1C1C1C" Stroke="#1C1C1C"/>
                                 </Button>
@@ -619,10 +579,10 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                                 <Border >
                                                     <Grid VerticalAlignment="Center" HorizontalAlignment="Center" >
                                                         <Path  Visibility="{Binding CurFilterStatus.ShowLocations, Converter={StaticResource BoolVisibilityInverseConverter}}"
-                                                               Data="M0.292893 0.325437C0.683417 -0.108479 1.31658 -0.108479 1.70711 0.325437L8 7.31754L14.2929 0.325437C14.6834 -0.108479 15.3166 -0.108479 15.7071 0.325437C16.0976 0.759353 16.0976 1.46287 15.7071 1.89679L8.70711 9.67456C8.31658 10.1085 7.68342 10.1085 7.29289 9.67456L0.292893 1.89679C-0.0976311 1.46287 -0.0976311 0.759353 0.292893 0.325437Z" Fill="#1C1C1C"/>
+                                                               Data="{StaticResource DownArrowGeometry}" Fill="#1C1C1C"/>
 
                                                         <Path Visibility="{Binding CurFilterStatus.ShowLocations, Converter={StaticResource BoolVisibilityConverter}}"
-                                                            Data="M15.7071 9.67456C15.3166 10.1085 14.6834 10.1085 14.2929 9.67456L8 2.68246L1.70711 9.67456C1.31658 10.1085 0.683417 10.1085 0.292893 9.67456C-0.0976315 9.24065 -0.0976315 8.53713 0.292893 8.10321L7.29289 0.325437C7.68342 -0.108479 8.31658 -0.108479 8.70711 0.325437L15.7071 8.10321C16.0976 8.53713 16.0976 9.24065 15.7071 9.67456Z" Fill="#1C1C1C"/>
+                                                            Data="{StaticResource UpArrowGeometry}" Fill="#1C1C1C"/>
                                                     </Grid>
                                                 </Border>
                                             </ControlTemplate>
@@ -886,55 +846,6 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <!--<DataGridTemplateColumn Width="*"
-                                                                HeaderStyle="{StaticResource DGCustomizedHeaderStyle}"
-                                                                CanUserSort="True"
-                                                                SortMemberPath="Name"
-                                                                MinWidth="250">
-                                            <DataGridTemplateColumn.Header>
-                                                -->
-                                            <!--<Button HorizontalAlignment="Stretch"
-                                                        VerticalAlignment="Stretch"
-                                                        Command="{Binding RecentItemSortCommand}">-->
-                                            <!--
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Name"
-                                                                   FontSize="15"
-                                                                   Foreground="White" />
-                                                    <Path Data="M468.2752 33.0752l-307.2 307.2c-9.984 9.984-9.984 26.2144 0 36.1984s26.2144 9.984 36.1984 0l263.4752-263.4752 0 834.2016c0 14.1312 11.4688 25.6 25.6 25.6s25.6-11.4688 25.6-25.6l0-834.2016 263.4752 263.4752c9.984 9.984 26.2144 9.984 36.1984 0 5.0176-5.0176 7.4752-11.5712 7.4752-18.1248s-2.5088-13.1072-7.4752-18.1248l-307.2-307.2c-9.984-9.984-26.2144-9.984-36.1984 0z"
-                                                          Fill="White"
-                                                          Margin="10 0 0 0"
-                                                          Height="20"
-                                                          Width="15"
-                                                          Stretch="UniformToFill">
-                                                        <Path.Style>
-                                                            <Style TargetType="Path">
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding IsAscending}" />
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Path.Style>
-                                                        -->
-                                            <!--<Path.RenderTransform>
-                                                            <RotateTransform Angle="180" />
-                                                        </Path.RenderTransform>-->
-                                            <!--
-                                                    </Path>
-                                                </StackPanel>
-                                                -->
-                                            <!--</Button>-->
-                                            <!--
-                                            </DataGridTemplateColumn.Header>
-
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Foreground="White"
-                                                               VerticalAlignment="Center"
-                                                               Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>-->
-
                                             <DataGridTextColumn Width="*"
                                                                 MinWidth="250"
                                                                 Header="Name"
@@ -957,28 +868,29 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.StarCommand}"
                                                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
                                                                         Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
-                                                                        Visibility="{Binding IsDefault, Converter={StaticResource BoolVisibilityInverseConverter}}"
-                                                                        BorderThickness="0"
-                                                                        Margin="0 0 5 0"
-                                                                        Width="20"
-                                                                        Height="20">
-                                                                    <Path Data="M98 193 c-8 -17 -25 -30 -45 -35 -38 -10 -41 -18 -12 -43 14 -13 19
--29 17 -50 -3 -27 0 -30 22 -27 31 3 49 3 80 0 22 -3 25 0 22 27 -2 21 3 37
-17 50 29 25 26 33 -11 43 -21 5 -38 18 -46 35 -7 15 -17 27 -22 27 -5 0 -15
--12 -22 -27z m37 -23 c3 -11 17 -23 31 -26 24 -6 24 -7 8 -25 -11 -12 -14 -27
--10 -45 6 -23 5 -25 -11 -19 -10 4 -25 8 -33 8 -8 0 -23 -4 -33 -8 -16 -6 -17
--4 -11 19 4 18 1 33 -10 45 -16 18 -16 19 8 25 14 3 28 15 31 26 3 11 10 20
-15 20 5 0 12 -9 15 -20z"
-                                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                                          Height="20"
-                                                                          Width="20"
-                                                                          Stretch="Uniform">
-                                                                        <Path.RenderTransform>
-                                                                            <RotateTransform Angle="45"
-                                                                                             CenterX="8"
-                                                                                             CenterY="10"></RotateTransform>
-                                                                        </Path.RenderTransform>
-                                                                    </Path>
+                                                                        BorderThickness="0" Margin="0 0 5 0" Width="20" Height="20">
+                                                                    <Button.Style>
+                                                                        <Style  TargetType="Button">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            <Style.Triggers>
+                                                                                <MultiDataTrigger >
+                                                                                    <MultiDataTrigger.Conditions>
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+                                                                                        <Condition Binding="{Binding IsDefault}" Value="False" />
+                                                                                    </MultiDataTrigger.Conditions>
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </MultiDataTrigger>
+                                                                                <MultiDataTrigger >
+                                                                                    <MultiDataTrigger.Conditions>
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True" />
+                                                                                        <Condition Binding="{Binding IsDefault}" Value="False" />
+                                                                                    </MultiDataTrigger.Conditions>
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </MultiDataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Button.Style>
+                                                                    <Path Data="{StaticResource StarGeometry}" Style="{StaticResource PinStarPathIconStyle}" />
                                                                 </Button>
                                                                 <Button x:Name="btnUnstar"
                                                                         ToolTip="Unset this item as default"
@@ -990,21 +902,8 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                                                         Margin="0 0 5 0"
                                                                         Width="20"
                                                                         Height="20">
-                                                                    <Path Data="M293 588 c-4 -7 -20 -46 -34 -88 l-26 -75 -85 -3 c-134 -4 -144 -43
-                                                                            -32 -125 49 -36 64 -53 59 -65 -3 -9 -16 -49 -27 -89 -18 -59 -19 -74 -9 -87
-                                                                            22 -26 43 -19 114 35 l67 52 67 -52 c71 -54 92 -61 114 -35 10 13 9 28 -9 87
-                                                                            -11 40 -24 80 -27 89 -5 12 10 29 59 65 112 82 102 121 -32 125 l-85 3 -26 75
-                                                                            c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
-                                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                                          Height="20"
-                                                                          Width="20"
-                                                                          Stretch="Uniform">
-                                                                        <Path.RenderTransform>
-                                                                            <RotateTransform Angle="45"
-                                                                                             CenterX="8"
-                                                                                             CenterY="10"></RotateTransform>
-                                                                        </Path.RenderTransform>
-                                                                    </Path>
+                                                                    <Path Data="{StaticResource FilledStarGeometry}" Style="{StaticResource PinStarPathIconStyle}"  />
+
                                                                 </Button>
                                                             </Grid>
                                                             <Grid Grid.Column="1">
@@ -1012,45 +911,46 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                                                         ToolTip="Pin this item to the list"
                                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.PinCommand}"
                                                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
-                                                                        Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
-                                                                        Visibility="{Binding IsPined, Converter={StaticResource BoolVisibilityInverseConverter}}"
+                                                                        Background="Transparent"
                                                                         BorderThickness="0"
                                                                         Margin="0 0 5 0"
-                                                                        Width="20"
+                                                                        Width="20" 
                                                                         Height="20">
-                                                                    <Path Data="M124 212 c-6 -4 -19 -22 -28 -39 -9 -18 -22 -33 -29 -33 -6 0 -19 -4
-                                                                -27 -10 -12 -7 -11 -12 5 -29 18 -21 18 -22 -5 -46 -30 -32 -17 -45 15 -15 24
-                                                                23 25 23 46 5 17 -16 22 -17 29 -5 6 8 10 21 10 28 0 7 16 20 35 29 55 26 55
-                                                                58 -1 102 -29 23 -34 24 -50 13z m50 -41 c32 -33 29 -43 -13 -61 -17 -7 -33
-                                                                -21 -37 -32 -6 -19 -7 -18 -35 8 -28 27 -29 29 -11 37 11 5 26 24 35 43 9 19
-                                                                20 34 25 34 5 0 21 -13 36 -29z"
-                                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                                          Height="20"
-                                                                          Width="20"
-                                                                          Stretch="Uniform">
-                                                                        <Path.RenderTransform>
-                                                                            <RotateTransform Angle="270"
-                                                                                             CenterX="9"
-                                                                                             CenterY="10"></RotateTransform>
-                                                                        </Path.RenderTransform>
-                                                                    </Path>
+                                                                    <Button.Style>
+                                                                        <Style  TargetType="Button">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            <Style.Triggers>
+                                                                                <MultiDataTrigger >
+                                                                                    <MultiDataTrigger.Conditions>
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+                                                                                        <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                                    </MultiDataTrigger.Conditions>
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </MultiDataTrigger>
+                                                                                <MultiDataTrigger >
+                                                                                    <MultiDataTrigger.Conditions>
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True" />
+                                                                                        <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                                    </MultiDataTrigger.Conditions>
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </MultiDataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Button.Style>
+                                                                    <Path Data="{StaticResource PinGeometry}" Style="{StaticResource PinStarPathIconStyle}"  />
+
                                                                 </Button>
                                                                 <Button x:Name="btnUnpin"
                                                                         ToolTip="Unpin this item from the list"
                                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.UnpinCommand}"
                                                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
-                                                                        Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
+                                                                        Background="{Binding}"
                                                                         Visibility="{Binding IsPined, Converter={StaticResource BoolVisibilityConverter}}"
                                                                         BorderThickness="0"
                                                                         Margin="0 0 5 0"
-                                                                        Width="20"
+                                                                        Width="20" 
                                                                         Height="20">
-                                                                    <Path Data="M 1.5,1.5 C 11.426,9.75698 20.7593,18.757 29.5,28.5C 28.9984,29.521 28.3317,29.6877 27.5,29C 24.6667,26.1667 21.8333,23.3333 19,20.5C 18.2881,22.8474 17.1214,24.8474 15.5,26.5C 13.8333,25.1667 12.1667,23.8333 10.5,22.5C 2.5,29.1667 1.83333,28.5 8.5,20.5C 7.16667,18.8333 5.83333,17.1667 4.5,15.5C 6.15263,13.8786 8.15263,12.7119 10.5,12C 6.89259,8.90231 3.89259,5.40231 1.5,1.5 Z M 11.5,14.5 C 16.469,15.7763 17.469,18.443 14.5,22.5C 12.1667,20.8333 10.1667,18.8333 8.5,16.5C 9.60164,15.8243 10.6016,15.1577 11.5,14.5 Z
-               M 15.5,3.5 C 16.8734,3.34332 18.2068,3.50999 19.5,4C 22,6.5 24.5,9 27,11.5C 27.8234,15.1992 26.3234,17.5325 22.5,18.5C 21.6919,18.1924 21.0253,17.6924 20.5,17C 22.0614,16.059 23.3947,14.8924 24.5,13.5C 22.4519,10.2568 19.7852,8.09009 16.5,7C 15.7894,8.25471 14.956,9.42138 14,10.5C 13.6667,10.1667 13.3333,9.83333 13,9.5C 12.9717,7.21343 13.805,5.21343 15.5,3.5 Z"
-                                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                                          Height="20"
-                                                                          Width="20"
-                                                                          Stretch="Uniform" />
+                                                                    <Path Data="{StaticResource UnPinGeometry}" Style="{StaticResource PinStarPathIconStyle}"  />
                                                                 </Button>
                                                             </Grid>
                                                         </Grid>
@@ -1199,28 +1099,33 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.StarCommand}"
                                                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
                                                                         Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
-                                                                        Visibility="{Binding IsDefault, Converter={StaticResource BoolVisibilityInverseConverter}}"
                                                                         BorderThickness="0"
                                                                         Margin="0 0 5 0"
                                                                         Width="20"
                                                                         Height="20">
-                                                                    <Path Data="M98 193 c-8 -17 -25 -30 -45 -35 -38 -10 -41 -18 -12 -43 14 -13 19
--29 17 -50 -3 -27 0 -30 22 -27 31 3 49 3 80 0 22 -3 25 0 22 27 -2 21 3 37
-17 50 29 25 26 33 -11 43 -21 5 -38 18 -46 35 -7 15 -17 27 -22 27 -5 0 -15
--12 -22 -27z m37 -23 c3 -11 17 -23 31 -26 24 -6 24 -7 8 -25 -11 -12 -14 -27
--10 -45 6 -23 5 -25 -11 -19 -10 4 -25 8 -33 8 -8 0 -23 -4 -33 -8 -16 -6 -17
--4 -11 19 4 18 1 33 -10 45 -16 18 -16 19 8 25 14 3 28 15 31 26 3 11 10 20
-15 20 5 0 12 -9 15 -20z"
-                                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                                          Height="20"
-                                                                          Width="20"
-                                                                          Stretch="Uniform">
-                                                                        <Path.RenderTransform>
-                                                                            <RotateTransform Angle="45"
-                                                                                             CenterX="8"
-                                                                                             CenterY="10"></RotateTransform>
-                                                                        </Path.RenderTransform>
-                                                                    </Path>
+                                                                    <Button.Style>
+                                                                        <Style  TargetType="Button">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            <Style.Triggers>
+                                                                                <MultiDataTrigger >
+                                                                                    <MultiDataTrigger.Conditions>
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+                                                                                        <Condition Binding="{Binding IsDefault}" Value="False" />
+                                                                                    </MultiDataTrigger.Conditions>
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </MultiDataTrigger>
+                                                                                <MultiDataTrigger >
+                                                                                    <MultiDataTrigger.Conditions>
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True" />
+                                                                                        <Condition Binding="{Binding IsDefault}" Value="False" />
+                                                                                    </MultiDataTrigger.Conditions>
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </MultiDataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Button.Style>
+                                                                    <Path Data="{StaticResource StarGeometry}" Style="{StaticResource PinStarPathIconStyle}" />
+
                                                                 </Button>
                                                                 <Button x:Name="btnUnstar"
                                                                         ToolTip="Unset this item as default"
@@ -1232,21 +1137,8 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                                         Margin="0 0 5 0"
                                                                         Width="20"
                                                                         Height="20">
-                                                                    <Path Data="M293 588 c-4 -7 -20 -46 -34 -88 l-26 -75 -85 -3 c-134 -4 -144 -43
--32 -125 49 -36 64 -53 59 -65 -3 -9 -16 -49 -27 -89 -18 -59 -19 -74 -9 -87
-22 -26 43 -19 114 35 l67 52 67 -52 c71 -54 92 -61 114 -35 10 13 9 28 -9 87
--11 40 -24 80 -27 89 -5 12 10 29 59 65 112 82 102 121 -32 125 l-85 3 -26 75
-c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
-                                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                                          Height="20"
-                                                                          Width="20"
-                                                                          Stretch="Uniform">
-                                                                        <Path.RenderTransform>
-                                                                            <RotateTransform Angle="45"
-                                                                                             CenterX="8"
-                                                                                             CenterY="10"></RotateTransform>
-                                                                        </Path.RenderTransform>
-                                                                    </Path>
+                                                                    <Path Data="{StaticResource FilledStarGeometry}" Style="{StaticResource PinStarPathIconStyle}" />
+
                                                                 </Button>
                                                             </Grid>
                                                             <Grid Grid.Column="1">
@@ -1255,27 +1147,33 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.PinCommand}"
                                                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
                                                                         Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
-                                                                        Visibility="{Binding IsPined, Converter={StaticResource BoolVisibilityInverseConverter}}"
                                                                         BorderThickness="0"
                                                                         Margin="0 0 5 0"
                                                                         Width="20"
                                                                         Height="20">
-                                                                    <Path Data="M124 212 c-6 -4 -19 -22 -28 -39 -9 -18 -22 -33 -29 -33 -6 0 -19 -4
-             -27 -10 -12 -7 -11 -12 5 -29 18 -21 18 -22 -5 -46 -30 -32 -17 -45 15 -15 24
-             23 25 23 46 5 17 -16 22 -17 29 -5 6 8 10 21 10 28 0 7 16 20 35 29 55 26 55
-             58 -1 102 -29 23 -34 24 -50 13z m50 -41 c32 -33 29 -43 -13 -61 -17 -7 -33
-             -21 -37 -32 -6 -19 -7 -18 -35 8 -28 27 -29 29 -11 37 11 5 26 24 35 43 9 19
-             20 34 25 34 5 0 21 -13 36 -29z"
-                                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                                          Height="20"
-                                                                          Width="20"
-                                                                          Stretch="Uniform">
-                                                                        <Path.RenderTransform>
-                                                                            <RotateTransform Angle="270"
-                                                                                             CenterX="9"
-                                                                                             CenterY="10"></RotateTransform>
-                                                                        </Path.RenderTransform>
-                                                                    </Path>
+                                                                    <Button.Style>
+                                                                        <Style  TargetType="Button">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            <Style.Triggers>
+                                                                                <MultiDataTrigger >
+                                                                                    <MultiDataTrigger.Conditions>
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+                                                                                        <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                                    </MultiDataTrigger.Conditions>
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </MultiDataTrigger>
+                                                                                <MultiDataTrigger >
+                                                                                    <MultiDataTrigger.Conditions>
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True" />
+                                                                                        <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                                    </MultiDataTrigger.Conditions>
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </MultiDataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Button.Style>
+                                                                    <Path Data="{StaticResource PinGeometry}" Style="{StaticResource PinStarPathIconStyle}"  />
+
                                                                 </Button>
                                                                 <Button x:Name="btnUnpin"
                                                                         ToolTip="Unpin this item from the list"
@@ -1287,12 +1185,7 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                                                         Margin="0 0 5 0"
                                                                         Width="20"
                                                                         Height="20">
-                                                                    <Path Data="M 1.5,1.5 C 11.426,9.75698 20.7593,18.757 29.5,28.5C 28.9984,29.521 28.3317,29.6877 27.5,29C 24.6667,26.1667 21.8333,23.3333 19,20.5C 18.2881,22.8474 17.1214,24.8474 15.5,26.5C 13.8333,25.1667 12.1667,23.8333 10.5,22.5C 2.5,29.1667 1.83333,28.5 8.5,20.5C 7.16667,18.8333 5.83333,17.1667 4.5,15.5C 6.15263,13.8786 8.15263,12.7119 10.5,12C 6.89259,8.90231 3.89259,5.40231 1.5,1.5 Z M 11.5,14.5 C 16.469,15.7763 17.469,18.443 14.5,22.5C 12.1667,20.8333 10.1667,18.8333 8.5,16.5C 9.60164,15.8243 10.6016,15.1577 11.5,14.5 Z
-               M 15.5,3.5 C 16.8734,3.34332 18.2068,3.50999 19.5,4C 22,6.5 24.5,9 27,11.5C 27.8234,15.1992 26.3234,17.5325 22.5,18.5C 21.6919,18.1924 21.0253,17.6924 20.5,17C 22.0614,16.059 23.3947,14.8924 24.5,13.5C 22.4519,10.2568 19.7852,8.09009 16.5,7C 15.7894,8.25471 14.956,9.42138 14,10.5C 13.6667,10.1667 13.3333,9.83333 13,9.5C 12.9717,7.21343 13.805,5.21343 15.5,3.5 Z"
-                                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                                          Height="20"
-                                                                          Width="20"
-                                                                          Stretch="Uniform" />
+                                                                    <Path Data="{StaticResource UnPinGeometry}" Style="{StaticResource PinStarPathIconStyle}"  />
                                                                 </Button>
                                                             </Grid>
                                                         </Grid>
@@ -1374,10 +1267,7 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                         FontWeight="Bold"
                                         Width="30" VerticalAlignment="Center"
                                         Style="{StaticResource btnSearch}">
-                                    <Path Data="M0,203.25c0,112.1,91.2,203.2,203.2,203.2c51.6,0,98.8-19.4,134.7-51.2l129.5,129.5c2.4,2.4,5.5,3.6,8.7,3.6
-            s6.3-1.2,8.7-3.6c4.8-4.8,4.8-12.5,0-17.3l-129.6-129.5c31.8-35.9,51.2-83,51.2-134.7c0-112.1-91.2-203.2-203.2-203.2
-            S0,91.15,0,203.25z M381.9,203.25c0,98.5-80.2,178.7-178.7,178.7s-178.7-80.2-178.7-178.7s80.2-178.7,178.7-178.7
-            S381.9,104.65,381.9,203.25z"
+                                    <Path Data="{StaticResource SearchGlassGeometry}"
                                           Stretch="Uniform"
                                           Height="14" Fill="#A0B8EC" Stroke="#A0B8EC"/>
                                 </Button>
@@ -1617,22 +1507,22 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                               CellStyle="{StaticResource DGCellStyle}" 
                               Style="{StaticResource DGStyle}" Sorting="ListOfDriveItems_Sorting"
                               SelectionMode="Single"
-                              SelectionUnit="FullRow"
+                              SelectionUnit="FullRow" 
                               AllowDrop="True">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="MouseDoubleClick">
-                                <i:InvokeCommandAction Command="{Binding FolderItemDoubleClickCommand}" />
-                            </i:EventTrigger>
-                            <i:EventTrigger EventName="DragLeave">
-                                <i:InvokeCommandAction Command="{Binding FolderItemDoubleClickCommand}" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn MinWidth="70"
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding FolderItemDoubleClickCommand}" />
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="DragLeave">
+                                    <i:InvokeCommandAction Command="{Binding FolderItemDoubleClickCommand}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn MinWidth="70"
                                                     Width="auto">
-                                <DataGridTemplateColumn.Header>
-                                    <Grid>
-                                        <Path Margin="25 0 0 0"
+                                    <DataGridTemplateColumn.Header>
+                                        <Grid>
+                                            <Path Margin="25 0 0 0"
                                               Height="15"
                                               Width="15"
                                               Style="{StaticResource IcnPathStyle}"
@@ -1645,112 +1535,115 @@ c0.179,0.017,0.357,0.036,0.536,0.049c0.129,0.008,0.26,0.011,0.389,0.017c0.586,0.
 c9.182,0,17.335-5.876,20.239-14.587l85.333-256C516.526,227.605,506.244,213.34,491.683,213.34z M427.683,170.673v42.667H406.35
 v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683,106.673H86.35v124.538l-42.667,128V106.673z
  M390.974,469.34H51.948l34.533-103.6l36.578-109.733h261.957h64h13.068L390.974,469.34z" />
-                                    </Grid>
-                                </DataGridTemplateColumn.Header>
+                                        </Grid>
+                                    </DataGridTemplateColumn.Header>
 
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Image Height="25"
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Image Height="25"
                                                Width="25"
                                                Source="{Binding IconSource}" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                            <!--ElementStyle="{StaticResource Centering}"-->
-                            <DataGridTextColumn Width="*"
+                                <!--ElementStyle="{StaticResource Centering}"-->
+                                <DataGridTextColumn Width="*"
                                                 MinWidth="250" SortMemberPath="Name" 
                                                 ElementStyle="{StaticResource Centering}"
                                                 Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
-                                <DataGridTextColumn.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Name"
+                                    <DataGridTextColumn.Header>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Name"
                                                    VerticalAlignment="Center"
                                                    Margin="0,0,10,0" />
-                                        <Path x:Name="SortArrow"
+                                            <Path x:Name="SortArrow"
                                                       Width="16"
                                                   Height="16" Stretch="Fill"
                                                       Fill="Black"
                                                       VerticalAlignment="Center" >
-
-                                            <Path.Style>
-                                                <Style TargetType="Path">
-                                                    <Setter Property="Data" Value="M3.95 314.94 240.74 7.7c1.02-1.39 2.24-2.65 3.67-3.75 8.27-6.39 20.17-4.87 26.56 3.41l236.11 306.4c3.06 3.37 4.92 7.84 4.92 12.75 0 10.49-8.51 19-19 19H18.93v-.06a18.9 18.9 0 0 1-11.57-3.95c-8.28-6.39-9.8-18.29-3.41-26.56z" />
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridNameAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Value="False">
-                                                            <Setter Property="Data" Value="M42.47.01 469.5 0C492.96 0 512 19.04 512 42.5c0 11.07-4.23 21.15-11.17 28.72L294.18 320.97c-14.93 18.06-41.7 20.58-59.76 5.65-1.8-1.49-3.46-3.12-4.97-4.83L10.43 70.39C-4.97 52.71-3.1 25.86 14.58 10.47 22.63 3.46 32.57.02 42.47.01z" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Path.Style>
-                                        </Path>
-                                        <Button Grid.Column="3"
-                                                Command="{Binding DataContext.ResetFilterCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                                Background="Transparent"
+                                                <Path.Style>
+                                                    <Style TargetType="Path">
+                                                        <Setter Property="Data" Value="M3.95 314.94 240.74 7.7c1.02-1.39 2.24-2.65 3.67-3.75 8.27-6.39 20.17-4.87 26.56 3.41l236.11 306.4c3.06 3.37 4.92 7.84 4.92 12.75 0 10.49-8.51 19-19 19H18.93v-.06a18.9 18.9 0 0 1-11.57-3.95c-8.28-6.39-9.8-18.29-3.41-26.56z" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridNameAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                                                <Setter Property="Data" Value="M42.47.01 469.5 0C492.96 0 512 19.04 512 42.5c0 11.07-4.23 21.15-11.17 28.72L294.18 320.97c-14.93 18.06-41.7 20.58-59.76 5.65-1.8-1.49-3.46-3.12-4.97-4.83L10.43 70.39C-4.97 52.71-3.1 25.86 14.58 10.47 22.63 3.46 32.57.02 42.47.01z" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Path.Style>
+                                            </Path>
+                                            <Button Grid.Column="3"
+                                                Command="{Binding DataContext.ResetSortFilterCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                                Background="{StaticResource WindowBackgroundColor}"
                                                             FontSize="20"
                                                 BorderThickness="1"
                                                 Cursor="Hand" FocusVisualStyle="{x:Null}"
                                                 VerticalAlignment="Center"
                                                 Margin="10,0,0,0"
                                                 Foreground="{DynamicResource WindowForegroundColor}">
-                                            <Button.Template>
-                                                <ControlTemplate>
-                                                    <TextBlock Text="↺"
+                                                <Button.Template>
+                                                    <ControlTemplate>
+                                                        <TextBlock Text="↺"
                                                       FontSize="25"
                                                       FontWeight="Thin" />
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button>
-                                    </StackPanel>
-                                </DataGridTextColumn.Header>
-                            </DataGridTextColumn>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+                                        </StackPanel>
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
 
-                            <!--<DataGridTextColumn Width="*"
+                                <!--<DataGridTextColumn Width="*"
                                                 MinWidth="250"
                                                 Header="Name"
                                                 ElementStyle="{StaticResource Centering}"
                                                 Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />-->
 
-                            <DataGridTemplateColumn MinWidth="80"
+                                <DataGridTemplateColumn MinWidth="80"
                                                     Width="auto">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition></ColumnDefinition>
-                                                <ColumnDefinition></ColumnDefinition>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid Grid.Column="0"
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition></ColumnDefinition>
+                                                    <ColumnDefinition></ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid Grid.Column="0"
                                                   Visibility="{Binding Type, Converter={StaticResource DirFileTypeVisibilityConverter}}">
-                                                <Button x:Name="btnStar"
+                                                    <Button x:Name="btnStar"
                                                         ToolTip="Set this item as default"
                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.StarCommand}"
                                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
                                                         Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
-                                                        Visibility="{Binding IsDefault, Converter={StaticResource BoolVisibilityInverseConverter}}"
                                                         BorderThickness="0"
                                                         Margin="0 0 5 0"
                                                         Width="20"
                                                         Height="20">
-                                                    <Path Data="M98 193 c-8 -17 -25 -30 -45 -35 -38 -10 -41 -18 -12 -43 14 -13 19
--29 17 -50 -3 -27 0 -30 22 -27 31 3 49 3 80 0 22 -3 25 0 22 27 -2 21 3 37
-17 50 29 25 26 33 -11 43 -21 5 -38 18 -46 35 -7 15 -17 27 -22 27 -5 0 -15
--12 -22 -27z m37 -23 c3 -11 17 -23 31 -26 24 -6 24 -7 8 -25 -11 -12 -14 -27
--10 -45 6 -23 5 -25 -11 -19 -10 4 -25 8 -33 8 -8 0 -23 -4 -33 -8 -16 -6 -17
--4 -11 19 4 18 1 33 -10 45 -16 18 -16 19 8 25 14 3 28 15 31 26 3 11 10 20
-15 20 5 0 12 -9 15 -20z"
-                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                          Height="20"
-                                                          Width="20"
-                                                          Stretch="Uniform">
-                                                        <Path.RenderTransform>
-                                                            <RotateTransform Angle="45"
-                                                                             CenterX="8"
-                                                                             CenterY="10"></RotateTransform>
-                                                        </Path.RenderTransform>
-                                                    </Path>
-                                                </Button>
-                                                <Button x:Name="btnUnstar"
+                                                        <Button.Style>
+                                                            <Style  TargetType="Button">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <MultiDataTrigger >
+                                                                        <MultiDataTrigger.Conditions>
+                                                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+                                                                            <Condition Binding="{Binding IsDefault}" Value="False" />
+                                                                        </MultiDataTrigger.Conditions>
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </MultiDataTrigger>
+                                                                    <MultiDataTrigger >
+                                                                        <MultiDataTrigger.Conditions>
+                                                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True" />
+                                                                            <Condition Binding="{Binding IsDefault}" Value="False" />
+                                                                        </MultiDataTrigger.Conditions>
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </MultiDataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                        <Path Data="{StaticResource StarGeometry}" Style="{StaticResource PinStarPathIconStyle}" />
+                                                    </Button>
+                                                    <Button x:Name="btnUnstar"
                                                         ToolTip="Unset this item as default"
                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.UnstarCommand}"
                                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
@@ -1760,52 +1653,44 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                         Margin="0 0 5 0"
                                                         Width="20"
                                                         Height="20">
-                                                    <Path Data="M293 588 c-4 -7 -20 -46 -34 -88 l-26 -75 -85 -3 c-134 -4 -144 -43
--32 -125 49 -36 64 -53 59 -65 -3 -9 -16 -49 -27 -89 -18 -59 -19 -74 -9 -87
-22 -26 43 -19 114 35 l67 52 67 -52 c71 -54 92 -61 114 -35 10 13 9 28 -9 87
--11 40 -24 80 -27 89 -5 12 10 29 59 65 112 82 102 121 -32 125 l-85 3 -26 75
-c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
-                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                          Height="20"
-                                                          Width="20"
-                                                          Stretch="Uniform">
-                                                        <Path.RenderTransform>
-                                                            <RotateTransform Angle="45"
-                                                                             CenterX="8"
-                                                                             CenterY="10"></RotateTransform>
-                                                        </Path.RenderTransform>
-                                                    </Path>
-                                                </Button>
-                                            </Grid>
-                                            <Grid Grid.Column="1">
-                                                <Button x:Name="btnPin"
+                                                        <Path Data="{StaticResource FilledStarGeometry}" Style="{StaticResource PinStarPathIconStyle}" />
+                                                    </Button>
+                                                </Grid>
+                                                <Grid Grid.Column="1">
+                                                    <Button x:Name="btnPin"
                                                         ToolTip="Pin this item to the list"
                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.PinCommand}"
                                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
                                                         Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
-                                                        Visibility="{Binding IsPined, Converter={StaticResource BoolVisibilityInverseConverter}}"
                                                         BorderThickness="0"
                                                         Margin="0 0 5 0"
                                                         Width="20"
                                                         Height="20">
-                                                    <Path Data="M124 212 c-6 -4 -19 -22 -28 -39 -9 -18 -22 -33 -29 -33 -6 0 -19 -4
-             -27 -10 -12 -7 -11 -12 5 -29 18 -21 18 -22 -5 -46 -30 -32 -17 -45 15 -15 24
-             23 25 23 46 5 17 -16 22 -17 29 -5 6 8 10 21 10 28 0 7 16 20 35 29 55 26 55
-             58 -1 102 -29 23 -34 24 -50 13z m50 -41 c32 -33 29 -43 -13 -61 -17 -7 -33
-             -21 -37 -32 -6 -19 -7 -18 -35 8 -28 27 -29 29 -11 37 11 5 26 24 35 43 9 19
-             20 34 25 34 5 0 21 -13 36 -29z"
-                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                          Height="20"
-                                                          Width="20"
-                                                          Stretch="Uniform">
-                                                        <Path.RenderTransform>
-                                                            <RotateTransform Angle="270"
-                                                                             CenterX="9"
-                                                                             CenterY="10"></RotateTransform>
-                                                        </Path.RenderTransform>
-                                                    </Path>
-                                                </Button>
-                                                <Button x:Name="btnUnpin"
+
+                                                        <Button.Style>
+                                                            <Style  TargetType="Button">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <MultiDataTrigger >
+                                                                        <MultiDataTrigger.Conditions>
+                                                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+                                                                            <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                        </MultiDataTrigger.Conditions>
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </MultiDataTrigger>
+                                                                    <MultiDataTrigger >
+                                                                        <MultiDataTrigger.Conditions>
+                                                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True" />
+                                                                            <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                        </MultiDataTrigger.Conditions>
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </MultiDataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                        <Path Data="{StaticResource PinGeometry}" Style="{StaticResource PinStarPathIconStyle}" />
+                                                    </Button>
+                                                    <Button x:Name="btnUnpin"
                                                         ToolTip="Unpin this item from the list"
                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.UnpinCommand}"
                                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
@@ -1815,70 +1700,65 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
                                                         Margin="0 0 5 0"
                                                         Width="20"
                                                         Height="20">
-                                                    <Path Data="M 1.5,1.5 C 11.426,9.75698 20.7593,18.757 29.5,28.5C 28.9984,29.521 28.3317,29.6877 27.5,29C 24.6667,26.1667 21.8333,23.3333 19,20.5C 18.2881,22.8474 17.1214,24.8474 15.5,26.5C 13.8333,25.1667 12.1667,23.8333 10.5,22.5C 2.5,29.1667 1.83333,28.5 8.5,20.5C 7.16667,18.8333 5.83333,17.1667 4.5,15.5C 6.15263,13.8786 8.15263,12.7119 10.5,12C 6.89259,8.90231 3.89259,5.40231 1.5,1.5 Z M 11.5,14.5 C 16.469,15.7763 17.469,18.443 14.5,22.5C 12.1667,20.8333 10.1667,18.8333 8.5,16.5C 9.60164,15.8243 10.6016,15.1577 11.5,14.5 Z
-               M 15.5,3.5 C 16.8734,3.34332 18.2068,3.50999 19.5,4C 22,6.5 24.5,9 27,11.5C 27.8234,15.1992 26.3234,17.5325 22.5,18.5C 21.6919,18.1924 21.0253,17.6924 20.5,17C 22.0614,16.059 23.3947,14.8924 24.5,13.5C 22.4519,10.2568 19.7852,8.09009 16.5,7C 15.7894,8.25471 14.956,9.42138 14,10.5C 13.6667,10.1667 13.3333,9.83333 13,9.5C 12.9717,7.21343 13.805,5.21343 15.5,3.5 Z"
-                                                          Fill="{DynamicResource DriveNavigationBtnIcnPath}"
-                                                          Height="20"
-                                                          Width="20"
-                                                          Stretch="Uniform" />
-                                                </Button>
+                                                        <Path Data="{StaticResource UnPinGeometry}" Style="{StaticResource PinStarPathIconStyle}" />
+                                                    </Button>
+                                                </Grid>
                                             </Grid>
-                                        </Grid>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                            <DataGridTextColumn Width="Auto"
+                                <DataGridTextColumn Width="Auto"
                                                 MinWidth="250"
                                                  SortMemberPath="DateModified"
                                                 ElementStyle="{StaticResource Centering}"
                                                 Binding="{Binding LastModifiedDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
-                                <DataGridTextColumn.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Date Modified"
+                                    <DataGridTextColumn.Header>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Date Modified"
                                               VerticalAlignment="Center"
                                               Margin="0,0,10,0" />
-                                        <Path x:Name="SortDateArrow"
+                                            <Path x:Name="SortDateArrow"
                Width="16"
            Height="16" Stretch="Fill"
                Fill="Black"
                VerticalAlignment="Center" >
 
-                                            <Path.Style>
-                                                <Style TargetType="Path">
-                                                    <Setter Property="Data" Value="M3.95 314.94 240.74 7.7c1.02-1.39 2.24-2.65 3.67-3.75 8.27-6.39 20.17-4.87 26.56 3.41l236.11 306.4c3.06 3.37 4.92 7.84 4.92 12.75 0 10.49-8.51 19-19 19H18.93v-.06a18.9 18.9 0 0 1-11.57-3.95c-8.28-6.39-9.8-18.29-3.41-26.56z" />
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridDateAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Value="False">
-                                                            <Setter Property="Data" Value="M42.47.01 469.5 0C492.96 0 512 19.04 512 42.5c0 11.07-4.23 21.15-11.17 28.72L294.18 320.97c-14.93 18.06-41.7 20.58-59.76 5.65-1.8-1.49-3.46-3.12-4.97-4.83L10.43 70.39C-4.97 52.71-3.1 25.86 14.58 10.47 22.63 3.46 32.57.02 42.47.01z" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Path.Style>
-                                        </Path>
-                                    </StackPanel>
-                                </DataGridTextColumn.Header>
-                            </DataGridTextColumn>
-                        </DataGrid.Columns>
-                        <DataGrid.ContextMenu>
-                            <ContextMenu StaysOpen="False">
-                                <MenuItem Header="Open"
+                                                <Path.Style>
+                                                    <Style TargetType="Path">
+                                                        <Setter Property="Data" Value="M3.95 314.94 240.74 7.7c1.02-1.39 2.24-2.65 3.67-3.75 8.27-6.39 20.17-4.87 26.56 3.41l236.11 306.4c3.06 3.37 4.92 7.84 4.92 12.75 0 10.49-8.51 19-19 19H18.93v-.06a18.9 18.9 0 0 1-11.57-3.95c-8.28-6.39-9.8-18.29-3.41-26.56z" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridDateAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                                                <Setter Property="Data" Value="M42.47.01 469.5 0C492.96 0 512 19.04 512 42.5c0 11.07-4.23 21.15-11.17 28.72L294.18 320.97c-14.93 18.06-41.7 20.58-59.76 5.65-1.8-1.49-3.46-3.12-4.97-4.83L10.43 70.39C-4.97 52.71-3.1 25.86 14.58 10.47 22.63 3.46 32.57.02 42.47.01z" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Path.Style>
+                                            </Path>
+                                        </StackPanel>
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                            </DataGrid.Columns>
+                            <DataGrid.ContextMenu>
+                                <ContextMenu StaysOpen="False">
+                                    <MenuItem Header="Open"
                                           Command="{Binding OpenItemCommand}"
                                           CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                           Height="35" />
-                                <MenuItem Header="Copy path to clipboard"
+                                    <MenuItem Header="Copy path to clipboard"
                                           Command="{Binding CopyItemPathCommand}"
                                           CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                           Height="35" />
-                                <MenuItem Header="Rename"
+                                    <MenuItem Header="Rename"
                                           Command="{Binding RenameItemCommand}"
                                           CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                           Height="35" />
-                                <MenuItem Header="Delete"
+                                    <MenuItem Header="Delete"
                                           Command="{Binding DeleteItemCommand}"
                                           CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                           Height="35" />
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
                         </DataGrid>
                         <!--Animated Loader-->
                         <StackPanel Orientation="Horizontal" Margin="50 10" HorizontalAlignment="Left" Visibility="{Binding CurSearchStatus.IsLoading,Converter={StaticResource BoolVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
@@ -2059,7 +1939,7 @@ c-31 91 -37 100 -61 100 -10 0 -22 -6 -27 -12z"
             </Grid.Background>
         </Grid>
 
-      
+
 
     </Grid>
 </UserControl>

@@ -63,6 +63,7 @@ namespace CDM.ViewModels
             ShowLocationsCommand = new RelayCommand(ShowLocations);
             DoFilterCommand = new RelayCommand(DoFilter);
             ResetFilterCommand = new RelayCommand(ResetFilter);
+            ResetSortFilterCommand = new RelayCommand(ResetSortFilter);
             DoSearchCommand = new RelayCommand(DoSearch);
             CancelSearchCommand = new RelayCommand(CancelSearch);
             PrevDrivesCommand = new RelayCommand(PrevDrives);
@@ -532,6 +533,7 @@ namespace CDM.ViewModels
         public RelayCommand ShowLocationsCommand { get; set; }
         public RelayCommand DoFilterCommand { get; set; }
         public RelayCommand ResetFilterCommand { get; set; }
+        public RelayCommand ResetSortFilterCommand { get; set; }
         public RelayCommand DoSearchCommand { get; set; }
         public RelayCommand CancelSearchCommand { get; set; }
         public RelayCommand PrevDrivesCommand { get; set; }
@@ -1163,6 +1165,7 @@ namespace CDM.ViewModels
                     CurSearchStatus.IsLoadingItems = false;
                     CurSearchStatus.IsDoing = false;
                     CurSearchStatus.Searched = true;
+                    ResetSortFilter(true);
                 }
             }
         }
@@ -1608,6 +1611,7 @@ namespace CDM.ViewModels
             IsSearchBoxPlaceholderVisible = Visibility.Visible;
             CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
             CurFilterStatus.ItemsCount = FoldersItemList.Count;
+            ResetSortFilter(true);
 
         }
 
@@ -1707,49 +1711,62 @@ namespace CDM.ViewModels
             }
             SelectedType = null;
             DoFilter(obj);
+            ResetSortFilter(obj);
         }
 
-        public void SortByName()
+        private void ResetSortFilter(object obj)
+        {
+            IsDriveItemsGridNameAscending = true;
+            IsDriveItemsGridDateAscending = true;
+            SortByName(true);
+        }
+
+        public void SortByName(bool isDefaultSort = false)
         {
 
+            IsDriveItemsGridNameAscending = isDefaultSort ? isDefaultSort : !IsDriveItemsGridNameAscending;
             if (IsDriveItemsGridNameAscending)
             {
                 FoldersItemList = new ObservableCollection<FileFolderModel>(
-                    FoldersItemList.OrderBy(f => f.IsDefault)
-                    .ThenBy(f => f.IsPined)
+                    FoldersItemList
+                    .OrderByDescending(f => f.IsDefault)
+                    .ThenByDescending(f => f.IsPined)
                     .ThenBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
                     .ToList());
             }
             else
             {
-                FoldersItemList = new ObservableCollection<FileFolderModel>(FoldersItemList.OrderByDescending(f => f.IsDefault)
+                FoldersItemList = new ObservableCollection<FileFolderModel>(
+                    FoldersItemList
+                    .OrderByDescending(f => f.IsDefault)
                     .ThenByDescending(f => f.IsPined)
                     .ThenByDescending(f => f.Name, StringComparer.OrdinalIgnoreCase)
                     .ToList());
             }
-            IsDriveItemsGridNameAscending = !IsDriveItemsGridNameAscending;
-
 
         }
 
-        public void SortByDateModified()
+        public void SortByDateModified(bool isDefaultSort = false)
         {
+            IsDriveItemsGridDateAscending = isDefaultSort ? isDefaultSort : !IsDriveItemsGridDateAscending;
             if (IsDriveItemsGridDateAscending)
             {
                 FoldersItemList = new ObservableCollection<FileFolderModel>(
-                    FoldersItemList.OrderBy(f => f.IsDefault)
-                    .ThenBy(f => f.IsPined)
+                    FoldersItemList
+                     .OrderByDescending(f => f.IsDefault)
+                    .ThenByDescending(f => f.IsPined)
                     .ThenBy(f => f.LastModifiedDateTime.ToString(), StringComparer.OrdinalIgnoreCase)
                     .ToList());
             }
             else
             {
-                FoldersItemList = new ObservableCollection<FileFolderModel>(FoldersItemList.OrderByDescending(f => f.IsDefault)
+                FoldersItemList = new ObservableCollection<FileFolderModel>(
+                    FoldersItemList
+                     .OrderByDescending(f => f.IsDefault)
                     .ThenByDescending(f => f.IsPined)
                     .ThenByDescending(f => f.LastModifiedDateTime.ToString(), StringComparer.OrdinalIgnoreCase)
                     .ToList());
             }
-            IsDriveItemsGridDateAscending = !IsDriveItemsGridDateAscending;
         }
 
         // File icon set
