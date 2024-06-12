@@ -112,7 +112,9 @@ void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent, int width, int heigh
 		if (SUCCEEDED(hr))
 		{
 			long hwndAsLong = reinterpret_cast<long>(hWnd);
-			spCSharpObj->showCDM(hwndAsLong, width, height);
+			long hwndAsLongParent = reinterpret_cast<long>(hWndParent);
+
+			spCSharpObj->showCDM(hwndAsLong, hwndAsLongParent, width, height);
 		}
 		else
 		{

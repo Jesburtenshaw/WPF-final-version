@@ -10,7 +10,7 @@ namespace MyCSharpLibrary
     public interface IMyInterface
     {
         void SayHello(int x, int y);
-        void showCDM(long param, int x, int y);
+        void showCDM(long param, long paramParent, int x, int y);
     }
 
     [ComVisible(true)]
@@ -33,11 +33,34 @@ namespace MyCSharpLibrary
                 MessageBox.Show("An error occurred: " + ex.Message);
             }
         }
-
-        public void showCDM(long param, int x, int y)
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+        public void showCDM(long param, long paramParent, int x, int y)
         {
             IntPtr hwnd = (IntPtr)param;
+            IntPtr hwndParent = (IntPtr)paramParent;
             MessageBox.Show("Width: " + x + " | Height: " + y + " | hwnd: " + hwnd);
+
+            RECT clientRect;
+            if (GetClientRect(hwndParent, out clientRect))
+            {
+                int width = clientRect.Right - clientRect.Left;
+                int height = clientRect.Bottom - clientRect.Top;
+
+                MessageBox.Show("Calculated Width: " + width + " | Height: " + height );
+            }
+            else
+            {
+                Console.WriteLine("Failed to retrieve client rectangle.");
+            }
             //System.Windows.Interop.HwndSourceParameters sourceParams = new System.Windows.Interop.HwndSourceParameters("CDMWrapper");
             //sourceParams.ParentWindow = hwnd;
             //sourceParams.WindowStyle = 0x10000000 | 0x40000000; // WS_VISIBLE | WS_CHILD; // style
