@@ -386,11 +386,11 @@ namespace CDM.UserControls
             //Highlight searched text
             var tmp = vm.CurrentDrivePath;
             DataGrid dataGrid;
-            if (tmp == null && TabView1.SelectedIndex == 0)
+            if (string.IsNullOrEmpty(tmp) && TabView1.SelectedIndex == 0)
             {
                 dataGrid = ListOfRecentItems;
             }
-            else if (tmp == null && TabView1.SelectedIndex == 1)
+            else if (string.IsNullOrEmpty(tmp) && TabView1.SelectedIndex == 1)
             {
                 dataGrid = ListOfPinnedItems;
             }
@@ -431,6 +431,11 @@ namespace CDM.UserControls
                 vm.CurSearchStatus.IsError = false;
                 vm.CurSearchStatus.Desc = "";
                 //isHighlightAllow = true;
+            }
+
+            if (string.IsNullOrEmpty(vm.CurrentDrivePath) && TabView1.SelectedIndex == 0)
+            {
+                vm.searchRecentItemList();
             }
 
         }

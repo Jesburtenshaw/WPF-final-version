@@ -58,6 +58,13 @@
     <SolidColorBrush x:Key="LineColor"
                      Color="#6B6B6B" />
 
+    <SolidColorBrush x:Key="PinHoverBackgroundColor"
+                     Color="#484848" />
+
+    <SolidColorBrush x:Key="GridHoverBackgroundColor"
+                     Color="#616161" />
+
+
     <Style x:Key="PinStarPathIconStyle"
         TargetType="Path">
         <Setter Property="Stretch"

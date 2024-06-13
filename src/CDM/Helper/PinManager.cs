@@ -22,6 +22,7 @@ namespace CDM.Helper
         #endregion
 
         #region :: Methods ::
+        public static bool IsPinLimitReached { get; set; } = false;
         public static ObservableCollection<FileFolderModel> GetPinnedItems()
         {
             //Application.Current.Dispatcher.Invoke(() =>
@@ -82,7 +83,21 @@ namespace CDM.Helper
             }
             // Get all folders in the Recent folder
             //string[] recentFolders = Directory.GetDirectories(pinnedItemsFolderPath);
+
+            UpdatePinLimitReached();
             return PinnedItemList;
+        }
+
+        private static void UpdatePinLimitReached()
+        {
+            if (PinnedItemList != null && PinnedItemList.Count >= 100)
+            {
+                IsPinLimitReached = true;
+            }
+            else
+            {
+                IsPinLimitReached = false;
+            }
         }
 
         public static bool IsPined(string fileOrFolderName)
@@ -118,6 +133,7 @@ namespace CDM.Helper
 
             PinnedItemList.Insert(0, item);
             CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
+            UpdatePinLimitReached();
         }
 
         public static void Unpin(FileFolderModel item)
@@ -130,6 +146,7 @@ namespace CDM.Helper
             File.Delete(item.OriginalPath);
             PinnedItemList.Remove(item);
             CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
+            UpdatePinLimitReached();
         }
         #endregion
     }

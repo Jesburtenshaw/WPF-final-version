@@ -286,7 +286,7 @@
     <Style x:Key="DGRowStyle"
            TargetType="DataGridRow">
         <Setter Property="BorderBrush"
-                Value="{StaticResource LineColor}" />
+                Value="{DynamicResource LineColor}" />
         <Setter Property="BorderThickness"
                 Value="0 1 0 0" />
         <Setter Property="FontWeight"
@@ -297,18 +297,18 @@
             <Trigger Property="IsMouseOver"
                      Value="True">
                 <Setter Property="Background"
-                        Value="#616161" />
-                <Setter Property="Foreground"
-                        Value="{DynamicResource WindowForegroundColor}" />
+                        Value="{DynamicResource GridHoverBackgroundColor}" />
+                <!--<Setter Property="Foreground"
+                        Value="{DynamicResource WindowForegroundColor}" />-->
             </Trigger>
             <Trigger Property="IsSelected"
                      Value="True">
 
-                <Setter Property="Foreground"
-                        Value="{DynamicResource WindowForegroundColor}" />
+                <!--<Setter Property="Foreground"
+                        Value="{DynamicResource WindowForegroundColor}" />-->
 
                 <Setter Property="Background"
-                        Value="#616161" />
+                        Value="{DynamicResource GridHoverBackgroundColor}" />
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -25,7 +25,7 @@ namespace CDM.Helper
         {
             //Application.Current.Dispatcher.Invoke(() =>
             //{
-                RecentItemList.Clear();
+            RecentItemList.Clear();
             //});
 
             // Get all files in the Recent folder
@@ -43,41 +43,58 @@ namespace CDM.Helper
                     FileAttributes f = File.GetAttributes(file);
                     //Application.Current.Dispatcher.Invoke(() =>
                     //{
-                        RecentItemList.Add(new FileFolderModel()
-                        {
+                    RecentItemList.Add(new FileFolderModel()
+                    {
 
-                            Name = fileInfo.Name,
-                            LastModifiedDateTime = fileInfo.LastWriteTime,
-                            Path = fileInfo.FullName,
-                            IconSource = IconHelper.GetIcon(fileInfo.FullName),
-                            OriginalPath = recentFile,
-                            IsPined = PinManager.IsPined(fileInfo.FullName),
-                            Type = "File"
-                        });
+                        Name = fileInfo.Name,
+                        LastModifiedDateTime = fileInfo.LastWriteTime,
+                        Path = fileInfo.FullName,
+                        IconSource = IconHelper.GetIcon(fileInfo.FullName),
+                        OriginalPath = recentFile,
+                        IsPined = PinManager.IsPined(fileInfo.FullName),
+                        Type = "File"
+                    });
                     //});
                 }
-                else if (Directory.Exists(file))
-                {
-                    DirectoryInfo dirInfo = new DirectoryInfo(file);
-                    //Application.Current.Dispatcher.Invoke(() =>
-                    //{
-                        RecentItemList.Add(new FileFolderModel()
-                        {
-                            Name = dirInfo.Name,
-                            LastModifiedDateTime = dirInfo.LastWriteTime,
-                            Path = dirInfo.FullName,
-                            IconSource = IconHelper.GetIcon(dirInfo.FullName),
-                            OriginalPath = recentFile,
-                            IsPined = PinManager.IsPined(dirInfo.FullName),
-                            IsDefault = StarManager.IsDefault(dirInfo.FullName),
-                            Type = "Dir"
-                        });
-                    //});
-                }
+                //Commented as only tracking recent files
+                //else if (Directory.Exists(file))
+                //{
+                //    DirectoryInfo dirInfo = new DirectoryInfo(file);
+                //    //Application.Current.Dispatcher.Invoke(() =>
+                //    //{
+                //        RecentItemList.Add(new FileFolderModel()
+                //        {
+                //            Name = dirInfo.Name,
+                //            LastModifiedDateTime = dirInfo.LastWriteTime,
+                //            Path = dirInfo.FullName,
+                //            IconSource = IconHelper.GetIcon(dirInfo.FullName),
+                //            OriginalPath = recentFile,
+                //            IsPined = PinManager.IsPined(dirInfo.FullName),
+                //            IsDefault = StarManager.IsDefault(dirInfo.FullName),
+                //            Type = "Dir"
+                //        });
+                //    //});
+                //}
             }
             // Get all folders in the Recent folder
-            // string[] recentFolders = Directory.GetDirectories(recentFolderPath);            
+            // string[] recentFolders = Directory.GetDirectories(recentFolderPath);
+
+            if (RecentItemList != null && RecentItemList.Count() > 100)
+            {
+                RemoveRecentItemsMoreThan100();
+            }
+
             return RecentItemList;
+        }
+
+        private static void RemoveRecentItemsMoreThan100()
+        {
+            //Remove old items 
+            var allRecentItems = RecentItemList.OrderByDescending(s => s.LastModifiedDateTime).ToList();
+            for (int i = allRecentItems.Count() - 1; i >= 100; i--)
+            {
+                Remove(allRecentItems[i]);
+            }
         }
 
         public static void Add(FileFolderModel item)
@@ -92,10 +109,11 @@ namespace CDM.Helper
             {
                 item.OriginalPath = Path.Combine(recentFolder, $"{Path.GetFileNameWithoutExtension(item.Path)}.lnk");
             }
-            else
-            {
-                item.OriginalPath = Path.Combine(recentFolder, $"{DirectoryHelper.GetDirectoryName(item.Path)}.lnk");
-            }
+            //Commented as only tracking recent files
+            //else
+            //{
+            //    item.OriginalPath = Path.Combine(recentFolder, $"{DirectoryHelper.GetDirectoryName(item.Path)}.lnk");
+            //}
             ShortcutHelper.CreateLnk(item.OriginalPath, item.Path);
 
             RecentItemList.Insert(0, item);

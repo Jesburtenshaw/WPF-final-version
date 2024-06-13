@@ -81,17 +81,18 @@
                 </Style.Triggers>
             </Style>
 
-            <!--NoMouseOverButton-->
-            <Style x:Key="NoMouseOverButton" TargetType="Button">
+
+            <!--Pin, Star, GotoParent button background style-->
+            <Style x:Key="PinButtonStyle" TargetType="Button">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border Name="border">
+                            <Border Name="border" CornerRadius="4" Padding="2">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="{StaticResource WindowBackgroundColor}"/>
+                                    <Setter TargetName="border" Property="Background" Value="{DynamicResource PinHoverBackgroundColor}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -308,7 +309,7 @@
                         </Grid.ColumnDefinitions>
 
                         <!--Style="{StaticResource MultiplyBtnStyle}"-->
-                        <Button Grid.Column="0"
+                        <Button Grid.Column="0" IsEnabled="{Binding IsBackNavigationEnabled,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Style="{StaticResource backBtnStyle}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                                 Command="{Binding BackWindowCommand}">
                             <Path Data="{StaticResource UpBackwardArrow}"
@@ -394,10 +395,9 @@
                                         ToolTip="Set this item as default"
                                         Command="{Binding StarCommand}"
                                         CommandParameter="{Binding CurFolder}"
-                                        Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
                                         Visibility="{Binding CurFolder.IsDefault, Converter={StaticResource BoolVisibilityInverseConverter}}"
                                         BorderThickness="0"
-                                        Margin="0 0 5 0" Style="{StaticResource NoMouseOverButton}"
+                                        Margin="0 0 5 0" Style="{StaticResource PinButtonStyle}"
                                         Width="20" 
                                         Height="20">
                                     <Path Data="{StaticResource StarGeometry}"  Style="{StaticResource PinStarPathIconStyle}" />
@@ -407,11 +407,10 @@
                                         ToolTip="Unset this item as default"
                                         Command="{Binding UnstarCommand}"
                                         CommandParameter="{Binding CurFolder}"
-                                        Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
                                         Visibility="{Binding CurFolder.IsDefault, Converter={StaticResource BoolVisibilityConverter}}"
                                         BorderThickness="0"
                                         Margin="0 0 5 0"
-                                        Width="20"  Style="{StaticResource NoMouseOverButton}"
+                                        Width="20"  Style="{StaticResource PinButtonStyle}"
                                         Height="20">
                                     <Path Data="{StaticResource FilledStarGeometry}"  Style="{StaticResource PinStarPathIconStyle}" />
                                 </Button>
@@ -426,7 +425,7 @@
                                         Visibility="{Binding CurFolder.IsPined, Converter={StaticResource BoolVisibilityInverseConverter}}"
                                         BorderThickness="0"
                                         Margin="0 0 5 0"
-                                        Width="20"
+                                        Width="20" Style="{StaticResource PinButtonStyle}"
                                         Height="20">
                                     <Path Data="{StaticResource PinGeometry}"  Style="{StaticResource PinStarPathIconStyle}" />
 
@@ -439,7 +438,7 @@
                                         Visibility="{Binding CurFolder.IsPined, Converter={StaticResource BoolVisibilityConverter}}"
                                         BorderThickness="0"
                                         Margin="0 0 5 0"
-                                        Width="20"
+                                        Width="20" Style="{StaticResource PinButtonStyle}"
                                         Height="20">
                                     <Path Data="{StaticResource UnPinGeometry}"  Style="{StaticResource PinStarPathIconStyle}" />
 
@@ -674,9 +673,9 @@
                       Name="DriveWindow"
                       Visibility="{Binding IsDriveWindowVisible}">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40*" />
+                        <RowDefinition Height="auto" />
                         <RowDefinition Height="36" />
-                        <RowDefinition Height="60*" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <!--Visibility="{Binding IsAvailableBooksVisibility}"-->
                     <Border Grid.Row="0">
@@ -707,9 +706,9 @@
                                       SelectionMode="Single">
 
                                 <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:EventTrigger EventName="MouseLeftButtonUp">
                                         <i:InvokeCommandAction Command="{Binding DoubleClickCommand, Mode=TwoWay}"
-                                                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListView}}" />
+                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListView}}" />
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
 
@@ -808,8 +807,8 @@
                                               SelectionMode="Single"
                                               SelectionUnit="FullRow">
                                         <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="MouseDoubleClick">
-                                                <i:InvokeCommandAction Command="{Binding RecentItemDoubleClickCommand}" />
+                                            <i:EventTrigger EventName="MouseLeftButtonUp">
+                                                <i:InvokeCommandAction Command="{Binding RecentItemDoubleClickCommand}" CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
                                             </i:EventTrigger>
                                         </i:Interaction.Triggers>
 
@@ -860,8 +859,48 @@
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition></ColumnDefinition>
                                                                 <ColumnDefinition></ColumnDefinition>
+                                                                <ColumnDefinition></ColumnDefinition>
+
                                                             </Grid.ColumnDefinitions>
-                                                            <Grid Grid.Column="0"
+
+                                                            <Button Grid.Column="0" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.GoToParentCommand}"
+                                                                      CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
+                                                                      ToolTip="Go to parent" Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"  
+                                                                    BorderThickness="0" Margin="0 0 5 0" Width="22" Height="22">
+                                                                <Button.Style>
+                                                                    <Style  TargetType="Button" BasedOn="{StaticResource PinButtonStyle}">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                        <Style.Triggers>
+                                                                            <MultiDataTrigger >
+                                                                                <MultiDataTrigger.Conditions>
+                                                                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
+                                                                                </MultiDataTrigger.Conditions>
+                                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                            </MultiDataTrigger>
+                                                                            <MultiDataTrigger >
+                                                                                <MultiDataTrigger.Conditions>
+                                                                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True" />
+                                                                                </MultiDataTrigger.Conditions>
+                                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                            </MultiDataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Button.Style>
+                                                                <Grid>
+                                                                    <Grid.Resources>
+                                                                        <Style TargetType="Path">
+                                                                            <Setter Property="Fill" Value="{DynamicResource SecondaryWindowForegroundColor}"/>
+                                                                        </Style>
+                                                                    </Grid.Resources>
+                                                                    <Path Data="{StaticResource GoToParent1of5Geometry}" />
+                                                                    <Path Data="{StaticResource GoToParent2of5Geometry}" />
+                                                                    <Path Data="{StaticResource GoToParent3of5Geometry}" />
+                                                                    <Path Data="{StaticResource GoToParent4of5Geometry}" />
+                                                                    <Path Data="{StaticResource GoToParent5of5Geometry}" />
+                                                                </Grid>
+                                                            </Button>
+
+                                                            <Grid Grid.Column="1"
                                                                   Visibility="{Binding Type, Converter={StaticResource DirFileTypeVisibilityConverter}}">
                                                                 <Button x:Name="btnStar"
                                                                         ToolTip="Set this item as default"
@@ -870,7 +909,7 @@
                                                                         Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
                                                                         BorderThickness="0" Margin="0 0 5 0" Width="20" Height="20">
                                                                     <Button.Style>
-                                                                        <Style  TargetType="Button">
+                                                                        <Style  TargetType="Button" BasedOn="{StaticResource PinButtonStyle}">
                                                                             <Setter Property="Visibility" Value="Collapsed"/>
                                                                             <Style.Triggers>
                                                                                 <MultiDataTrigger >
@@ -900,13 +939,14 @@
                                                                         Visibility="{Binding IsDefault, Converter={StaticResource BoolVisibilityConverter}}"
                                                                         BorderThickness="0"
                                                                         Margin="0 0 5 0"
-                                                                        Width="20"
+                                                                        Width="20" Style="{StaticResource PinButtonStyle}"
                                                                         Height="20">
                                                                     <Path Data="{StaticResource FilledStarGeometry}" Style="{StaticResource PinStarPathIconStyle}"  />
 
                                                                 </Button>
                                                             </Grid>
-                                                            <Grid Grid.Column="1">
+
+                                                            <Grid Grid.Column="2">
                                                                 <Button x:Name="btnPin"
                                                                         ToolTip="Pin this item to the list"
                                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.PinCommand}"
@@ -917,13 +957,14 @@
                                                                         Width="20" 
                                                                         Height="20">
                                                                     <Button.Style>
-                                                                        <Style  TargetType="Button">
+                                                                        <Style  TargetType="Button" BasedOn="{StaticResource PinButtonStyle}">
                                                                             <Setter Property="Visibility" Value="Collapsed"/>
                                                                             <Style.Triggers>
                                                                                 <MultiDataTrigger >
                                                                                     <MultiDataTrigger.Conditions>
                                                                                         <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
                                                                                         <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.IsPinLimitReached}" Value="False" />
                                                                                     </MultiDataTrigger.Conditions>
                                                                                     <Setter Property="Visibility" Value="Visible"/>
                                                                                 </MultiDataTrigger>
@@ -931,6 +972,7 @@
                                                                                     <MultiDataTrigger.Conditions>
                                                                                         <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True" />
                                                                                         <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.IsPinLimitReached}" Value="False" />
                                                                                     </MultiDataTrigger.Conditions>
                                                                                     <Setter Property="Visibility" Value="Visible"/>
                                                                                 </MultiDataTrigger>
@@ -948,11 +990,12 @@
                                                                         Visibility="{Binding IsPined, Converter={StaticResource BoolVisibilityConverter}}"
                                                                         BorderThickness="0"
                                                                         Margin="0 0 5 0"
-                                                                        Width="20" 
+                                                                        Width="20" Style="{StaticResource PinButtonStyle}"
                                                                         Height="20">
                                                                     <Path Data="{StaticResource UnPinGeometry}" Style="{StaticResource PinStarPathIconStyle}"  />
                                                                 </Button>
                                                             </Grid>
+
                                                         </Grid>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -1104,7 +1147,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                                         Width="20"
                                                                         Height="20">
                                                                     <Button.Style>
-                                                                        <Style  TargetType="Button">
+                                                                        <Style  TargetType="Button" BasedOn="{StaticResource PinButtonStyle}">
                                                                             <Setter Property="Visibility" Value="Collapsed"/>
                                                                             <Style.Triggers>
                                                                                 <MultiDataTrigger >
@@ -1135,7 +1178,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                                         Visibility="{Binding IsDefault, Converter={StaticResource BoolVisibilityConverter}}"
                                                                         BorderThickness="0"
                                                                         Margin="0 0 5 0"
-                                                                        Width="20"
+                                                                        Width="20" Style="{StaticResource PinButtonStyle}"
                                                                         Height="20">
                                                                     <Path Data="{StaticResource FilledStarGeometry}" Style="{StaticResource PinStarPathIconStyle}" />
 
@@ -1152,13 +1195,14 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                                         Width="20"
                                                                         Height="20">
                                                                     <Button.Style>
-                                                                        <Style  TargetType="Button">
+                                                                        <Style  TargetType="Button" BasedOn="{StaticResource PinButtonStyle}">
                                                                             <Setter Property="Visibility" Value="Collapsed"/>
                                                                             <Style.Triggers>
                                                                                 <MultiDataTrigger >
                                                                                     <MultiDataTrigger.Conditions>
                                                                                         <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
                                                                                         <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.IsPinLimitReached}" Value="False" />
                                                                                     </MultiDataTrigger.Conditions>
                                                                                     <Setter Property="Visibility" Value="Visible"/>
                                                                                 </MultiDataTrigger>
@@ -1166,6 +1210,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                                                     <MultiDataTrigger.Conditions>
                                                                                         <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True" />
                                                                                         <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.IsPinLimitReached}" Value="False" />
                                                                                     </MultiDataTrigger.Conditions>
                                                                                     <Setter Property="Visibility" Value="Visible"/>
                                                                                 </MultiDataTrigger>
@@ -1183,7 +1228,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                                         Visibility="{Binding IsPined, Converter={StaticResource BoolVisibilityConverter}}"
                                                                         BorderThickness="0"
                                                                         Margin="0 0 5 0"
-                                                                        Width="20"
+                                                                        Width="20" Style="{StaticResource PinButtonStyle}"
                                                                         Height="20">
                                                                     <Path Data="{StaticResource UnPinGeometry}" Style="{StaticResource PinStarPathIconStyle}"  />
                                                                 </Button>
@@ -1621,7 +1666,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                         Width="20"
                                                         Height="20">
                                                         <Button.Style>
-                                                            <Style  TargetType="Button">
+                                                            <Style  TargetType="Button" BasedOn="{StaticResource PinButtonStyle}">
                                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                                                 <Style.Triggers>
                                                                     <MultiDataTrigger >
@@ -1651,7 +1696,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                         Visibility="{Binding IsDefault, Converter={StaticResource BoolVisibilityConverter}}"
                                                         BorderThickness="0"
                                                         Margin="0 0 5 0"
-                                                        Width="20"
+                                                        Width="20" Style="{StaticResource PinButtonStyle}"
                                                         Height="20">
                                                         <Path Data="{StaticResource FilledStarGeometry}" Style="{StaticResource PinStarPathIconStyle}" />
                                                     </Button>
@@ -1668,13 +1713,14 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                         Height="20">
 
                                                         <Button.Style>
-                                                            <Style  TargetType="Button">
+                                                            <Style  TargetType="Button" BasedOn="{StaticResource PinButtonStyle}">
                                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                                                 <Style.Triggers>
                                                                     <MultiDataTrigger >
                                                                         <MultiDataTrigger.Conditions>
                                                                             <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}" Value="True" />
                                                                             <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.IsPinLimitReached}" Value="False" />
                                                                         </MultiDataTrigger.Conditions>
                                                                         <Setter Property="Visibility" Value="Visible"/>
                                                                     </MultiDataTrigger>
@@ -1682,6 +1728,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                                         <MultiDataTrigger.Conditions>
                                                                             <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True" />
                                                                             <Condition Binding="{Binding IsPined}" Value="False" />
+                                                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.IsPinLimitReached}" Value="False" />
                                                                         </MultiDataTrigger.Conditions>
                                                                         <Setter Property="Visibility" Value="Visible"/>
                                                                     </MultiDataTrigger>
@@ -1698,7 +1745,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                         Visibility="{Binding IsPined, Converter={StaticResource BoolVisibilityConverter}}"
                                                         BorderThickness="0"
                                                         Margin="0 0 5 0"
-                                                        Width="20"
+                                                        Width="20" Style="{StaticResource PinButtonStyle}"
                                                         Height="20">
                                                         <Path Data="{StaticResource UnPinGeometry}" Style="{StaticResource PinStarPathIconStyle}" />
                                                     </Button>

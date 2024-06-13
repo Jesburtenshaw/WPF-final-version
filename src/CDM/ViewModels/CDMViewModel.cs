@@ -68,6 +68,7 @@ namespace CDM.ViewModels
             CancelSearchCommand = new RelayCommand(CancelSearch);
             PrevDrivesCommand = new RelayCommand(PrevDrives);
             NextDrivesCommand = new RelayCommand(NextDrives);
+            GoToParentCommand = new RelayCommand(GoToParent);
 
             //DriveCommand = new RelayCommand(driveCommand);
             IsSearchBoxPlaceholderVisible = Visibility.Visible;
@@ -501,6 +502,36 @@ namespace CDM.ViewModels
             }
         }
 
+
+        private bool _isBackNavigationEnabled = false;
+        public bool IsBackNavigationEnabled
+        {
+            get
+            {
+                return _isBackNavigationEnabled;
+            }
+            set
+            {
+                _isBackNavigationEnabled = value;
+                OnPropertyChanged(nameof(IsBackNavigationEnabled));
+            }
+        }
+
+
+        private bool _isPinLimitReached = false;
+        public bool IsPinLimitReached
+        {
+            get
+            {
+                return _isPinLimitReached;
+            }
+            set
+            {
+                _isPinLimitReached = value;
+                OnPropertyChanged(nameof(IsPinLimitReached));
+            }
+        }
+
         #endregion
 
         #region :: Commands ::
@@ -538,6 +569,7 @@ namespace CDM.ViewModels
         public RelayCommand CancelSearchCommand { get; set; }
         public RelayCommand PrevDrivesCommand { get; set; }
         public RelayCommand NextDrivesCommand { get; set; }
+        public RelayCommand GoToParentCommand { get; set; }
 
         #endregion
 
@@ -545,6 +577,7 @@ namespace CDM.ViewModels
 
         public void Init()
         {
+            IsPinLimitReached = PinManager.IsPinLimitReached;
             PinnedItemList = PinManager.PinnedItemList;
             RecentItemList = RecentManager.RecentItemList;
             DriveList = DriveManager.DriveList;
@@ -565,6 +598,7 @@ namespace CDM.ViewModels
             {
                 CurFilterStatus.PinnedCount = PinnedItemList.Count;
                 CurSearchStatus.IsLoadingPinned = false;
+                IsPinLimitReached = PinManager.IsPinLimitReached;
             });
             RecentManager.GetRecentItems();
             _userControl.Dispatcher.Invoke(() =>
@@ -605,6 +639,47 @@ namespace CDM.ViewModels
             CurDrivesPagesIndex++;
         }
 
+        private void GoToParent(object obj)
+        {
+            try
+            {
+                FileFolderModel curItem = obj as FileFolderModel;
+                string folderPath = string.Empty;
+
+                if (curItem != null)
+                {
+                    switch (curItem.Type)
+                    {
+                        case "Dir":
+                            folderPath = curItem.Path;
+                            break;
+
+                        case "File":
+                            folderPath = Path.GetDirectoryName(curItem.Path);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    FoldersItemList.Clear();
+                    if (!string.IsNullOrEmpty(folderPath))
+                    {
+
+                        NavigateToFolder(folderPath);
+                        directoryHistory.Push(folderPath);
+
+                        //CurrentDrivePath = item.DriveName;
+                        IsDriveFoldersVisible = Visibility.Visible;
+                        IsDriveWindowVisible = Visibility.Collapsed;
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
         private void Pin(object obj)
         {
             FileFolderModel curItem = null;
@@ -640,6 +715,7 @@ namespace CDM.ViewModels
             try
             {
                 PinManager.Pin(unpinedItem);
+                IsPinLimitReached = PinManager.IsPinLimitReached;
 
                 FileFolderModel t = null;
                 if (null == curItem || string.IsNullOrEmpty(curItem.OriginalPath))
@@ -694,6 +770,7 @@ namespace CDM.ViewModels
             try
             {
                 PinManager.Unpin(pinedItem);
+                IsPinLimitReached = PinManager.IsPinLimitReached;
 
                 FileFolderModel t = null;
                 if (null == curItem || string.IsNullOrEmpty(curItem.OriginalPath))
@@ -876,6 +953,7 @@ namespace CDM.ViewModels
             if (null != t)
             {
                 PinManager.Unpin(t);
+                IsPinLimitReached = PinManager.IsPinLimitReached;
             }
             t = FoldersItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
             if (null != t)
@@ -922,6 +1000,7 @@ namespace CDM.ViewModels
                 t.Name = curRenameStatus.Name;
                 t.Path = newPath;
                 PinManager.Pin(t);
+                IsPinLimitReached = PinManager.IsPinLimitReached;
             }
             t = FoldersItemList.FirstOrDefault(e => e.Path.Equals(CurRenameItem.Path));
             if (null != t)
@@ -1035,6 +1114,7 @@ namespace CDM.ViewModels
             {
                 //cannot go back
                 CurrentDrivePath = "";
+                IsBackNavigationEnabled = false;
                 return;
             }
 
@@ -1046,6 +1126,7 @@ namespace CDM.ViewModels
                 IsDriveFoldersVisible = Visibility.Collapsed;
                 TxtSearchBoxItem = string.Empty;
                 IsSearchBoxPlaceholderVisible = Visibility.Visible;
+                IsBackNavigationEnabled = false;
                 return;
             }
 
@@ -1520,7 +1601,7 @@ namespace CDM.ViewModels
             TxtSearchBoxItem = "";
             Locations = isRoot ? FilterConditionModel.DirveLocations : FilterConditionModel.DirectoryLocations;
             SelectedLocation = Locations.Last();
-
+            IsBackNavigationEnabled = true;
             if (!string.IsNullOrEmpty(folderPath))
             {
                 // Check if the folder exists
@@ -1593,6 +1674,7 @@ namespace CDM.ViewModels
                                     IsDefault = StarManager.IsDefault(file),
                                     IsPined = PinManager.IsPined(file)
                                 });
+
                             }
                         }
                     }
@@ -1884,6 +1966,19 @@ namespace CDM.ViewModels
             if (e.PropertyName.Equals(nameof(CurSearchStatus.IsDoing)))
             {
                 CurSearchStatus.CanSearch = !CurSearchStatus.IsDoing;
+            }
+        }
+        public void searchRecentItemList()
+        {
+            if (!string.IsNullOrEmpty(TxtSearchBoxItem))
+            {
+                //IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(RecentItemList);
+                view.Filter = searchItemFilter;
+            }
+            else
+            {
+                CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
             }
         }
         #endregion
