@@ -63,6 +63,7 @@ namespace CDM.Helper
                 }
                 else if (Directory.Exists(file))
                 {
+
                     DirectoryInfo dirInfo = new DirectoryInfo(file);
                     //Application.Current.Dispatcher.Invoke(() =>
                     //{
@@ -75,7 +76,8 @@ namespace CDM.Helper
                         OriginalPath = pinnedFile,
                         IsPined = true,
                         IsDefault = StarManager.IsDefault(dirInfo.FullName),
-                        Type = "Dir"
+                        Type = "Dir",
+                        IsDrive = IsThisPathDrive(file)
                     });
                     //});
                 }
@@ -130,7 +132,6 @@ namespace CDM.Helper
                 }
                 ShortcutHelper.CreateLnk(item.OriginalPath, item.Path);
             }
-
             PinnedItemList.Insert(0, item);
             CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
             UpdatePinLimitReached();
@@ -147,6 +148,15 @@ namespace CDM.Helper
             PinnedItemList.Remove(item);
             CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
             UpdatePinLimitReached();
+        }
+
+        private static bool IsThisPathDrive(string path)
+        {
+            if (!string.IsNullOrWhiteSpace(path) && DriveManager.Drives != null && DriveManager.Drives?.Count(s => s.Name == path) > 0)
+            {
+                return true;
+            }
+            return false;
         }
         #endregion
     }

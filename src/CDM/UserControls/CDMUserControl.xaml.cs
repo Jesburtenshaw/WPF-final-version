@@ -340,29 +340,32 @@ namespace CDM.UserControls
         {
             if (obj is TextBlock textBlock)
             {
-                string originalText = textBlock.Text;
-                textBlock.Inlines.Clear();
-
-                if (regex == null)
+                if (!(obj as TextBlock).Text.Contains(":"))
                 {
-                    textBlock.Inlines.Add(new Run(originalText));
-                    return;
-                }
+                    string originalText = textBlock.Text;
+                    textBlock.Inlines.Clear();
 
-                string[] substrings = regex.Split(originalText);
-                foreach (var substring in substrings)
-                {
-                    if (regex.IsMatch(substring))
+                    if (regex == null)
                     {
-                        Run highlightRun = new Run(substring)
-                        {
-                            FontWeight = FontWeights.Bold
-                        };
-                        textBlock.Inlines.Add(highlightRun);
+                        textBlock.Inlines.Add(new Run(originalText));
+                        return;
                     }
-                    else
+
+                    string[] substrings = regex.Split(originalText);
+                    foreach (var substring in substrings)
                     {
-                        textBlock.Inlines.Add(new Run(substring));
+                        if (regex.IsMatch(substring))
+                        {
+                            Run highlightRun = new Run(substring)
+                            {
+                                FontWeight = FontWeights.Bold
+                            };
+                            textBlock.Inlines.Add(highlightRun);
+                        }
+                        else
+                        {
+                            textBlock.Inlines.Add(new Run(substring));
+                        }
                     }
                 }
             }

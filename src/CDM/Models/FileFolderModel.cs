@@ -74,6 +74,21 @@ namespace CDM.Models
                 OnPropertyChanged(nameof(isDefault));
             }
         }
+
+        private bool _isDrive = false;
+        public bool IsDrive
+        {
+            get
+            {
+                return _isDrive;
+            }
+            set
+            {
+                _isDrive = value;
+                OnPropertyChanged(nameof(IsDrive));
+            }
+        }
+
         #endregion
         #region :: Event Handler ::
         public event PropertyChangedEventHandler PropertyChanged;

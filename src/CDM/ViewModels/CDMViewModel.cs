@@ -593,7 +593,20 @@ namespace CDM.ViewModels
                 CurSearchStatus.IsLoadingPinned = true;
                 CurSearchStatus.IsLoadingRecent = true;
             });
+            DriveManager.GetDrivesItem();
+            _userControl.Dispatcher.Invoke(() =>
+            {
+                CurFilterStatus.DrivesCount = DriveList.Count;
+                if (CurFilterStatus.DrivesCount > 0)
+                {
+                    CurDrivesPagesIndex = 1;
+                }
+
+                CurSearchStatus.IsLoadingDrives = false;
+            });
             PinManager.GetPinnedItems();
+            DriveManager.UpdatePinnedDrives();
+
             _userControl.Dispatcher.Invoke(() =>
             {
                 CurFilterStatus.PinnedCount = PinnedItemList.Count;
@@ -605,18 +618,9 @@ namespace CDM.ViewModels
             {
                 CurFilterStatus.RecentCount = RecentItemList.Count;
                 CurSearchStatus.IsLoadingRecent = false;
-            });
-            DriveManager.GetDrivesItem();
-            _userControl.Dispatcher.Invoke(() =>
-            {
-                CurFilterStatus.DrivesCount = DriveList.Count;
-                if (CurFilterStatus.DrivesCount > 0)
-                {
-                    CurDrivesPagesIndex = 1;
-                }
 
                 CurSearchStatus.IsLoading = false;
-                CurSearchStatus.IsLoadingDrives = false;
+
             });
             //});
         }
@@ -695,7 +699,8 @@ namespace CDM.ViewModels
                     Path = dirInfo.FullName,
                     IconSource = IconHelper.GetIcon(dirInfo.FullName),
                     Type = "Dir",
-                    IsPined = true
+                    IsPined = true,
+                    IsDrive = true
                 };
             }
             else
@@ -757,6 +762,10 @@ namespace CDM.ViewModels
             if (null != driveItem)
             {
                 pinedItem = PinnedItemList.FirstOrDefault(e => e.Path.Equals(driveItem.DriveName));
+                if (pinedItem != null)
+                {
+                    pinedItem.IsDrive = true;
+                }
             }
             else
             {
@@ -1307,7 +1316,7 @@ namespace CDM.ViewModels
 
                 _userControl.Dispatcher.Invoke(() =>
                 {
-                    if (TxtSearchBoxItem.Length > 256)
+                    if (!string.IsNullOrEmpty(TxtSearchBoxItem) && TxtSearchBoxItem.Length > 256)
                     {
                         TxtSearchBoxItem = TxtSearchBoxItem.Substring(0, 256);
                     }

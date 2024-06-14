@@ -5,7 +5,8 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/CDM;component/Themes/LightStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
-
+    <converter:DirFileTypeVisibilityConverter x:Key="DirFileTypeVisibilityConverter" />
+    <converter:BoolVisibilityConverter x:Key="BoolVisibilityConverter" />
     <!--<Style x:Key="DGCustomizedHeaderStyle"
            TargetType="DataGridColumnHeader">
         <EventSetter Event="Click"
@@ -14,7 +15,31 @@
 
     <!--<converter:ArrowPathConverter x:Key="ArrowPathConverter" />-->
 
-    <Style x:Key="FolderMenuItemStyle" TargetType="MenuItem">
+    <Style x:Key="PinButtonStyleA"
+           TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Name="border"
+                            CornerRadius="4"
+                            Padding="2">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="border"
+                                    Property="Background"
+                                    Value="{DynamicResource PinHoverBackgroundColor}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!--<Style x:Key="FolderMenuItemStyle" TargetType="MenuItem">
         <Setter Property="Background"
                 Value="red" />
         <Setter Property="Foreground"
@@ -53,7 +78,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style>-->
 
     <Style x:Key="btnSearch"
            TargetType="Button">
@@ -169,7 +194,7 @@
         <Setter Property="FontSize"
                 Value="20" />
         <Setter Property="FontWeight"
-                Value="Bold" />
+                Value="Light" />
         <Setter Property="Foreground"
                 Value="{DynamicResource WindowForegroundColor}" />
         <Setter Property="Background"
@@ -181,7 +206,8 @@
                 <ControlTemplate TargetType="TabItem">
                     <Grid Name="Panel">
                         <Border Name="border"
-                                BorderThickness="0 0 0 2">
+                                Margin="0 0 20 0"
+                                BorderThickness="0 0 0 5">
                             <ContentPresenter x:Name="TabContents"
                                               VerticalAlignment="Center"
                                               HorizontalAlignment="Center"
@@ -199,6 +225,8 @@
                                     Value="#1b72d1" />
                             <Setter Property="Cursor"
                                     Value="Hand" />
+                            <Setter Property="FontWeight"
+                                    Value="Bold" />
                         </Trigger>
                         <Trigger Property="IsMouseOver"
                                  Value="True">
@@ -290,7 +318,7 @@
         <Setter Property="BorderThickness"
                 Value="0 1 0 0" />
         <Setter Property="FontWeight"
-                Value="Regular" />
+                Value="SemiBold" />
         <Setter Property="Background"
                 Value="Transparent" />
         <Style.Triggers>
@@ -310,6 +338,11 @@
                 <Setter Property="Background"
                         Value="{DynamicResource GridHoverBackgroundColor}" />
             </Trigger>
+            <DataTrigger  Binding="{Binding IsDrive}"
+                Value="True">
+                <Setter  Property="Visibility"
+               Value="Collapsed"   />
+            </DataTrigger>
         </Style.Triggers>
     </Style>
 
@@ -326,7 +359,7 @@
         <Setter Property="Height"
                 Value="40" />
         <Setter Property="FontWeight"
-                Value="SemiBold" />
+                Value="Regular" />
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="BorderThickness"
@@ -408,7 +441,7 @@ l122.965,122.965c5,5,13.099,5,18.099,0C414.863,161.66,414.863,153.57,409.862,148
                 VerticalAlignment="Stretch"
                 HorizontalAlignment="Stretch"
                 Background="Transparent">
-                <!--Width="429"-->
+            <!--Width="429"-->
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -417,27 +450,37 @@ l122.965,122.965c5,5,13.099,5,18.099,0C414.863,161.66,414.863,153.57,409.862,148
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20*" />
-                    <ColumnDefinition Width="80*" />
+                    <ColumnDefinition Width="75*" />
+                    <ColumnDefinition Width="10*" />
                 </Grid.ColumnDefinitions>
 
-                <Path Data="M10.43,62.14V53.69H46.55A15.38,15.38,0,0,1,57,43.38V34.61H2.85A2.87,2.87,0,0,1,0,31.76V2.8a2.84,2.84,0,0,1,.84-2A2.89,2.89,0,0,1,2.33,0H120.54a2.88,2.88,0,0,1,1.5.79,2.84,2.84,0,0,1,.84,2v29a2.84,2.84,0,0,1-.84,2,2.88,2.88,0,0,1-2,.84H65.44v8.77A15.38,15.38,0,0,1,75.88,53.69h39.31v8.45H76a15.32,15.32,0,0,1-29.55,0ZM100.77,9.06a8.56,8.56,0,1,1-8.56,8.56,8.57,8.57,0,0,1,8.56-8.56ZM35,8h7.14V26.59H35V8ZM53.46,8H60.6V26.59H53.46V8ZM16.54,8h7.13V26.59H16.54V8ZM66.07,53.25a6.87,6.87,0,1,0,2,4.85,6.82,6.82,0,0,0-2-4.85Z"
-                      Grid.Row="0"
-                      Stretch="Fill"
-                      Grid.Column="0"
-                      Height="40"
-                      Width="45"
-                      Margin="5"
-                      VerticalAlignment="Stretch"
-                      HorizontalAlignment="Stretch"
-                      Fill="{DynamicResource DriveIcnPathFillColor}"
-                      Grid.RowSpan="2" />
+
+                <Grid Grid.Row="0"
+                        Width="40"
+                      Grid.RowSpan="2" 
+                      VerticalAlignment="Center"
+HorizontalAlignment="Stretch"
+                        >
+                    <Grid.Resources>
+                        <Style TargetType="Path">
+                            <Setter Property="Fill" Value="{DynamicResource SecondaryWindowForegroundColor}"/>
+                        </Style>
+                    </Grid.Resources>
+                    <Path Data="{StaticResource DriveIcon1of7Geometry}" />
+                    <Path Data="{StaticResource DriveIcon2of7Geometry}" />
+                    <Path Data="{StaticResource DriveIcon3of7Geometry}" />
+                    <Path Data="{StaticResource DriveIcon4of7Geometry}" />
+                    <Path Data="{StaticResource DriveIcon5of7Geometry}" />
+                    <Path Data="{StaticResource DriveIcon6of7Geometry}" />
+                    <Path Data="{StaticResource DriveIcon7of7Geometry}" />
+                </Grid>
 
                 <TextBlock Grid.Row="0"
                            Grid.Column="1"
                            FontSize="15"
                            Foreground="{DynamicResource WindowForegroundColor}"
                            VerticalAlignment="Bottom"
-                           Padding="10 0"
+                           Padding="0 0"
                            FontWeight="Bold"
                            Text="{Binding DriveName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -447,7 +490,56 @@ l122.965,122.965c5,5,13.099,5,18.099,0C414.863,161.66,414.863,153.57,409.862,148
                            Foreground="{DynamicResource WindowForegroundColor}"
                            VerticalAlignment="Top"
                            Text="{Binding DriveDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                           Padding="10 0" />
+                           Padding="0 0" />
+
+                <Grid Grid.Column="2">
+                    <Button x:Name="btnPin"
+                            ToolTip="Pin this item to the list"
+                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.PinCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=DataContext}"
+                            Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
+                            BorderThickness="0"
+                            Margin="0 0 5 0"
+                            Width="30"
+                            Height="30">
+                        <Button.Style>
+                            <Style  TargetType="Button" BasedOn="{StaticResource PinButtonStyleA}">
+                                <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=IsMouseOver}"
+                                                       Value="True" />
+                                            <Condition Binding="{Binding IsPined}"
+                                                       Value="False" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility"
+                                                Value="Visible" />
+                                    </MultiDataTrigger>
+                                   
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Path Data="{StaticResource PinGeometry}"
+                              Style="{StaticResource PinStarPathIconStyle}" />
+
+                    </Button>
+                    <Button x:Name="btnUnpin"
+                            ToolTip="Unpin this item from the list"
+                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.UnpinCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=DataContext}"
+                            Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
+                            Visibility="{Binding IsPined, Converter={StaticResource BoolVisibilityConverter}}"
+                            BorderThickness="0"
+                            Margin="0 0 5 0"
+                            Width="30"
+                            Style="{StaticResource PinButtonStyleA}"
+                            Height="30">
+                        <Path Data="{StaticResource UnPinGeometry}"
+                              Style="{StaticResource PinStarPathIconStyle}" />
+                    </Button>
+                </Grid>
             </Grid>
         </Border>
         <DataTemplate.Triggers>
@@ -486,7 +578,7 @@ l122.965,122.965c5,5,13.099,5,18.099,0C414.863,161.66,414.863,153.57,409.862,148
         </Setter>
     </Style>
 
-    <DataTemplate x:Key="QuickAccessTemplateStyle">
+    <!--<DataTemplate x:Key="QuickAccessTemplateStyle">
         <Border Name="border"
                 BorderThickness="1"
                 CornerRadius="3"
@@ -516,7 +608,7 @@ l122.965,122.965c5,5,13.099,5,18.099,0C414.863,161.66,414.863,153.57,409.862,148
                         Value="red" />
             </Trigger>
         </DataTemplate.Triggers>
-    </DataTemplate>
+    </DataTemplate>-->
 
     <Style x:Key="driveBtnStyle"
            TargetType="Button">

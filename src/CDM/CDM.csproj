@@ -72,6 +72,7 @@
     <Compile Include="Converters\BoolInverseConverter.cs" />
     <Compile Include="Converters\BoolVisibilityConverter.cs" />
     <Compile Include="Converters\BoolVisibilityInverseConverter.cs" />
+    <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\DirFileTypeVisibilityConverter.cs" />
     <Compile Include="Converters\EmptyStringVisibilityConverter.cs" />
     <Compile Include="Converters\EmptyStringVisibilityInverseConverter.cs" />

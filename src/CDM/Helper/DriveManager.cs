@@ -95,6 +95,20 @@ namespace CDM.Helper
                 }
             }
         }
+
+        public static void UpdatePinnedDrives()
+        {
+            try
+            {
+                foreach (DriveModel drive in DriveList)
+                {
+                    drive.IsPined = PinManager.IsPined(drive.DriveName);
+                }
+            }
+            catch
+            {
+            }
+        }
         #endregion
         #region ::Events::
         public static event EventHandler DriveIsSelectedChanged;
