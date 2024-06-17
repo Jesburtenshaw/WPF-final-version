@@ -24,11 +24,15 @@ namespace CDMWrapper
             RECT lpRect;
             GetClientRect(hwndParent, out lpRect);
             MessageBox.Show("w: "+ (lpRect.Right - lpRect.Left)+ "h: "+ (lpRect.Bottom - lpRect.Top));
+            double width = (lpRect.Right - lpRect.Left);
+            double height = (lpRect.Bottom - lpRect.Top);
+
             System.Windows.Interop.HwndSourceParameters sourceParams = new System.Windows.Interop.HwndSourceParameters("CDMWrapper");
             sourceParams.ParentWindow = hwnd;
             sourceParams.WindowStyle = 0x10000000 | 0x40000000; // WS_VISIBLE | WS_CHILD; // style
             System.Windows.Interop.HwndSource source = new System.Windows.Interop.HwndSource(sourceParams);
-            UIElement page = new CDM.UserControls.CDMUserControl();
+            UIElement page = new CDM.UserControls.CDMUserControl(width, height);
+            
             source.RootVisual = page;
         }
     }

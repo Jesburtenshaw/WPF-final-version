@@ -42,13 +42,17 @@ namespace CDM.UserControls
         private CancellationTokenSource cts = null;
         #endregion
         #region :: Constructor ::
-        public CDMUserControl()
+        public CDMUserControl(double width = 0,double height = 0)
         {
+         
+
             //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             //Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
             InitializeComponent();
             vm = new CDMViewModel(this);
+            vm.ParentHeight = height;
+            vm.ParentWidth = width;
             this.DataContext = vm;
             SetInitialTheme();
 

@@ -11,7 +11,7 @@
         WindowStartupLocation="CenterScreen"
         Width="{x:Static SystemParameters.PrimaryScreenWidth}"
         Height="{x:Static SystemParameters.PrimaryScreenHeight}">
-    <Grid>
-        <controls:CDMUserControl />
+    <Grid x:Name="grdMain">
+        <!--<controls:CDMUserControl />-->
     </Grid>
 </Window>

@@ -23,6 +23,12 @@ namespace CDMMain
         public MainWindow()
         {
             InitializeComponent();
+            this.Loaded += MainWindow_Loaded;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            grdMain.Children.Add(new CDM.UserControls.CDMUserControl(grdMain.ActualWidth, grdMain.ActualHeight));
         }
     }
 }

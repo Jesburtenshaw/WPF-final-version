@@ -93,6 +93,31 @@ namespace CDM.ViewModels
         public int DrivesPageSize { get; set; }
         public int DrivesPagesCount { get; set; }
 
+
+        private double parentHeight = 200;
+        public double ParentHeight
+        {
+            get { return parentHeight; }
+            set
+            {
+                parentHeight = value;
+                OnPropertyChanged(nameof(ParentHeight));
+            }
+        }
+
+        private double parentWidth = 200;
+        public double ParentWidth
+        {
+            get { return parentWidth; }
+            set
+            {
+                parentWidth = value;
+                OnPropertyChanged(nameof(ParentWidth));
+            }
+        }
+
+
+
         private int curDrivesPagesIndex;
         public int CurDrivesPagesIndex
         {

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:converter="clr-namespace:CDM.Converters"
              xmlns:local="clr-namespace:CDM.UserControls"
              xmlns:common="clr-namespace:CDM.Common"
@@ -34,7 +34,7 @@
     </UserControl.Resources>
 
     <!--<Grid Background="#484848">-->
-    <Grid Background="{DynamicResource WindowBackgroundColor}">
+    <Grid Background="{DynamicResource WindowBackgroundColor}" Height="{Binding ParentHeight}" Width="{Binding ParentWidth}">
         <Grid.Resources>
             <!--Resources for this usercontrol components-->
 
