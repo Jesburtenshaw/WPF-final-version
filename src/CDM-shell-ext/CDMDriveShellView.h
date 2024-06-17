@@ -4,6 +4,7 @@
 #include "cdmshellext_i.h"
 #include <memory>
 #include "clrloadersimple.h"
+#pragma comment(lib, "mscoree.lib")
 
 
 
@@ -87,5 +88,7 @@ private:
 	void _HandleDeactivate();
 	void _FillList();
 	void LoadCDM(HWND hWnd, HWND hWndParent);
+	HRESULT CallMethod(LPCWSTR assemblyName, LPCWSTR className, LPCWSTR methodName, LONGLONG param);
+
 };
 
