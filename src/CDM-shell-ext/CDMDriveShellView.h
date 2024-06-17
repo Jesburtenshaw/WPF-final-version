@@ -4,6 +4,7 @@
 #include "cdmshellext_i.h"
 #include <memory>
 #include "clrloadersimple.h"
+#pragma comment(lib, "mscoree.lib")
 
 
 
@@ -78,9 +79,6 @@ private:
 	CComPtr<IShellBrowser>	m_pShellBrowser; // ref to the ShellBrowser pointer
 	FOLDERSETTINGS			m_FolderSettings;
 	UINT					m_uUIState;
-	HWND					hScrollBar;
-	HWND					hButton;
-	HWND					hListView;
 
 	CWindow							m_wndHost;
 	std::unique_ptr<CCLRLoaderSimple> m_pCLRLoader;
@@ -89,6 +87,8 @@ private:
 	void _HandleActivate(UINT uState);
 	void _HandleDeactivate();
 	void _FillList();
-	void LoadCDM(HWND hWnd, HWND hWndParent, int width, int height);
+	void LoadCDM(HWND hWnd, HWND hWndParent);
+	HRESULT CallMethod(LPCWSTR assemblyName, LPCWSTR className, LPCWSTR methodName, LONGLONG param);
+
 };
 

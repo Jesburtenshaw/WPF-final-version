@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "CDMDriveShellView.h"
-#include <sstream>
 
 UINT CDMDriveShellView::sm_uListID = 101;
 
@@ -62,10 +61,40 @@ IFACEMETHODIMP CDMDriveShellView::ContextSensitiveHelp(_In_ BOOL fEnterMode)
 	}
 }
 
-HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant params[], int numParams, CComVariant& result)
+//HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant params[], int numParams, CComVariant& result)
+//{
+//	if (pDisp == NULL)
+//		return E_POINTER;
+//	DISPID dispId;
+//	LPOLESTR v1[] = { (LPOLESTR)name };
+//	HRESULT hr = pDisp->GetIDsOfNames(IID_NULL, v1, 1, LOCALE_SYSTEM_DEFAULT, &dispId);
+//	if (FAILED(hr))
+//	{
+//		return hr;
+//	}
+//	DISPPARAMS dp;
+//	dp.cNamedArgs = 0;
+//	dp.cArgs = numParams;
+//	dp.rgdispidNamedArgs = NULL;
+//	dp.rgvarg = params;
+//	EXCEPINFO exInfo;
+//	UINT n = 0;
+//	hr = pDisp->Invoke(dispId, IID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_METHOD, &dp, &result, &exInfo, &n);
+//	if (FAILED(hr))
+//	{
+//		return hr;
+//	}
+//	return S_OK;
+//}
+
+HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant param1, CComVariant param2, CComVariant& result)
 {
 	if (pDisp == NULL)
+	{
 		return E_POINTER;
+	}
+
+	// Get the DISPID for the method name
 	DISPID dispId;
 	LPOLESTR v1[] = { (LPOLESTR)name };
 	HRESULT hr = pDisp->GetIDsOfNames(IID_NULL, v1, 1, LOCALE_SYSTEM_DEFAULT, &dispId);
@@ -73,23 +102,110 @@ HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant params[]
 	{
 		return hr;
 	}
+
+	// Prepare the DISPPARAMS structure
 	DISPPARAMS dp;
 	dp.cNamedArgs = 0;
-	dp.cArgs = numParams;
+	dp.cArgs = 2; // Number of parameters
 	dp.rgdispidNamedArgs = NULL;
+
+	// Create an array of variants for the parameters
+	CComVariant params[2] = { param2, param1 }; // Note the order: last parameter first
+
 	dp.rgvarg = params;
-	EXCEPINFO exInfo;
+
+	// Initialize the EXCEPINFO structure
+	EXCEPINFO exInfo = {};
 	UINT n = 0;
+
+	// Invoke the method
 	hr = pDisp->Invoke(dispId, IID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_METHOD, &dp, &result, &exInfo, &n);
 	if (FAILED(hr))
 	{
+		// Handle the exception information if needed
+		// e.g., Logger::LogError(L"Exception occurred during Invoke", exInfo);
 		return hr;
 	}
+
 	return S_OK;
 }
 
 
-void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent, int width, int height)
+HRESULT CDMDriveShellView::CallMethod(LPCWSTR assemblyName, LPCWSTR className, LPCWSTR methodName, LONGLONG param)
+{
+	ICLRMetaHost* pMetaHost = nullptr;
+	ICLRRuntimeInfo* pRuntimeInfo = nullptr;
+	ICLRRuntimeHost* pClrRuntimeHost = nullptr;
+	HRESULT hr = S_OK;
+
+	// Start the CLR
+	hr = CLRCreateInstance(CLSID_CLRMetaHost, IID_PPV_ARGS(&pMetaHost));
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+
+	hr = pMetaHost->GetRuntime(L"v4.0.30319", IID_PPV_ARGS(&pRuntimeInfo));
+	if (FAILED(hr))
+	{
+		pMetaHost->Release();
+		return hr;
+	}
+
+	BOOL fLoadable;
+	hr = pRuntimeInfo->IsLoadable(&fLoadable);
+	if (FAILED(hr) || !fLoadable)
+	{
+		pRuntimeInfo->Release();
+		pMetaHost->Release();
+		return hr;
+	}
+
+	hr = pRuntimeInfo->GetInterface(CLSID_CLRRuntimeHost, IID_PPV_ARGS(&pClrRuntimeHost));
+	if (FAILED(hr))
+	{
+		pRuntimeInfo->Release();
+		pMetaHost->Release();
+		return hr;
+	}
+
+	hr = pClrRuntimeHost->Start();
+	if (FAILED(hr))
+	{
+		pClrRuntimeHost->Release();
+		pRuntimeInfo->Release();
+		pMetaHost->Release();
+		return hr;
+	}
+
+	DWORD pReturnValue;
+	wchar_t paramStr[20];
+	swprintf_s(paramStr, 20, L"%lld", param);
+	hr = pClrRuntimeHost->ExecuteInDefaultAppDomain(assemblyName, className, methodName, paramStr, &pReturnValue);
+
+	pClrRuntimeHost->Release();
+	pRuntimeInfo->Release();
+	pMetaHost->Release();
+
+	return hr;
+}
+
+//void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent)
+//{
+//	// Combine HWND and HWNDParent into a single long parameter if necessary
+//	// For simplicity, we'll just pass hWnd in this example
+//
+//	LONGLONG param = reinterpret_cast<LONGLONG>(hWnd);
+//
+//	HRESULT hr = CallMethod(L"CDMWrapper.dll", L"CDMWrapper.CDMWrapper", L"showCDM", param);
+//	if (FAILED(hr))
+//	{
+//		// Handle error
+//	}
+//}
+
+
+void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent)
 {
 	// Create a unique pointer to a CCLRLoaderSimple object
 	m_pCLRLoader = std::make_unique<CCLRLoaderSimple>();
@@ -100,25 +216,28 @@ void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent, int width, int heigh
 	// If the instance creation failed, exit the function
 	if (FAILED(hr))
 	{
+		// Log the error if logging is available
+		// e.g., Logger::LogError(L"Failed to create instance of CDMWrapper");
 		return;
 	}
 
 	// Prepare the parameters to be passed to the COM method
 	CComVariant v1((UINT64)hWnd);
 	CComVariant v2((UINT64)hWndParent);
-	CComVariant v3(width);
-	CComVariant v4(height);
-	CComVariant params[]{ v1, v2, v3, v4 }, result;
+	CComVariant result;
 
 	// Call the "showCDM" method on the COM object with the prepared parameters
-	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", params, 4, result);
+	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", v1, v2, result);
 
 	// If the method call failed, exit the function
 	if (FAILED(hr))
 	{
+		// Log the error if logging is available
+		// e.g., Logger::LogError(L"Failed to call showCDM method");
 		return;
 	}
 }
+
 
 
 IFACEMETHODIMP CDMDriveShellView::CreateViewWindow(_In_ LPSHELLVIEW pPrevious, _In_ LPCFOLDERSETTINGS pfs, _In_ LPSHELLBROWSER psb, _In_ LPRECT prcView, _Out_ HWND* phWnd)
@@ -142,26 +261,7 @@ IFACEMETHODIMP CDMDriveShellView::CreateViewWindow(_In_ LPSHELLVIEW pPrevious, _
 
 		LOGINFO(_MainApplication->GetLogger(), L"Return our window handle to the browser.");
 		*phWnd = m_hWnd;
-
-		// Assume m_pShellBrowser is already initialized
-		CComPtr<IShellView> pShellView;
-		HRESULT hr = m_pShellBrowser->QueryActiveShellView(&pShellView);
-		if (FAILED(hr) || !pShellView)
-		{
-			return E_FAIL;
-		}
-
-		HWND hwndView;
-		hr = pShellView->GetWindow(&hwndView);
-		if (FAILED(hr) || !hwndView)
-		{
-			return E_FAIL;
-		}
-
-		RECT rect;
-		::GetWindowRect(hwndView, &rect);
-			
-		LoadCDM(m_hWnd, hwndView, rect.right - rect.left, rect.bottom - rect.top);
+		LoadCDM(m_hWnd, m_hwndParent);
 		return S_OK;
 	}
 	catch (...)
@@ -458,13 +558,6 @@ LRESULT CDMDriveShellView::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 {
 	try
 	{
-		if (hScrollBar)
-		{
-			RECT rect;
-			::GetClientRect(m_hWnd, &rect);
-			::MoveWindow(hScrollBar, rect.right - 20, rect.top, 20, rect.bottom - rect.top, TRUE);
-		}
-
 		LOGINFO(_MainApplication->GetLogger(), L"Resize the list control to the same size as the container window.");
 
 		if (m_wndHost.IsWindow())
