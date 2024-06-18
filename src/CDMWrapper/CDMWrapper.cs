@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace CDMWrapper
 {
@@ -31,8 +32,7 @@ namespace CDMWrapper
             sourceParams.ParentWindow = hwnd;
             sourceParams.WindowStyle = 0x10000000 | 0x40000000; // WS_VISIBLE | WS_CHILD; // style
             System.Windows.Interop.HwndSource source = new System.Windows.Interop.HwndSource(sourceParams);
-            UIElement page = new CDM.UserControls.CDMUserControl(width, height);
-            
+            UIElement page = new CDM.UserControls.CDMUserControl(source.Dispatcher,width, height);
             source.RootVisual = page;
         }
     }

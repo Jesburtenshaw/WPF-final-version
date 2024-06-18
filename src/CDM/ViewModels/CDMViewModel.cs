@@ -15,16 +15,17 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Threading;
 
 namespace CDM.ViewModels
 {
     internal class CDMViewModel : ViewModelBase
     {
         #region :: Constructor ::
-        UserControl _userControl;
-        public CDMViewModel(UserControl cdmUserControl)
+        Dispatcher _sysDispatcher;
+        public CDMViewModel(Dispatcher sysDispatcher)
         {
-            _userControl = cdmUserControl ?? throw new ArgumentNullException(nameof(cdmUserControl));
+            _sysDispatcher = sysDispatcher;
             DoubleClickCommand = new RelayCommand(DoubleDriveClick);
             BackWindowCommand = new RelayCommand(BackNavigationClick);
             //SearchBoxTextChangedCommand = new RelayCommand(searchBoxTextChanged);
@@ -100,7 +101,7 @@ namespace CDM.ViewModels
             get { return parentHeight; }
             set
             {
-                parentHeight = value;
+                parentHeight = value; //>10? value - 10 : value;
                 OnPropertyChanged(nameof(ParentHeight));
             }
         }
@@ -111,7 +112,7 @@ namespace CDM.ViewModels
             get { return parentWidth; }
             set
             {
-                parentWidth = value;
+                parentWidth = value>30 ? value - 30 : value;
                 OnPropertyChanged(nameof(ParentWidth));
             }
         }
@@ -611,7 +612,7 @@ namespace CDM.ViewModels
 
             //Task.Run(() =>
             //{
-            _userControl.Dispatcher.Invoke(() =>
+            _sysDispatcher.Invoke(() =>
             {
                 CurSearchStatus.IsLoading = true;
                 CurSearchStatus.IsLoadingDrives = true;
@@ -619,7 +620,7 @@ namespace CDM.ViewModels
                 CurSearchStatus.IsLoadingRecent = true;
             });
             DriveManager.GetDrivesItem();
-            _userControl.Dispatcher.Invoke(() =>
+            _sysDispatcher.Invoke(() =>
             {
                 CurFilterStatus.DrivesCount = DriveList.Count;
                 if (CurFilterStatus.DrivesCount > 0)
@@ -632,14 +633,14 @@ namespace CDM.ViewModels
             PinManager.GetPinnedItems();
             DriveManager.UpdatePinnedDrives();
 
-            _userControl.Dispatcher.Invoke(() =>
+            _sysDispatcher.Invoke(() =>
             {
                 CurFilterStatus.PinnedCount = PinnedItemList.Count;
                 CurSearchStatus.IsLoadingPinned = false;
                 IsPinLimitReached = PinManager.IsPinLimitReached;
             });
             RecentManager.GetRecentItems();
-            _userControl.Dispatcher.Invoke(() =>
+            _sysDispatcher.Invoke(() =>
             {
                 CurFilterStatus.RecentCount = RecentItemList.Count;
                 CurSearchStatus.IsLoadingRecent = false;
@@ -1307,7 +1308,7 @@ namespace CDM.ViewModels
             {
                 //await Task.Run(() => { });
 
-                _userControl.Dispatcher.Invoke(() =>
+                _sysDispatcher.Invoke(() =>
                 {
                     FoldersItemList.Add(new FileFolderModel
                     {
@@ -1339,7 +1340,7 @@ namespace CDM.ViewModels
                     return;
                 }
 
-                _userControl.Dispatcher.Invoke(() =>
+                _sysDispatcher.Invoke(() =>
                 {
                     if (!string.IsNullOrEmpty(TxtSearchBoxItem) && TxtSearchBoxItem.Length > 256)
                     {

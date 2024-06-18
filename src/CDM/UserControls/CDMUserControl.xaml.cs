@@ -40,17 +40,18 @@ namespace CDM.UserControls
         public event dlgtTest EventTest;
         private CDMViewModel vm = null;
         private CancellationTokenSource cts = null;
+        Dispatcher _sysDispatcher;
         #endregion
         #region :: Constructor ::
-        public CDMUserControl(double width = 0,double height = 0)
+        public CDMUserControl(Dispatcher sysDispatcher, double width = 0,double height = 0)
         {
-         
 
+            _sysDispatcher = sysDispatcher;
             //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             //Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
             InitializeComponent();
-            vm = new CDMViewModel(this);
+            vm = new CDMViewModel(_sysDispatcher);
             vm.ParentHeight = height;
             vm.ParentWidth = width;
             this.DataContext = vm;
@@ -59,22 +60,16 @@ namespace CDM.UserControls
             // Subscribe to system theme changes
             Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             //IsSystemInDarkMode();
+           
         }
-        public CDMUserControl(int width, int height)
-        {
-            //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-            //Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
-            this.Width = width;
-            this.Height = height;
-            InitializeComponent();
-            vm = new CDMViewModel(this);
-            this.DataContext = vm;
-            SetInitialTheme();
 
-            // Subscribe to system theme changes
-            Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
-            //IsSystemInDarkMode();
+        public void CDMUserControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (vm != null)
+            {
+                vm.ParentHeight = e.NewSize.Height;
+                vm.ParentWidth = e.NewSize.Width;
+            }
         }
         #endregion
         #region :: Events ::
