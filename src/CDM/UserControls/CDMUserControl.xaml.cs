@@ -139,14 +139,12 @@ namespace CDM.UserControls
         }
         private void UserControl_Drop(object sender, DragEventArgs e)
         {
-            //var allowDragAndDrop = ConfigurationManager.AppSettings["AllowDragAndDrop"] == "true";
-            //if (!allowDragAndDrop) return;
             try
             {
+                string destinationPath = vm.CurFolder.Path == null ? vm.CurrentDrivePath : vm.CurFolder.Path;
                 if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 {
                     string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                    string destinationPath = vm.CurFolder.Path == null ? vm.CurrentDrivePath : vm.CurFolder.Path;
                     if (!string.IsNullOrEmpty(destinationPath))
                     {
                         bool isDirectory = false;
@@ -161,18 +159,21 @@ namespace CDM.UserControls
                             }
                             else
                             {
-                                FileSystem.CopyFile(file, destinationPath + fileName, UIOption.AllDialogs, UICancelOption.DoNothing);
+                                FileSystem.CopyFile(file, destinationPath + "\\" + fileName, UIOption.AllDialogs, UICancelOption.DoNothing);
                             }
                         }
-                        //vm.NavigateToFolder(destinationPath);
                     }
                 }
                 else if (e.Data.GetDataPresent("Shell IDList Array"))
                 {
                     var shellObjects = (System.Runtime.InteropServices.ComTypes.IDataObject)e.Data.GetData("Shell IDList Array");
-                    // Process shell objects (e.g., display their names in the TextBox)
                     ProcessShellObjects(shellObjects);
                 }
+
+                _sysDispatcher.Invoke(() =>
+                {
+                    vm.NavigateToFolder(destinationPath);
+                });
             }
             catch (Exception ex)
             {
