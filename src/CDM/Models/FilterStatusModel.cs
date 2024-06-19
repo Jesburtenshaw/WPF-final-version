@@ -116,17 +116,18 @@ namespace CDM.Models
             }
         }
 
-        private int pinnedCount;
-        public int PinnedCount
+
+        private int _pinnedCountWithoutDrive;
+        public int PinnedCountWithoutDrive
         {
             get
             {
-                return pinnedCount;
+                return _pinnedCountWithoutDrive;
             }
             set
             {
-                pinnedCount = value;
-                OnPropertyChanged(nameof(PinnedCount));
+                _pinnedCountWithoutDrive = value;
+                OnPropertyChanged(nameof(PinnedCountWithoutDrive));
             }
         }
 

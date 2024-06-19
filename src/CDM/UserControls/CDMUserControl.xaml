@@ -38,7 +38,7 @@
     <!--<Grid Background="#484848">-->
     <Grid Background="{DynamicResource WindowBackgroundColor}"
          HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-         Margin="10,10,20,0">
+         Margin="10,10,10,30">
         <Grid.Resources>
             <!--Resources for this usercontrol components-->
             <Style TargetType="ContextMenu">
@@ -966,15 +966,15 @@
                                        Text="We didn't find anything to show here."
                                        FontWeight="Thin"
                                        FontSize="14"
-                                       Visibility="{Binding CurFilterStatus.PinnedCount, Converter={StaticResource ZeroIntVisibilityInverseConverter}}"
+                                       Visibility="{Binding CurFilterStatus.PinnedCountWithoutDrive, Converter={StaticResource ZeroIntVisibilityInverseConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                        Foreground="{DynamicResource WindowForegroundColor}">
                             </TextBlock>
                             <DataGrid x:Name="ListOfPinnedItems"
                                       AllowDrop="True"
-                                      Visibility="{Binding CurFilterStatus.PinnedCount, Converter={StaticResource ZeroIntVisibilityConverter}}"
+                                      Visibility="{Binding CurFilterStatus.PinnedCountWithoutDrive, Converter={StaticResource ZeroIntVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                       Grid.Row="1"
-                                      ItemsSource="{Binding PinnedItemList}"
-                                      SelectedItem="{Binding SelectedPinnedItem}"
+                                      ItemsSource="{Binding PinnedItemList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                      SelectedItem="{Binding SelectedPinnedItem,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                       ColumnHeaderStyle="{StaticResource DGHeaderStyle}"
                                       RowStyle="{StaticResource DGRowStyle}"
                                       CellStyle="{StaticResource DGCellStyle}"

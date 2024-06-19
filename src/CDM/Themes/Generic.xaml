@@ -317,8 +317,10 @@
                 Value="{DynamicResource LineColor}" />
         <Setter Property="BorderThickness"
                 Value="0 1 0 0" />
+        <Setter Property="FontFamily"
+                Value="Segoe UI" />
         <Setter Property="FontWeight"
-                Value="SemiBold" />
+                Value="Normal" />
         <Setter Property="Background"
                 Value="Transparent" />
         <Style.Triggers>

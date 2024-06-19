@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -101,7 +102,7 @@ namespace CDM.ViewModels
             get { return parentHeight; }
             set
             {
-                parentHeight = value; //>10? value - 10 : value;
+                parentHeight = value > 20 ? value - 20 : value;
                 OnPropertyChanged(nameof(ParentHeight));
             }
         }
@@ -112,12 +113,10 @@ namespace CDM.ViewModels
             get { return parentWidth; }
             set
             {
-                parentWidth = value>30 ? value - 30 : value;
+                parentWidth = value;
                 OnPropertyChanged(nameof(ParentWidth));
             }
         }
-
-
 
         private int curDrivesPagesIndex;
         public int CurDrivesPagesIndex
@@ -258,6 +257,7 @@ namespace CDM.ViewModels
             {
                 _pinnedItemList = value;
                 OnPropertyChanged(nameof(PinnedItemList));
+
             }
         }
 
@@ -635,7 +635,7 @@ namespace CDM.ViewModels
 
             _sysDispatcher.Invoke(() =>
             {
-                CurFilterStatus.PinnedCount = PinnedItemList.Count;
+                CurFilterStatus.PinnedCountWithoutDrive = PinnedItemList.Count(s => s.IsDrive == false);
                 CurSearchStatus.IsLoadingPinned = false;
                 IsPinLimitReached = PinManager.IsPinLimitReached;
             });
@@ -773,6 +773,9 @@ namespace CDM.ViewModels
                 {
                     curItem.IsPined = !curItem.IsPined;
                 }
+                CurFilterStatus.PinnedCountWithoutDrive = PinnedItemList == null ? 0 : PinnedItemList.Count(s => s.IsDrive == false);
+                RefreshPinStatusInRecentFiles(unpinedItem);
+
             }
             catch (Exception ex)
             {
@@ -832,6 +835,8 @@ namespace CDM.ViewModels
                 {
                     curItem.IsPined = !curItem.IsPined;
                 }
+                CurFilterStatus.PinnedCountWithoutDrive = PinnedItemList.Count(s => s.IsDrive == false);
+                RefreshPinStatusInRecentFiles(pinedItem);
             }
             catch (Exception ex)
             {
@@ -839,6 +844,18 @@ namespace CDM.ViewModels
             }
         }
 
+        private void RefreshPinStatusInRecentFiles(FileFolderModel pinUnpinnedItem)
+        {
+
+            if (pinUnpinnedItem.IsDrive == false && pinUnpinnedItem.Type == "File" && RecentItemList != null && RecentItemList.Count > 0)
+            {
+                foreach (FileFolderModel item in RecentItemList.Where(s => s.Path == pinUnpinnedItem.Path))
+                {
+                    item.IsPined = PinManager.IsPined(item.Path);
+                }
+            }
+
+        }
         private void Star(object obj)
         {
             var item = obj as FileFolderModel;
@@ -1162,6 +1179,7 @@ namespace CDM.ViewModels
                 TxtSearchBoxItem = string.Empty;
                 IsSearchBoxPlaceholderVisible = Visibility.Visible;
                 IsBackNavigationEnabled = false;
+                CurFilterStatus.PinnedCountWithoutDrive = PinnedItemList == null ? 0 : PinnedItemList.Count(s => s.IsDrive == false);
                 return;
             }
 
@@ -1420,7 +1438,7 @@ namespace CDM.ViewModels
                         CurFilterStatus.RecentCount = view.Count;
                         view = (CollectionView)CollectionViewSource.GetDefaultView(PinnedItemList);
                         view.Filter = searchItemFilter;
-                        CurFilterStatus.PinnedCount = view.Count;
+                        CurFilterStatus.PinnedCountWithoutDrive = PinnedItemList.Count(s => s.IsDrive == false);
                         CurSearchStatus.IsDoing = false;
                     }
                 }
@@ -1442,7 +1460,7 @@ namespace CDM.ViewModels
                         CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
                         CurFilterStatus.RecentCount = RecentItemList.Count;
                         CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
-                        CurFilterStatus.PinnedCount = PinnedItemList.Count;
+                        CurFilterStatus.PinnedCountWithoutDrive = PinnedItemList.Count(s => s.IsDrive == false);
                         ResetFilter(sender);
                         CurSearchStatus.IsDoing = false;
                     }
@@ -1846,7 +1864,8 @@ namespace CDM.ViewModels
             {
                 FoldersItemList = new ObservableCollection<FileFolderModel>(
                     FoldersItemList
-                    .OrderByDescending(f => f.IsDefault)
+                    .OrderBy(f => f.Type)
+                    .ThenByDescending(f => f.IsDefault)
                     .ThenByDescending(f => f.IsPined)
                     .ThenBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
                     .ToList());
@@ -1855,7 +1874,8 @@ namespace CDM.ViewModels
             {
                 FoldersItemList = new ObservableCollection<FileFolderModel>(
                     FoldersItemList
-                    .OrderByDescending(f => f.IsDefault)
+                    .OrderBy(f => f.Type)
+                    .ThenByDescending(f => f.IsDefault)
                     .ThenByDescending(f => f.IsPined)
                     .ThenByDescending(f => f.Name, StringComparer.OrdinalIgnoreCase)
                     .ToList());
@@ -1870,7 +1890,8 @@ namespace CDM.ViewModels
             {
                 FoldersItemList = new ObservableCollection<FileFolderModel>(
                     FoldersItemList
-                     .OrderByDescending(f => f.IsDefault)
+                     .OrderBy(f => f.Type)
+                     .ThenByDescending(f => f.IsDefault)
                     .ThenByDescending(f => f.IsPined)
                     .ThenBy(f => f.LastModifiedDateTime.ToString(), StringComparer.OrdinalIgnoreCase)
                     .ToList());
@@ -1879,7 +1900,8 @@ namespace CDM.ViewModels
             {
                 FoldersItemList = new ObservableCollection<FileFolderModel>(
                     FoldersItemList
-                     .OrderByDescending(f => f.IsDefault)
+                     .OrderBy(f => f.Type)
+                     .ThenByDescending(f => f.IsDefault)
                     .ThenByDescending(f => f.IsPined)
                     .ThenByDescending(f => f.LastModifiedDateTime.ToString(), StringComparer.OrdinalIgnoreCase)
                     .ToList());
@@ -2014,6 +2036,32 @@ namespace CDM.ViewModels
             else
             {
                 CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
+            }
+        }
+        public void searchPinnedItemList()
+        {
+            if (!string.IsNullOrEmpty(TxtSearchBoxItem))
+            {
+                //IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(PinnedItemList);
+                view.Filter = searchItemFilter;
+            }
+            else
+            {
+                CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
+            }
+        }
+        public void searchFileFolderItemList()
+        {
+            if (!string.IsNullOrEmpty(TxtSearchBoxItem))
+            {
+                //IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(FoldersItemList);
+                view.Filter = searchItemFilter;
+            }
+            else
+            {
+                CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
             }
         }
         #endregion

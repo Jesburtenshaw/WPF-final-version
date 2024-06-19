@@ -43,7 +43,7 @@ namespace CDM.UserControls
         Dispatcher _sysDispatcher;
         #endregion
         #region :: Constructor ::
-        public CDMUserControl(Dispatcher sysDispatcher, double width = 0,double height = 0)
+        public CDMUserControl(Dispatcher sysDispatcher, double width = 0, double height = 0)
         {
 
             _sysDispatcher = sysDispatcher;
@@ -60,7 +60,7 @@ namespace CDM.UserControls
             // Subscribe to system theme changes
             Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             //IsSystemInDarkMode();
-           
+
         }
 
         public void CDMUserControl_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -141,38 +141,44 @@ namespace CDM.UserControls
         {
             //var allowDragAndDrop = ConfigurationManager.AppSettings["AllowDragAndDrop"] == "true";
             //if (!allowDragAndDrop) return;
-
-            e.Handled = true;
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            try
             {
-                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                string destinationPath = vm.CurFolder.Path == null ? vm.CurrentDrivePath : vm.CurFolder.Path;
-                if (!string.IsNullOrEmpty(destinationPath))
+                if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 {
-                    bool isDirectory = false;
-                    string fileName = "";
-                    foreach (string file in files)
+                    string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                    string destinationPath = vm.CurFolder.Path == null ? vm.CurrentDrivePath : vm.CurFolder.Path;
+                    if (!string.IsNullOrEmpty(destinationPath))
                     {
-                        isDirectory = !System.IO.Path.HasExtension(file);
-                        fileName = System.IO.Path.GetFileName(file);
-                        if (isDirectory)
+                        bool isDirectory = false;
+                        string fileName = "";
+                        foreach (string file in files)
                         {
-                            FileSystem.CopyDirectory(file, destinationPath + "\\" + fileName, UIOption.AllDialogs, UICancelOption.DoNothing);
+                            isDirectory = !System.IO.Path.HasExtension(file);
+                            fileName = System.IO.Path.GetFileName(file);
+                            if (isDirectory)
+                            {
+                                FileSystem.CopyDirectory(file, destinationPath + "\\" + fileName, UIOption.AllDialogs, UICancelOption.DoNothing);
+                            }
+                            else
+                            {
+                                FileSystem.CopyFile(file, destinationPath + fileName, UIOption.AllDialogs, UICancelOption.DoNothing);
+                            }
                         }
-                        else
-                        {
-                            FileSystem.CopyFile(file, destinationPath + fileName, UIOption.AllDialogs, UICancelOption.DoNothing);
-                        }
+                        //vm.NavigateToFolder(destinationPath);
                     }
-                    vm.NavigateToFolder(destinationPath);
+                }
+                else if (e.Data.GetDataPresent("Shell IDList Array"))
+                {
+                    var shellObjects = (System.Runtime.InteropServices.ComTypes.IDataObject)e.Data.GetData("Shell IDList Array");
+                    // Process shell objects (e.g., display their names in the TextBox)
+                    ProcessShellObjects(shellObjects);
                 }
             }
-            else if (e.Data.GetDataPresent("Shell IDList Array"))
+            catch (Exception ex)
             {
-                var shellObjects = (System.Runtime.InteropServices.ComTypes.IDataObject)e.Data.GetData("Shell IDList Array");
-                // Process shell objects (e.g., display their names in the TextBox)
-                ProcessShellObjects(shellObjects);
+                HandleException(ex);
             }
+
         }
         private void UserControl_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -438,6 +444,14 @@ namespace CDM.UserControls
             if (string.IsNullOrEmpty(vm.CurrentDrivePath) && TabView1.SelectedIndex == 0)
             {
                 vm.searchRecentItemList();
+            }
+            else if (string.IsNullOrEmpty(vm.CurrentDrivePath) && TabView1.SelectedIndex == 1)
+            {
+                vm.searchPinnedItemList();
+            }
+            else
+            {
+                vm.searchFileFolderItemList();
             }
 
         }
