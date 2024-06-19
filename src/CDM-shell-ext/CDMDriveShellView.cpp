@@ -3,6 +3,36 @@
 
 UINT CDMDriveShellView::sm_uListID = 101;
 
+
+BOOL CALLBACK EnumChildProc(HWND hwnd, LPARAM lParam) {
+	char className[256];
+	GetClassNameA(hwnd, className, sizeof(className));
+
+	if (std::string(className) == "SysTreeView32") {
+		std::cout << "Found left side panel HWND (SysTreeView32): " << hwnd << std::endl;
+		*((HWND*)lParam) = hwnd;
+		return FALSE; // Stop enumeration once we found the target window
+	}
+
+	return TRUE; // Continue enumeration
+}
+
+HWND GetFileExplorerLeftPanelHWND() {
+	// Find the File Explorer window
+	HWND explorerHwnd = FindWindowA("CabinetWClass", NULL);
+	if (!explorerHwnd) {
+		std::cerr << "File Explorer window not found." << std::endl;
+		return NULL;
+	}
+
+	// Enumerate child windows
+	HWND leftPanelHwnd = NULL;
+	EnumChildWindows(explorerHwnd, EnumChildProc, (LPARAM)&leftPanelHwnd);
+
+	return leftPanelHwnd;
+}
+
+
 CDMDriveShellView::CDMDriveShellView()
 	: m_uUIState(SVUIA_DEACTIVATE),
 	m_hwndParent(nullptr),
@@ -87,7 +117,7 @@ IFACEMETHODIMP CDMDriveShellView::ContextSensitiveHelp(_In_ BOOL fEnterMode)
 //	return S_OK;
 //}
 
-HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant param1, CComVariant param2, CComVariant& result)
+HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant param1, CComVariant param2, CComVariant param3, CComVariant& result)
 {
 	if (pDisp == NULL)
 	{
@@ -106,11 +136,11 @@ HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant param1, 
 	// Prepare the DISPPARAMS structure
 	DISPPARAMS dp;
 	dp.cNamedArgs = 0;
-	dp.cArgs = 2; // Number of parameters
+	dp.cArgs = 3; // Number of parameters
 	dp.rgdispidNamedArgs = NULL;
 
 	// Create an array of variants for the parameters
-	CComVariant params[2] = { param2, param1 }; // Note the order: last parameter first
+	CComVariant params[3] = { param3, param2, param1 }; // Note the order: last parameter first
 
 	dp.rgvarg = params;
 
@@ -122,8 +152,24 @@ HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant param1, 
 	hr = pDisp->Invoke(dispId, IID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_METHOD, &dp, &result, &exInfo, &n);
 	if (FAILED(hr))
 	{
-		// Handle the exception information if needed
-		// e.g., Logger::LogError(L"Exception occurred during Invoke", exInfo);
+		// Log detailed exception information
+		std::wcerr << L"Invoke failed with error: " << hr << std::endl;
+		std::wcerr << L"Exception code: " << exInfo.scode << std::endl;
+		if (exInfo.bstrSource)
+		{
+			std::wcerr << L"Source: " << exInfo.bstrSource << std::endl;
+			SysFreeString(exInfo.bstrSource);
+		}
+		if (exInfo.bstrDescription)
+		{
+			std::wcerr << L"Description: " << exInfo.bstrDescription << std::endl;
+			SysFreeString(exInfo.bstrDescription);
+		}
+		if (exInfo.bstrHelpFile)
+		{
+			std::wcerr << L"Help file: " << exInfo.bstrHelpFile << std::endl;
+			SysFreeString(exInfo.bstrHelpFile);
+		}
 		return hr;
 	}
 
@@ -205,7 +251,7 @@ HRESULT CDMDriveShellView::CallMethod(LPCWSTR assemblyName, LPCWSTR className, L
 //}
 
 
-void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent)
+void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent, HWND hWndLeft)
 {
 	// Create a unique pointer to a CCLRLoaderSimple object
 	m_pCLRLoader = std::make_unique<CCLRLoaderSimple>();
@@ -224,10 +270,12 @@ void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent)
 	// Prepare the parameters to be passed to the COM method
 	CComVariant v1((UINT64)hWnd);
 	CComVariant v2((UINT64)hWndParent);
+	CComVariant v3((UINT64)hWndLeft);
+
 	CComVariant result;
 
 	// Call the "showCDM" method on the COM object with the prepared parameters
-	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", v1, v2, result);
+	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", v1, v2, v3, result);
 
 	// If the method call failed, exit the function
 	if (FAILED(hr))
@@ -261,7 +309,11 @@ IFACEMETHODIMP CDMDriveShellView::CreateViewWindow(_In_ LPSHELLVIEW pPrevious, _
 
 		LOGINFO(_MainApplication->GetLogger(), L"Return our window handle to the browser.");
 		*phWnd = m_hWnd;
-		LoadCDM(m_hWnd, m_hwndParent);
+		HWND leftPanelHwnd = GetFileExplorerLeftPanelHWND();
+		if (leftPanelHwnd) {
+			LoadCDM(m_hWnd, m_hwndParent, leftPanelHwnd);
+		}
+
 		return S_OK;
 	}
 	catch (...)

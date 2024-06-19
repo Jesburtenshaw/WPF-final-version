@@ -87,7 +87,8 @@ private:
 	void _HandleActivate(UINT uState);
 	void _HandleDeactivate();
 	void _FillList();
-	void LoadCDM(HWND hWnd, HWND hWndParent);
+	void LoadCDM(HWND hWnd, HWND hWndParent, HWND hWndLeft);
+
 	HRESULT CallMethod(LPCWSTR assemblyName, LPCWSTR className, LPCWSTR methodName, LONGLONG param);
 
 };
