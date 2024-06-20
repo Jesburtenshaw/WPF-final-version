@@ -1881,6 +1881,11 @@ namespace CDM.ViewModels
                     .ToList());
             }
 
+            if (!string.IsNullOrEmpty(TxtSearchBoxItem))
+            {
+                EventHighlightSearchedText?.Invoke();
+            }
+
         }
 
         public void SortByDateModified(bool isDefaultSort = false)
@@ -1906,6 +1911,12 @@ namespace CDM.ViewModels
                     .ThenByDescending(f => f.LastModifiedDateTime.ToString(), StringComparer.OrdinalIgnoreCase)
                     .ToList());
             }
+
+            if (!string.IsNullOrEmpty(TxtSearchBoxItem))
+            {
+                EventHighlightSearchedText?.Invoke();
+            }
+
         }
 
         // File icon set
@@ -1973,6 +1984,9 @@ namespace CDM.ViewModels
         #endregion
 
         #region :: Events ::
+
+        public delegate void DlgtHighlightSearchedText();
+        public event DlgtHighlightSearchedText EventHighlightSearchedText;
 
         private void CDMViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {

@@ -315,7 +315,6 @@
                         <TextBox x:Name="txtSearchBox"
                                  CaretBrush="Black"
                                  TextChanged="OnSearchTextChanged"
-                                 PreviewKeyDown="txtSearchBox_PreviewKeyDown"
                                  PreviewKeyUp="txtSearchBox_PreviewKeyUp"
                                  IsEnabled="{Binding CurSearchStatus.CanSearch}"
                                  Text="{Binding TxtSearchBoxItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -646,8 +645,8 @@
                                        Visibility="{Binding CurFilterStatus.RecentCount, Converter={StaticResource ZeroIntVisibilityInverseConverter}}"
                                        Foreground="{DynamicResource WindowForegroundColor}">
                             </TextBlock>
-                            <DataGrid x:Name="ListOfRecentItems"
-                                      Grid.Row="0"
+                            <DataGrid x:Name="ListOfRecentItems"  MouseMove="DataGrid_MouseMove"
+                                      Grid.Row="0" Sorting="ListOfRecentItems_Sorting"
                                       AllowDrop="True"
                                       Visibility="{Binding CurFilterStatus.RecentCount, Converter={StaticResource ZeroIntVisibilityConverter}}"
                                       ItemsSource="{Binding RecentItemList}"
@@ -969,8 +968,8 @@
                                        Visibility="{Binding CurFilterStatus.PinnedCountWithoutDrive, Converter={StaticResource ZeroIntVisibilityInverseConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                        Foreground="{DynamicResource WindowForegroundColor}">
                             </TextBlock>
-                            <DataGrid x:Name="ListOfPinnedItems"
-                                      AllowDrop="True"
+                            <DataGrid x:Name="ListOfPinnedItems" MouseMove="DataGrid_MouseMove"
+                                      AllowDrop="True" Sorting="ListOfPinnedItems_Sorting"
                                       Visibility="{Binding CurFilterStatus.PinnedCountWithoutDrive, Converter={StaticResource ZeroIntVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                       Grid.Row="1"
                                       ItemsSource="{Binding PinnedItemList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
@@ -1474,7 +1473,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                     </Style>
                 </TextBlock.Style></TextBlock>
             <Grid Grid.Row="2">
-                <DataGrid x:Name="ListOfDriveItems"
+                <DataGrid x:Name="ListOfDriveItems" MouseMove="DataGrid_MouseMove"
                           Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                           ItemsSource="{Binding FoldersItemList}"
                           Visibility="{Binding CurFilterStatus.ItemsCount, Converter={StaticResource ZeroIntVisibilityConverter}}"
@@ -1489,9 +1488,6 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                           AllowDrop="True">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseDoubleClick">
-                            <i:InvokeCommandAction Command="{Binding FolderItemDoubleClickCommand}" />
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="DragLeave">
                             <i:InvokeCommandAction Command="{Binding FolderItemDoubleClickCommand}" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>

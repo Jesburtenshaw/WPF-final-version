@@ -41,6 +41,9 @@ namespace CDM.UserControls
         private CDMViewModel vm = null;
         private CancellationTokenSource cts = null;
         Dispatcher _sysDispatcher;
+        private Point _startPoint;
+        private bool _isDragging = false;
+
         #endregion
         #region :: Constructor ::
         public CDMUserControl(Dispatcher sysDispatcher, double width = 0, double height = 0)
@@ -54,6 +57,7 @@ namespace CDM.UserControls
             vm = new CDMViewModel(_sysDispatcher);
             vm.ParentHeight = height;
             vm.ParentWidth = width;
+            vm.EventHighlightSearchedText += Vm_EventHighlightSearchedText;
             this.DataContext = vm;
             SetInitialTheme();
 
@@ -62,6 +66,7 @@ namespace CDM.UserControls
             //IsSystemInDarkMode();
 
         }
+
 
         public void CDMUserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -141,6 +146,10 @@ namespace CDM.UserControls
         {
             try
             {
+                if (_isDragging)
+                {
+                    return;
+                }
                 string destinationPath = vm.CurFolder.Path == null ? vm.CurrentDrivePath : vm.CurFolder.Path;
                 if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 {
@@ -384,27 +393,30 @@ namespace CDM.UserControls
             }
         }
 
-        private void txtSearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-
-        }
-
         private void txtSearchBox_PreviewKeyUp(object sender, KeyEventArgs e)
         {
+            HighlightSearchedText();
+        }
 
+        private void HighlightSearchedText()
+        {
+            ListOfDriveItems.UpdateLayout();
             //Highlight searched text
             var tmp = vm.CurrentDrivePath;
             DataGrid dataGrid;
             if (string.IsNullOrEmpty(tmp) && TabView1.SelectedIndex == 0)
             {
+                ListOfRecentItems.UpdateLayout();
                 dataGrid = ListOfRecentItems;
             }
             else if (string.IsNullOrEmpty(tmp) && TabView1.SelectedIndex == 1)
             {
+                ListOfPinnedItems.UpdateLayout();
                 dataGrid = ListOfPinnedItems;
             }
             else
             {
+                ListOfDriveItems.UpdateLayout();
                 dataGrid = ListOfDriveItems;
             }
             this.Dispatcher.Invoke(() =>
@@ -415,9 +427,17 @@ namespace CDM.UserControls
                 {
                     regex = new Regex($"({Regex.Escape(vm.TxtSearchBoxItem)})", RegexOptions.IgnoreCase);
                 }
+
+                if (!dataGrid.IsLoaded)
+                {
+                    return;
+                }
+
                 FindDataGridItem(dataGrid, regex);
+
             });
         }
+
 
         private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
         {
@@ -457,5 +477,103 @@ namespace CDM.UserControls
 
         }
 
+        private void DataGrid_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && !_isDragging) // Check if not already dragging
+            {
+                Point mousePos = e.GetPosition(null);
+                Vector diff = _startPoint - mousePos;
+
+                if (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+                    Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
+                {
+                    // Get the data row under the mouse
+                    DataGridRow dataGridRow = FindAncestor<DataGridRow>((DependencyObject)e.OriginalSource);
+
+                    if (dataGridRow != null)
+                    {
+                        // Get the data from the DataGrid row
+                        FileFolderModel data = dataGridRow.Item as FileFolderModel;
+                        string filePath = data?.Path;
+
+                        if (!string.IsNullOrEmpty(filePath))
+                        {
+                            // Check if the path exists
+                            if (System.IO.File.Exists(filePath) || System.IO.Directory.Exists(filePath))
+                            {
+                                try
+                                {
+                                    _isDragging = true; // Set the flag to indicate a drag operation is in progress
+
+                                    // Create a DataObject containing the file or folder path
+                                    DataObject dataObject = new DataObject(DataFormats.FileDrop, new string[] { filePath });
+                                    DragDrop.DoDragDrop(dataGridRow, dataObject, DragDropEffects.Copy);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("An error occurred during the drag-and-drop operation: " + ex.Message);
+                                }
+                                finally
+                                {
+                                    _isDragging = false; // Reset the flag after the drag operation
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("The path does not exist: " + filePath);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private static T FindAncestor<T>(DependencyObject current) where T : DependencyObject
+        {
+            while (current != null && !(current is T))
+            {
+                current = VisualTreeHelper.GetParent(current);
+            }
+            return current as T;
+        }
+
+        private void DataGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Store the mouse position when the left button is pressed
+            _startPoint = e.GetPosition(null);
+        }
+
+        private void Vm_EventHighlightSearchedText()
+        {
+            if (string.IsNullOrEmpty(vm.TxtSearchBoxItem))
+            {
+                return;
+            }
+            HighlightSearchedText();
+        }
+
+        private void ListOfPinnedItems_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (string.IsNullOrEmpty(vm.TxtSearchBoxItem))
+                {
+                    return;
+                }
+                HighlightSearchedText();
+            }));
+        }
+
+        private void ListOfRecentItems_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (string.IsNullOrEmpty(vm.TxtSearchBoxItem))
+                {
+                    return;
+                }
+                HighlightSearchedText();
+            }));
+        }
     }
 }
