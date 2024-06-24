@@ -31,7 +31,7 @@ namespace CDMWrapper
             GetClientRect(hwndLeft, out lpRectLeft);
             double width = (lpRect.Right - lpRect.Left) - (lpRectLeft.Right - lpRectLeft.Left);
             double height = (lpRect.Bottom - lpRect.Top);
-            MessageBox.Show("w: "+ width + "  h: "+ height);
+            //MessageBox.Show("w: "+ width + "  h: "+ height);
 
             System.Windows.Interop.HwndSourceParameters sourceParams = new System.Windows.Interop.HwndSourceParameters("CDMWrapper");
             sourceParams.ParentWindow = hwnd;
