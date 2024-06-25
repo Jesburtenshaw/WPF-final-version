@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
+using static CDMWrapper.CDMWrapper;
 
 namespace CDMWrapper
 {
@@ -38,7 +39,7 @@ namespace CDMWrapper
             //MessageBox.Show("w: "+ width + "  h: "+ height);
 
             
-            myWindow = new MyWindow(hwnd);
+            myWindow = new MyWindow(hwnd, hwndParent, hwndLeft);
 
 
             System.Windows.Interop.HwndSourceParameters sourceParams = new System.Windows.Interop.HwndSourceParameters("CDMWrapper");
@@ -52,6 +53,8 @@ namespace CDMWrapper
     class MyWindow
         {
             private IntPtr hwnd;
+            private IntPtr hwndParent;
+            private IntPtr hwndLeft;
             private WndProc newProc;
             private IntPtr oldProc;
 
@@ -65,20 +68,33 @@ namespace CDMWrapper
 
             const int GWLP_WNDPROC = -4;
 
-            public MyWindow(IntPtr hwnd)
+            public MyWindow(IntPtr hwnd, IntPtr hwndParent, IntPtr hwndLeft)
             {
                 this.hwnd = hwnd;
+                this.hwndParent = hwndParent;
+                this.hwndLeft = hwndLeft;    
+
                 this.newProc = new WndProc(WindowProc);
                 this.oldProc = SetWindowLongPtr(hwnd, GWLP_WNDPROC, Marshal.GetFunctionPointerForDelegate(newProc));
             }
 
+            
             private IntPtr WindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
             {
                 // Handle messages here
                 switch (msg)
                 {
                     case 0x0005: // WM_SIZE
-                    MessageBox.Show("WM_SIZE");
+                    {
+                        RECT lpRect;
+                        GetClientRect(hwndParent, out lpRect);
+
+                        RECT lpRectLeft;
+                        GetClientRect(hwndLeft, out lpRectLeft);
+                        double width = (lpRect.Right - lpRect.Left) - (lpRectLeft.Right - lpRectLeft.Left);
+                        double height = (lpRect.Bottom - lpRect.Top);
+                        MessageBox.Show("w: "+ width + "  h: "+ height);
+                    }
                     break;
                         // Add more cases as needed for different messages
                 }
