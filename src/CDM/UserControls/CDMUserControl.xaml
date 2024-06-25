@@ -296,7 +296,8 @@
                     MinWidth="600"
                     MaxWidth="600"
                     CornerRadius="3"
-                    Height="40"
+                    IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                    Height="40" 
                     Grid.Column="0">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -520,14 +521,14 @@
             </StackPanel>
         </Grid>
 
-        <!-- Offline Mode -->
+        <!-- Offline Mode --><!--
         <Grid Grid.Row="1"
               Visibility="{Binding Offline,Converter={StaticResource BoolVisibilityConverter}}">
             <Grid.Background>
                 <SolidColorBrush Color="LightGray"
                                  Opacity="0.5" />
             </Grid.Background>
-        </Grid>
+        </Grid>-->
 
         <!--Mainwindow-->
         <Grid Grid.Row="2"
@@ -553,11 +554,13 @@
                                Foreground="{DynamicResource WindowForegroundColor}">
                     </TextBlock>
                     <ListView ItemTemplate="{StaticResource DriveTemplateStyle}"
-                              Grid.Row="0" Width="{Binding ParentWidth}"
+                                      IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                              Grid.Row="0" Width="{Binding ParentWidth}" 
                               ItemsSource="{Binding PagedDrivesList,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               ItemContainerStyle="{StaticResource driveListViewItemStyle}"
                               VerticalAlignment="Top" HorizontalAlignment="Stretch"
                               BorderBrush="Transparent"
+                              BorderThickness="0"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               ScrollViewer.VerticalScrollBarVisibility="Auto"
                               SelectedItem="{Binding DriveSelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -648,6 +651,7 @@
                             <DataGrid x:Name="ListOfRecentItems"  MouseMove="DataGrid_MouseMove"
                                       Grid.Row="0" Sorting="ListOfRecentItems_Sorting"
                                       AllowDrop="True"
+                                      IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                       Visibility="{Binding CurFilterStatus.RecentCount, Converter={StaticResource ZeroIntVisibilityConverter}}"
                                       ItemsSource="{Binding RecentItemList}"
                                       SelectedItem="{Binding SelectedRecentItem}"
@@ -971,7 +975,7 @@
                             <DataGrid x:Name="ListOfPinnedItems" MouseMove="DataGrid_MouseMove"
                                       AllowDrop="True" Sorting="ListOfPinnedItems_Sorting"
                                       Visibility="{Binding CurFilterStatus.PinnedCountWithoutDrive, Converter={StaticResource ZeroIntVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                      Grid.Row="1"
+                                      Grid.Row="1" IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                       ItemsSource="{Binding PinnedItemList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                       SelectedItem="{Binding SelectedPinnedItem,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                       ColumnHeaderStyle="{StaticResource DGHeaderStyle}"
@@ -1472,7 +1476,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                         </Style.Triggers>
                     </Style>
                 </TextBlock.Style></TextBlock>
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="2" IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
                 <DataGrid x:Name="ListOfDriveItems" MouseMove="DataGrid_MouseMove"
                           Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                           ItemsSource="{Binding FoldersItemList}"
@@ -1481,7 +1485,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                           ColumnHeaderStyle="{StaticResource DGHeaderStyle}"
                           RowStyle="{StaticResource DGRowStyle}"
                           CellStyle="{StaticResource DGCellStyle}"
-                          Style="{StaticResource DGStyle}"
+                          Style="{StaticResource DGStyle}" IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                           Sorting="ListOfDriveItems_Sorting"
                           SelectionMode="Single" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                           SelectionUnit="FullRow"
@@ -1869,7 +1873,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
 
         <!--Rename Window-->
         <Grid Grid.Row="2"
-              Name="RenameWindow"
+              Name="RenameWindow" IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
               Visibility="{Binding CurRenameStatus.IsDoing, Converter={StaticResource BoolVisibilityConverter}}">
             <Grid.Background>
                 <SolidColorBrush Color="LightGray"

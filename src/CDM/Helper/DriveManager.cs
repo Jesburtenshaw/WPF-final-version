@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,12 +18,15 @@ namespace CDM.Helper
         #region ::Variables::
         public static ObservableCollection<DriveModel> DriveList = new ObservableCollection<DriveModel>();
         public static ObservableCollection<FilterConditionModel> Drives = new ObservableCollection<FilterConditionModel>();
+        public static string[] _driveNameList;
+
         #endregion
         #region ::Methods::
         /// <summary>
         /// This method return as tuple of Drive Items based on available in current system
         /// </summary>
         /// <returns></returns>
+        /// 
         public static Tuple<ObservableCollection<DriveModel>, ObservableCollection<FilterConditionModel>> GetDrivesItem()
         {
             var fcm = new FilterConditionModel
@@ -33,7 +37,7 @@ namespace CDM.Helper
             fcm.PropertyChanged += FilterConditionModel_PropertyChanged;
             //Application.Current.Dispatcher.Invoke(() =>
             //{
-                Drives.Add(fcm);
+            Drives.Add(fcm);
             //});
 
             try
@@ -43,12 +47,12 @@ namespace CDM.Helper
                 {
                     //Application.Current.Dispatcher.Invoke(() =>
                     //{
-                        DriveList.Add(new DriveModel()
-                        {
-                            DriveName = drive.Name,//.TrimEnd('\\'),
-                            DriveDescription = drive.VolumeLabel,
-                            IsPined = PinManager.IsPined(drive.Name)
-                        });
+                    DriveList.Add(new DriveModel()
+                    {
+                        DriveName = drive.Name,//.TrimEnd('\\'),
+                        DriveDescription = drive.VolumeLabel,
+                        IsPined = PinManager.IsPined(drive.Name)
+                    });
                     //});
                     fcm = new FilterConditionModel
                     {
@@ -58,7 +62,7 @@ namespace CDM.Helper
                     fcm.PropertyChanged += FilterConditionModel_PropertyChanged;
                     //Application.Current.Dispatcher.Invoke(() =>
                     //{
-                        Drives.Add(fcm);
+                    Drives.Add(fcm);
                     //});
                 }
             }
@@ -77,12 +81,20 @@ namespace CDM.Helper
                 {
                     break;
                 }
-                DriveInfo[] _drives = DriveInfo.GetDrives().Where(item => item.DriveType == DriveType.Network || item.DriveType == DriveType.Fixed).ToArray();
-                var _driveNameList = _drives.Select(item => item.Name).ToList();
+                //DriveInfo[] _drives = DriveInfo.GetDrives().Where(item => item.DriveType == DriveType.Network || item.DriveType == DriveType.Fixed).ToArray();
+                //var _driveNameList = _drives.Select(item => item.Name).ToList();
+
+                if (_driveNameList == null || _driveNameList.Count() == 0)
+                {
+                    PopulateArrayFromConfig();
+                    if (_driveNameList == null || _driveNameList.Count() == 0)
+                    { continue; }
+                }
+
                 var result = true;
                 foreach (var drive in DriveList)
                 {
-                    result = result && _driveNameList.Contains(drive.DriveName);
+                    result = result && _driveNameList.Contains(drive.DriveName[0].ToString());
                     if (!result)
                     {
                         DrivesStateChanged?.Invoke(null, false);
@@ -109,6 +121,56 @@ namespace CDM.Helper
             {
             }
         }
+
+        private static void PopulateArrayFromConfig()
+        {
+            try
+            {
+                string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "drives.config";
+
+                if (File.Exists(configFilePath))
+                {
+                    string jsonText = File.ReadAllText(configFilePath);
+                    _driveNameList = ParseDriveArray(jsonText);
+                }
+            }
+            catch 
+            {
+
+            }
+        }
+
+        private static string[] ParseDriveArray(string jsonText)
+        {
+            try
+            {
+                // Find the start of the driveArray
+                int startIndex = jsonText.IndexOf("[");
+                int endIndex = jsonText.IndexOf("]");
+
+                if (startIndex == -1 || endIndex == -1 || endIndex < startIndex)
+                {
+                    return null;
+                }
+
+                // Extract the array content
+                string arrayContent = jsonText.Substring(startIndex + 1, endIndex - startIndex - 1);
+
+                // Split the content by commas, and trim whitespace and quotes
+                string[] driveArray = arrayContent.Split(',')
+                                                   .Select(s => s.Trim().Trim('"'))
+                                                   .ToArray();
+
+                return driveArray;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+
         #endregion
         #region ::Events::
         public static event EventHandler DriveIsSelectedChanged;

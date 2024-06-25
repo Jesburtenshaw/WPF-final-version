@@ -332,9 +332,24 @@ namespace CDM.ViewModels
             set
             {
                 offline = value;
+                Online = !offline;
                 OnPropertyChanged(nameof(Offline));
             }
         }
+
+        public bool Online
+        {
+            get
+            {
+                return !offline;
+            }
+            set
+            {
+                OnPropertyChanged(nameof(Online));
+            }
+        }
+
+
 
         private FileFolderModel nullFolder = new FileFolderModel();
         private FileFolderModel curFolder;
