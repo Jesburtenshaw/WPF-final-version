@@ -31,6 +31,7 @@ namespace CDM.ViewModels
             BackWindowCommand = new RelayCommand(BackNavigationClick);
             //SearchBoxTextChangedCommand = new RelayCommand(searchBoxTextChanged);
             FolderItemDoubleClickCommand = new RelayCommand(FolderItemDoubleClick);
+            FolderItemSingleClickCommand = new RelayCommand(FolderItemSingleClick);
             RecentItemDoubleClickCommand = new RelayCommand(RecentItemDoubleClick);
             PinnedItemDoubleClickCommand = new RelayCommand(PinnedItemDoubleClick);
 
@@ -583,6 +584,7 @@ namespace CDM.ViewModels
         public RelayCommand TxtSearchGotFocusCommand { get; set; }
         public RelayCommand TxtSearchLostFocusCommand { get; set; }
         public RelayCommand FolderItemDoubleClickCommand { get; set; }
+        public RelayCommand FolderItemSingleClickCommand { get; set; }
         public RelayCommand RecentItemDoubleClickCommand { get; set; }
         public RelayCommand PinnedItemDoubleClickCommand { get; set; }
         public RelayCommand SearchItemCommand { get; set; }
@@ -618,6 +620,8 @@ namespace CDM.ViewModels
 
         public void Init()
         {
+            RegistryManager.CheckMostRecentAndEnsureKeyExists();
+
             IsPinLimitReached = PinManager.IsPinLimitReached;
             PinnedItemList = PinManager.PinnedItemList;
             RecentItemList = RecentManager.RecentItemList;
@@ -958,7 +962,11 @@ namespace CDM.ViewModels
             }
             try
             {
+                RecentManager.Add(item);
                 Process.Start(item.Path);
+                CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
+                CurFilterStatus.RecentCount = RecentItemList.Count;
+
             }
             catch (Exception ex)
             {
@@ -1581,8 +1589,7 @@ namespace CDM.ViewModels
                 return;
             }
         }
-
-        public void FolderItemDoubleClick(object sender)
+        public void FolderItemSingleClick(object sender)
         {
             if (SelectedFileFolderItem != null && !string.IsNullOrEmpty(SelectedFileFolderItem.Path))
             {
@@ -1592,28 +1599,37 @@ namespace CDM.ViewModels
                 if (Directory.Exists(path))
                 {
                     directoryHistory.Push(path);
-                    //_userControl.Dispatcher.Invoke(() =>
-                    //{
-                    //    NavigateToFolder(path);
-                    //});
 
                     NavigateToFolder(path);
-
-                    //TxtSearchBoxItem = string.Empty;
-                    //IsSearchBoxPlaceholderVisible = Visibility.Visible;
-                    //CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
+                    SelectedFileFolderItem = null;
                 }
+            }
+        }
+
+        public void FolderItemDoubleClick(object sender)
+        {
+            if (SelectedFileFolderItem != null && !string.IsNullOrEmpty(SelectedFileFolderItem.Path))
+            {
+                string path = SelectedFileFolderItem.Path;
+
                 // Check if the path exist and path is file
-                else if (File.Exists(path))
+                if (File.Exists(path))
                 {
                     try
                     {
+                        RecentManager.Add(SelectedFileFolderItem);
+
                         Process.Start(path);
+                        
+                        CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
+                        CurFilterStatus.RecentCount = RecentItemList.Count;
+
+                        SelectedFileFolderItem = null;
+
                     }
                     catch (Exception ex)
                     {
                         ExceptionHelper.ShowErrorMessage(ex, $"Could not open file {SelectedFileFolderItem.Name}");
-                        //throw ex;
                     }
                 }
             }
@@ -1625,7 +1641,13 @@ namespace CDM.ViewModels
             {
                 try
                 {
+                    RecentManager.Add(SelectedRecentItem);
+
                     Process.Start(SelectedRecentItem.Path);
+
+                    CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
+                    CurFilterStatus.RecentCount = RecentItemList.Count;
+
                 }
                 catch (Exception ex)
                 {
@@ -1642,7 +1664,11 @@ namespace CDM.ViewModels
             {
                 try
                 {
+                    RecentManager.Add(pinedItem);
                     Process.Start(pinedItem.Path);
+                    CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
+                    CurFilterStatus.RecentCount = RecentItemList.Count;
+
                 }
                 catch (Exception ex)
                 {
@@ -2066,6 +2092,8 @@ namespace CDM.ViewModels
             {
                 CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
             }
+            CurFilterStatus.RecentCount = RecentItemList.Count;
+
         }
         public void searchPinnedItemList()
         {

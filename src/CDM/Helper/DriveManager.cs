@@ -86,7 +86,7 @@ namespace CDM.Helper
 
                 if (_driveNameList == null || _driveNameList.Count() == 0)
                 {
-                    PopulateArrayFromConfig();
+                    _driveNameList = JsonHelper.PopulateArrayFromConfig();
                     if (_driveNameList == null || _driveNameList.Count() == 0)
                     { continue; }
                 }
@@ -121,54 +121,6 @@ namespace CDM.Helper
             {
             }
         }
-
-        private static void PopulateArrayFromConfig()
-        {
-            try
-            {
-                string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "drives.config";
-
-                if (File.Exists(configFilePath))
-                {
-                    string jsonText = File.ReadAllText(configFilePath);
-                    _driveNameList = ParseDriveArray(jsonText);
-                }
-            }
-            catch 
-            {
-
-            }
-        }
-
-        private static string[] ParseDriveArray(string jsonText)
-        {
-            try
-            {
-                // Find the start of the driveArray
-                int startIndex = jsonText.IndexOf("[");
-                int endIndex = jsonText.IndexOf("]");
-
-                if (startIndex == -1 || endIndex == -1 || endIndex < startIndex)
-                {
-                    return null;
-                }
-
-                // Extract the array content
-                string arrayContent = jsonText.Substring(startIndex + 1, endIndex - startIndex - 1);
-
-                // Split the content by commas, and trim whitespace and quotes
-                string[] driveArray = arrayContent.Split(',')
-                                                   .Select(s => s.Trim().Trim('"'))
-                                                   .ToArray();
-
-                return driveArray;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
 
 
         #endregion

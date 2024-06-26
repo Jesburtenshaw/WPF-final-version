@@ -42,6 +42,9 @@
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.122\lib\net462\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -77,9 +80,11 @@
     <Compile Include="Converters\ZeroIntVisibilityConverter.cs" />
     <Compile Include="Converters\ZeroIntVisibilityInverseConverter.cs" />
     <Compile Include="Helper\DriveManager.cs" />
+    <Compile Include="Helper\JsonHelper.cs" />
     <Compile Include="Helper\LightDarkModeDetector.cs" />
     <Compile Include="Helper\PinManager.cs" />
     <Compile Include="Helper\RecentManager.cs" />
+    <Compile Include="Helper\RegistryManager.cs" />
     <Compile Include="Helper\RelayCommand.cs" />
     <Compile Include="Helper\ResourceDictionaryManager.cs" />
     <Compile Include="Helper\StarManager.cs" />

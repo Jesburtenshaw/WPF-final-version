@@ -391,15 +391,13 @@
                                 HorizontalAlignment="Right"
                                 Style="{StaticResource btnSearch}"
                                 Visibility="{Binding TxtSearchBoxItem, Converter={StaticResource EmptyStringVisibilityConverter}}">
-                            <Button.Template>
-                                <ControlTemplate>
+                            
                                     <Path Stretch="Uniform"
                                           Stroke="#1C1C1C"
                                           Fill="#1C1C1C"
                                           Height="12"
                                           Data="{StaticResource CloseGeometry}" />
-                                </ControlTemplate>
-                            </Button.Template>
+                               
                         </Button>
 
                         <Button x:Name="purchasedBookSearchBtn"
@@ -435,8 +433,7 @@
                                     Command="{Binding ShowLocationsCommand}"
                                     Cursor="Hand"
                                     Style="{StaticResource btnSearch}">
-                                <Button.Template>
-                                    <ControlTemplate>
+                              
                                         <Border>
                                             <Grid VerticalAlignment="Center"
                                                   HorizontalAlignment="Center">
@@ -451,8 +448,7 @@
                                                       Fill="#1C1C1C" />
                                             </Grid>
                                         </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
+                                   
                             </Button>
 
                             <Popup Name="popupLocations"
@@ -521,7 +517,8 @@
             </StackPanel>
         </Grid>
 
-        <!-- Offline Mode --><!--
+        <!-- Offline Mode -->
+        <!--
         <Grid Grid.Row="1"
               Visibility="{Binding Offline,Converter={StaticResource BoolVisibilityConverter}}">
             <Grid.Background>
@@ -626,15 +623,15 @@
 
                 <TabControl BorderThickness="0"
                             x:Name="TabView1"
-                            Background="Transparent">
+                            Background="Transparent" SelectionChanged="TabView1_SelectionChanged">
                     <TabControl.Resources>
 
                     </TabControl.Resources>
 
-                    <TabItem Name="RecentTabItem"
+                    <TabItem Name="RecentTabItem" 
                              Style="{StaticResource TabItemStyle}"
                              ScrollViewer.VerticalScrollBarVisibility="Auto"
-                             Header="Recent">
+                             Header="Recent" >
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"></RowDefinition>
@@ -653,7 +650,7 @@
                                       AllowDrop="True"
                                       IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                       Visibility="{Binding CurFilterStatus.RecentCount, Converter={StaticResource ZeroIntVisibilityConverter}}"
-                                      ItemsSource="{Binding RecentItemList}"
+                                      ItemsSource="{Binding RecentItemList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                       SelectedItem="{Binding SelectedRecentItem}"
                                       ColumnHeaderStyle="{StaticResource DGHeaderStyle}"
                                       RowStyle="{StaticResource DGRowStyle}"
@@ -1483,18 +1480,28 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                           Visibility="{Binding CurFilterStatus.ItemsCount, Converter={StaticResource ZeroIntVisibilityConverter}}"
                           SelectedItem="{Binding SelectedFileFolderItem,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                           ColumnHeaderStyle="{StaticResource DGHeaderStyle}"
-                          RowStyle="{StaticResource DGRowStyle}"
+                
                           CellStyle="{StaticResource DGCellStyle}"
                           Style="{StaticResource DGStyle}" IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                           Sorting="ListOfDriveItems_Sorting"
                           SelectionMode="Single" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                          SelectionUnit="FullRow"
+                          SelectionUnit="FullRow" 
                           AllowDrop="True">
-                    <i:Interaction.Triggers>
+                    <!--<i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseDoubleClick">
-                            <i:InvokeCommandAction Command="{Binding FolderItemDoubleClickCommand}" />
+                            <i:InvokeCommandAction Command="{Binding FolderItemDoubleClickCommand}" CommandParameter="this"/>
                         </i:EventTrigger>
-                    </i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseLeftButtonUp">
+                            <i:InvokeCommandAction Command="{Binding FolderItemSingleClickCommand}" CommandParameter="this"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>-->
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow" BasedOn="{StaticResource DGRowStyle}">
+                            <EventSetter Event="MouseLeftButtonUp" Handler="DataGridRow_MouseLeftButtonUp"/>
+                            <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
+                        </Style>
+                    </DataGrid.RowStyle>
+
                     <DataGrid.Columns>
                         <DataGridTemplateColumn MinWidth="70"
                                                 Width="auto">
@@ -1875,10 +1882,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
         <Grid Grid.Row="2"
               Name="RenameWindow" IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
               Visibility="{Binding CurRenameStatus.IsDoing, Converter={StaticResource BoolVisibilityConverter}}">
-            <Grid.Background>
-                <SolidColorBrush Color="LightGray"
-                                 Opacity="0.5" />
-            </Grid.Background>
+
             <Border Margin="0 0 0 0"
                     BorderThickness="1"
                     BorderBrush="#6b6b6b"
@@ -1901,60 +1905,22 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Rename"
-                               Grid.Row="0"
+                               Grid.Row="0" FontSize="14"
                                Grid.Column="0"
                                Grid.ColumnSpan="3"
                                Foreground="{DynamicResource WindowForegroundColor}">
                     </TextBlock>
-                    <Button Grid.Row="0"
-                            Grid.Column="3"
-                            HorizontalAlignment="Right"
-                            Command="{Binding CancelRenameCommand}"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Cursor="Hand"
-                            Foreground="{DynamicResource WindowForegroundColor}">
-                        <Button.Template>
-                            <ControlTemplate>
-                                <TextBlock Text="X">
-                                </TextBlock>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver"
-                                             Value="True">
-                                        <Trigger.EnterActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
 
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </Trigger.EnterActions>
-                                        <Trigger.ExitActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </Trigger.ExitActions>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
                     <Border Grid.Row="1"
                             Grid.Column="0"
                             Grid.ColumnSpan="4"
                             BorderThickness="1"
                             CornerRadius="5"
-                            Background="#B0B0B0"
-                            BorderBrush="#929292">
-                        <TextBox Grid.Row="1"
-                                 Grid.Column="0"
-                                 Grid.ColumnSpan="4"
-                                 Margin="2 "
-                                 MinLines="1"
-                                 MaxLines="1"
-                                 Background="#B0B0B0"
-                                 Name="txtRename"
+                            Background="{DynamicResource BackgroundBrushContextMenu}"
+                            BorderBrush="{DynamicResource SeachBoxBorderColor}" >
+                        <TextBox BorderThickness="0" Margin="1 0"
+                                 Background="Transparent" FontSize="14"
+                                 Name="txtRename" VerticalAlignment="Center" VerticalContentAlignment="Center"
                                  Text="{Binding CurRenameStatus.Name, Mode = TwoWay, UpdateSourceTrigger = PropertyChanged}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="TextChanged">
@@ -1994,16 +1960,24 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                             Command="{Binding DoRenameCommand}">
                         <Button.Template>
                             <ControlTemplate>
-                                <Border Width="60"
+                                <Border Width="60" Name="border"
                                         Height="25"
                                         BorderThickness="1"
                                         CornerRadius="3"
-                                        BorderBrush="#929292"
-                                        Background="#B0B0B0">
-                                    <TextBlock HorizontalAlignment="Center"
+                            Background="{DynamicResource BackgroundBrushContextMenu}"
+                            BorderBrush="{DynamicResource SeachBoxBorderColor}">
+                                    <TextBlock  HorizontalAlignment="Center"
                                                VerticalAlignment="Center"
                                                Text="OK"></TextBlock>
                                 </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver"
+              Value="True">
+                                        <Setter TargetName="border"
+                 Property="Background"
+                 Value="{DynamicResource RenameHoverBackgroundColor}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
@@ -2016,16 +1990,24 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                             Command="{Binding CancelRenameCommand}">
                         <Button.Template>
                             <ControlTemplate>
-                                <Border Width="60"
+                                <Border Width="60" Name="border"
                                         Height="25"
                                         BorderThickness="1"
                                         CornerRadius="3"
-                                        BorderBrush="#929292"
-                                        Background="#B0B0B0">
+                            Background="{DynamicResource BackgroundBrushContextMenu}"
+                            BorderBrush="{DynamicResource SeachBoxBorderColor}">
                                     <TextBlock HorizontalAlignment="Center"
                                                VerticalAlignment="Center"
                                                Text="Cancel"></TextBlock>
                                 </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver"
+              Value="True">
+                                        <Setter TargetName="border"
+                 Property="Background"
+                 Value="{DynamicResource RenameHoverBackgroundColor}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Button.Template>
                     </Button>

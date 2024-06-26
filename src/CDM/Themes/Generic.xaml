@@ -38,7 +38,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <!--<Style x:Key="FolderMenuItemStyle" TargetType="MenuItem">
         <Setter Property="Background"
                 Value="red" />
@@ -283,17 +283,27 @@
     <Style x:Key="DGCellStyle"
            TargetType="DataGridCell">
         <Setter Property="Margin"
-                Value="0 5 0 5" />
+                Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="DataGridCell">
-                    <Border BorderThickness="0"
-                            BorderBrush="Gray"
+                    <Border BorderThickness="0" Name="borderCell"
+                            BorderBrush="Gray" Background="{TemplateBinding Background}"
                             Padding="10 0 0 0">
                         <ContentPresenter />
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True" SourceName="borderCell">
+                            <Setter Property="Background" Value="{DynamicResource GridHoverBackgroundColor}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True" >
+                            <Setter Property="Background" Value="{DynamicResource GridHoverBackgroundColor}" TargetName="borderCell"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
+
             </Setter.Value>
+
         </Setter>
         <Setter Property="BorderBrush"
                 Value="Gray" />
@@ -322,7 +332,7 @@
         <Setter Property="FontWeight"
                 Value="Normal" />
         <Setter Property="Background"
-                Value="Transparent" />
+                Value="{DynamicResource WindowBackgroundColor}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver"
                      Value="True">
@@ -519,7 +529,7 @@ HorizontalAlignment="Stretch"
                                         <Setter Property="Visibility"
                                                 Value="Visible" />
                                     </MultiDataTrigger>
-                                   
+
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>

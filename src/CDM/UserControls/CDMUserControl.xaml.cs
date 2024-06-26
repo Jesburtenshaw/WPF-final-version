@@ -575,5 +575,70 @@ namespace CDM.UserControls
                 HighlightSearchedText();
             }));
         }
+
+        private void DataGridRow_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+
+                var row = sender as DataGridRow;
+                if (row != null && row.IsSelected)
+                {
+                    vm.FolderItemSingleClick(null);
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                var row = sender as DataGridRow;
+                if (row != null && row.IsSelected)
+                {
+                    vm.FolderItemDoubleClick(null);
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
+
+        private void TabView1_Selected(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TabView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (vm == null)
+                {
+                    return;
+                }
+                if (PinnedTabItem != null && PinnedTabItem.IsSelected && vm.PinnedItemList != null)
+                {
+                    CollectionViewSource.GetDefaultView(vm.PinnedItemList).Refresh();
+                    vm.CurFilterStatus.PinnedCountWithoutDrive = vm.PinnedItemList.Count;
+
+                }
+                else if (RecentTabItem != null && RecentTabItem.IsSelected && vm.RecentItemList != null)
+                {
+                    CollectionViewSource.GetDefaultView(vm.RecentItemList).Refresh();
+                    vm.CurFilterStatus.RecentCount = vm.RecentItemList.Count;
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
     }
 }
