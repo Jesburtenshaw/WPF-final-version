@@ -35,7 +35,7 @@ HKCU
 				{
 					NoRemove Explorer
 					{
-						NoRemove Desktop
+						NoRemove MyComputer
 						{
 							NoRemove NameSpace
 							{
