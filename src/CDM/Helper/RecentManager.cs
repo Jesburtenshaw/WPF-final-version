@@ -23,61 +23,77 @@ namespace CDM.Helper
         #region :: Methods ::
         public static ObservableCollection<FileFolderModel> GetRecentItems()
         {
-            //Application.Current.Dispatcher.Invoke(() =>
-            //{
+
             RecentItemList.Clear();
-            //});
 
-            // Get all files in the Recent folder
-            string[] recentFiles = Directory.GetFiles(recentFolder);
-            foreach (string recentFile in recentFiles)
+            if (RegistryManager.IsUsingRegistry)
             {
-                var file = ShortcutHelper.GetLnkTarget(recentFile);
-                if (String.IsNullOrEmpty(file))
-                {
-                    continue;
-                }
-                if (File.Exists(file))
-                {
-                    FileInfo fileInfo = new FileInfo(file);
-                    FileAttributes f = File.GetAttributes(file);
-                    //Application.Current.Dispatcher.Invoke(() =>
-                    //{
-                    RecentItemList.Add(new FileFolderModel()
-                    {
+                List<(string FilePath, DateTime? LastOpenedDate)> defaultRecentFiles = RegistryManager.GetAllValues(RegistryKeys.Recent);
 
-                        Name = fileInfo.Name,
-                        LastModifiedDateTime = fileInfo.LastWriteTime,
-                        Path = fileInfo.FullName,
-                        IconSource = IconHelper.GetIcon(fileInfo.FullName),
-                        OriginalPath = recentFile,
-                        IsPined = PinManager.IsPined(fileInfo.FullName),
-                        Type = "File"
-                    });
-                    //});
+                foreach ((string FilePath, DateTime? LastOpenedDate) recentFile in defaultRecentFiles)
+                {
+
+                    if (String.IsNullOrEmpty(recentFile.FilePath))
+                    {
+                        continue;
+                    }
+                    if (File.Exists(recentFile.FilePath))
+                    {
+                        FileInfo fileInfo = new FileInfo(recentFile.FilePath);
+                        FileAttributes f = File.GetAttributes(recentFile.FilePath);
+
+                        RecentItemList.Add(new FileFolderModel()
+                        {
+                            Name = fileInfo.Name,
+                            LastModifiedDateTime = recentFile.LastOpenedDate ?? DateTime.Now,
+                            Path = fileInfo.FullName,
+                            IconSource = IconHelper.GetIcon(fileInfo.FullName),
+                            IsPined = PinManager.IsPined(fileInfo.FullName),
+                            Type = "File"
+                        });
+
+                    }
+                    else
+                    {
+                        //remove from registry as not found
+                        RegistryManager.DeleteValue(RegistryKeys.Recent, recentFile.FilePath);
+                    }
+
                 }
-                //Commented as only tracking recent files
-                //else if (Directory.Exists(file))
-                //{
-                //    DirectoryInfo dirInfo = new DirectoryInfo(file);
-                //    //Application.Current.Dispatcher.Invoke(() =>
-                //    //{
-                //        RecentItemList.Add(new FileFolderModel()
-                //        {
-                //            Name = dirInfo.Name,
-                //            LastModifiedDateTime = dirInfo.LastWriteTime,
-                //            Path = dirInfo.FullName,
-                //            IconSource = IconHelper.GetIcon(dirInfo.FullName),
-                //            OriginalPath = recentFile,
-                //            IsPined = PinManager.IsPined(dirInfo.FullName),
-                //            IsDefault = StarManager.IsDefault(dirInfo.FullName),
-                //            Type = "Dir"
-                //        });
-                //    //});
-                //}
             }
-            // Get all folders in the Recent folder
-            // string[] recentFolders = Directory.GetDirectories(recentFolderPath);
+            else
+            {
+                // Get all files in the Recent folder
+                string[] recentFiles = Directory.GetFiles(recentFolder);
+                foreach (string recentFile in recentFiles)
+                {
+                    var file = ShortcutHelper.GetLnkTarget(recentFile);
+                    if (String.IsNullOrEmpty(file))
+                    {
+                        continue;
+                    }
+                    if (File.Exists(file))
+                    {
+                        FileInfo fileInfo = new FileInfo(file);
+                        FileAttributes f = File.GetAttributes(file);
+                        //Application.Current.Dispatcher.Invoke(() =>
+                        //{
+                        RecentItemList.Add(new FileFolderModel()
+                        {
+
+                            Name = fileInfo.Name,
+                            LastModifiedDateTime = fileInfo.LastWriteTime,
+                            Path = fileInfo.FullName,
+                            IconSource = IconHelper.GetIcon(fileInfo.FullName),
+                            OriginalPath = recentFile,
+                            IsPined = PinManager.IsPined(fileInfo.FullName),
+                            Type = "File"
+                        });
+                        //});
+                    }
+                    
+                }
+            }
 
             if (RecentItemList != null && RecentItemList.Count() > 100)
             {
@@ -99,38 +115,58 @@ namespace CDM.Helper
 
         public static void Add(FileFolderModel item)
         {
-            var t = RecentItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
-            if (null != t)
+            if (RegistryManager.IsUsingRegistry)
             {
-                return;
-            }
+                //TODO add recent by application type, add conditions
+                RegistryManager.AddOrUpdateValue(RegistryKeys.Recent, item.Path, DateTime.Now);
 
-            if (item.Type == "File")
+            }
+            else
             {
-                item.OriginalPath = Path.Combine(recentFolder, $"{Path.GetFileNameWithoutExtension(item.Path)}.lnk");
-            }
-            //Commented as only tracking recent files
-            //else
-            //{
-            //    item.OriginalPath = Path.Combine(recentFolder, $"{DirectoryHelper.GetDirectoryName(item.Path)}.lnk");
-            //}
-            ShortcutHelper.CreateLnk(item.OriginalPath, item.Path);
+                var t = RecentItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
+                if (null != t)
+                {
+                    return;
+                }
 
-            RecentItemList.Insert(0, item);
+                if (item.Type == "File")
+                {
+                    item.OriginalPath = Path.Combine(recentFolder, $"{Path.GetFileNameWithoutExtension(item.Path)}.lnk");
+                }
+                ShortcutHelper.CreateLnk(item.OriginalPath, item.Path);
+
+            }
+            if (!RecentItemList.Contains(item))
+            {
+                RecentItemList.Insert(0, item);
+            }
             CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
         }
 
         public static void Remove(FileFolderModel item)
         {
-            var t = RecentItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
-            if (null == t)
+            if (RegistryManager.IsUsingRegistry)
             {
-                return;
+                RegistryManager.DeleteValue(RegistryKeys.Recent, item.Path);
+                //RegistryManager.DeleteValue(RegistryKeys.WordRecent, item.Path);
+                //RegistryManager.DeleteValue(RegistryKeys.PowerPointRecent, item.Path);
+                //RegistryManager.DeleteValue(RegistryKeys.ExcelRecent, item.Path);
             }
-            File.Delete(item.OriginalPath);
+            else
+            {
+                var t = RecentItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
+                if (null == t)
+                {
+                    return;
+                }
+                File.Delete(item.OriginalPath);
+            }
+
             RecentItemList.Remove(item);
             CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
         }
+
+
         #endregion
     }
 }

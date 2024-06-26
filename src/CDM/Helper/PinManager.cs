@@ -19,26 +19,27 @@ namespace CDM.Helper
         private static string pinFolder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
 
         public static ObservableCollection<FileFolderModel> PinnedItemList = new ObservableCollection<FileFolderModel>();
+
         #endregion
 
         #region :: Methods ::
         public static bool IsPinLimitReached { get; set; } = false;
         public static ObservableCollection<FileFolderModel> GetPinnedItems()
         {
+            PinnedItemList.Clear();
+            //if (RegistryManager.IsUsingRegistry)
+            //{
+
             //Application.Current.Dispatcher.Invoke(() =>
             //{
-            PinnedItemList.Clear();
             //});
 
-            // Get all files in the pinned items folder
-            string[] pinnedFiles = Directory.GetFiles(pinFolder);
+            // Get all files in the pinned registry
+            List<(string FilePath, DateTime? LastOpenedDate)> defaultPinFiles = RegistryManager.GetAllValues(RegistryKeys.Pins);
 
-            //// Get all folders in the pinned items folder
-            //string[] pinnedFolders = Directory.GetDirectories(pinFolder);
-
-            foreach (string pinnedFile in pinnedFiles)
+            foreach ((string FilePath, DateTime? LastOpenedDate) pinnedFile in defaultPinFiles)
             {
-                var file = ShortcutHelper.GetLnkTarget(pinnedFile);
+                var file = pinnedFile.FilePath;
                 if (String.IsNullOrEmpty(file))
                 {
                     continue;
@@ -52,10 +53,9 @@ namespace CDM.Helper
                     PinnedItemList.Add(new FileFolderModel()
                     {
                         Name = fileInfo.Name,
-                        LastModifiedDateTime = fileInfo.LastWriteTime,
+                        LastModifiedDateTime = pinnedFile.LastOpenedDate ?? DateTime.Now,
                         Path = fileInfo.FullName,
                         IconSource = IconHelper.GetIcon(fileInfo.FullName),
-                        OriginalPath = pinnedFile,
                         IsPined = true,
                         Type = "File"
                     });
@@ -70,10 +70,9 @@ namespace CDM.Helper
                     PinnedItemList.Add(new FileFolderModel()
                     {
                         Name = dirInfo.Name,
-                        LastModifiedDateTime = dirInfo.LastWriteTime,
+                        LastModifiedDateTime = pinnedFile.LastOpenedDate ?? DateTime.Now,
                         Path = dirInfo.FullName,
                         IconSource = IconHelper.GetIcon(dirInfo.FullName),
-                        OriginalPath = pinnedFile,
                         IsPined = true,
                         IsDefault = StarManager.IsDefault(dirInfo.FullName),
                         Type = "Dir",
@@ -81,10 +80,69 @@ namespace CDM.Helper
                     });
                     //});
                 }
-
+                else
+                {
+                    //remove from registry
+                    RegistryManager.DeleteValue(RegistryKeys.Pins, file);
+                }
             }
-            // Get all folders in the Recent folder
-            //string[] recentFolders = Directory.GetDirectories(pinnedItemsFolderPath);
+            //}
+            //else
+            //{
+            //    // Get all files in the pinned items folder
+            //    string[] pinnedFiles = Directory.GetFiles(pinFolder);
+
+            //    //// Get all folders in the pinned items folder
+            //    //string[] pinnedFolders = Directory.GetDirectories(pinFolder);
+
+            //    foreach (string pinnedFile in pinnedFiles)
+            //    {
+            //        var file = ShortcutHelper.GetLnkTarget(pinnedFile);
+            //        if (String.IsNullOrEmpty(file))
+            //        {
+            //            continue;
+            //        }
+            //        if (File.Exists(file))
+            //        {
+            //            FileInfo fileInfo = new FileInfo(file);
+            //            FileAttributes f = File.GetAttributes(file);
+            //            //Application.Current.Dispatcher.Invoke(() =>
+            //            //{
+            //            PinnedItemList.Add(new FileFolderModel()
+            //            {
+            //                Name = fileInfo.Name,
+            //                LastModifiedDateTime = fileInfo.LastWriteTime,
+            //                Path = fileInfo.FullName,
+            //                IconSource = IconHelper.GetIcon(fileInfo.FullName),
+            //                OriginalPath = pinnedFile,
+            //                IsPined = true,
+            //                Type = "File"
+            //            });
+            //            //});
+            //        }
+            //        else if (Directory.Exists(file))
+            //        {
+
+            //            DirectoryInfo dirInfo = new DirectoryInfo(file);
+            //            //Application.Current.Dispatcher.Invoke(() =>
+            //            //{
+            //            PinnedItemList.Add(new FileFolderModel()
+            //            {
+            //                Name = dirInfo.Name,
+            //                LastModifiedDateTime = dirInfo.LastWriteTime,
+            //                Path = dirInfo.FullName,
+            //                IconSource = IconHelper.GetIcon(dirInfo.FullName),
+            //                OriginalPath = pinnedFile,
+            //                IsPined = true,
+            //                IsDefault = StarManager.IsDefault(dirInfo.FullName),
+            //                Type = "Dir",
+            //                IsDrive = IsThisPathDrive(file)
+            //            });
+            //            //});
+            //        }
+
+            //    }
+            //}
 
             UpdatePinLimitReached();
             return PinnedItemList;
@@ -109,42 +167,65 @@ namespace CDM.Helper
 
         public static void Pin(FileFolderModel item)
         {
-            var t = PinnedItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
-            if (null != t)
-            {
-                return;
-            }
+            //if (RegistryManager.IsUsingRegistry)
+            //{
+            //TODO add pin by application  type, add conditions
+            RegistryManager.AddOrUpdateValue(RegistryKeys.Pins, item.Path, DateTime.Now);
+            //}
+            //else
+            //{
+            //    var t = PinnedItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
+            //    if (null != t)
+            //    {
+            //        return;
+            //    }
 
-            if (!string.IsNullOrEmpty(item.OriginalPath))
+            //    if (!string.IsNullOrEmpty(item.OriginalPath))
+            //    {
+            //        File.Copy(item.OriginalPath, Path.Combine(pinFolder, Path.GetFileName(item.OriginalPath)), true);
+            //        item.OriginalPath = Path.Combine(pinFolder, Path.GetFileName(item.OriginalPath));
+            //    }
+            //    else
+            //    {
+            //        if (item.Type == "File")
+            //        {
+            //            item.OriginalPath = Path.Combine(pinFolder, $"{Path.GetFileNameWithoutExtension(item.Path)}.lnk");
+            //        }
+            //        else
+            //        {
+            //            item.OriginalPath = Path.Combine(pinFolder, $"{DirectoryHelper.GetDirectoryName(item.Path)}.lnk");
+            //        }
+            //        ShortcutHelper.CreateLnk(item.OriginalPath, item.Path);
+            //    }
+            //}
+
+            if (!PinnedItemList.Contains(item))
             {
-                File.Copy(item.OriginalPath, Path.Combine(pinFolder, Path.GetFileName(item.OriginalPath)), true);
-                item.OriginalPath = Path.Combine(pinFolder, Path.GetFileName(item.OriginalPath));
+                PinnedItemList.Insert(0, item);
             }
-            else
-            {
-                if (item.Type == "File")
-                {
-                    item.OriginalPath = Path.Combine(pinFolder, $"{Path.GetFileNameWithoutExtension(item.Path)}.lnk");
-                }
-                else
-                {
-                    item.OriginalPath = Path.Combine(pinFolder, $"{DirectoryHelper.GetDirectoryName(item.Path)}.lnk");
-                }
-                ShortcutHelper.CreateLnk(item.OriginalPath, item.Path);
-            }
-            PinnedItemList.Insert(0, item);
             CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
             UpdatePinLimitReached();
         }
 
         public static void Unpin(FileFolderModel item)
         {
-            var t = PinnedItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
-            if (null == t)
-            {
-                return;
-            }
-            File.Delete(item.OriginalPath);
+            //if (RegistryManager.IsUsingRegistry)
+            //{
+            RegistryManager.DeleteValue(RegistryKeys.Pins, item.Path);
+            //RegistryManager.DeleteValue(RegistryKeys.WordPins, item.Path);
+            //RegistryManager.DeleteValue(RegistryKeys.PowerPointPins, item.Path);
+            //RegistryManager.DeleteValue(RegistryKeys.ExcelPins, item.Path);
+            //}
+            //else
+            //{
+            //    var t = PinnedItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
+            //    if (null == t)
+            //    {
+            //        return;
+            //    }
+            //    File.Delete(item.OriginalPath);
+            //}
+
             PinnedItemList.Remove(item);
             CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
             UpdatePinLimitReached();
@@ -158,6 +239,7 @@ namespace CDM.Helper
             }
             return false;
         }
+
         #endregion
     }
 }
