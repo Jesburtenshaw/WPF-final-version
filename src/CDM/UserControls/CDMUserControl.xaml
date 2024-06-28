@@ -107,7 +107,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Border Name="border"
-                         CornerRadius="4"
+                         CornerRadius="4"  Background="{TemplateBinding Background}"
                          Padding="2">
                                 <ContentPresenter HorizontalAlignment="Center"
                                        VerticalAlignment="Center" />
@@ -216,18 +216,18 @@
                                FontWeight="Normal"></TextBlock>
                 </StackPanel>
 
-                <Grid Grid.Column="3">
-                    <Grid Visibility="{Binding CurFolder.Type, Converter={StaticResource DirFileTypeVisibilityConverter}}">
+                <Grid Grid.Column="3" Margin="0">
+                    <Grid Visibility="{Binding CurFolder.Type, Converter={StaticResource DirFileTypeVisibilityConverter}}" Margin="0">
                         <Button x:Name="btnStar"
                                 ToolTip="Set this item as default"
-                                Command="{Binding StarCommand}"
+                                Command="{Binding StarCommand}" 
                                 CommandParameter="{Binding CurFolder}"
                                 Visibility="{Binding CurFolder.IsDefault, Converter={StaticResource BoolVisibilityInverseConverter}}"
                                 BorderThickness="0"
-                                Margin="0 0 5 0"
+                                Margin="0 0 0 0"
                                 Style="{StaticResource PinButtonStyle}"
-                                Width="20"
-                                Height="20">
+                                Width="30" Background="{DynamicResource WindowBackgroundColor}"
+                                Height="30">
                             <Path Data="{StaticResource StarGeometry}"
                                   Style="{StaticResource PinStarPathIconStyle}" />
 
@@ -238,10 +238,10 @@
                                 CommandParameter="{Binding CurFolder}"
                                 Visibility="{Binding CurFolder.IsDefault, Converter={StaticResource BoolVisibilityConverter}}"
                                 BorderThickness="0"
-                                Margin="0 0 5 0"
-                                Width="20"
+                                Margin="0 0 0 0"
+                                Width="30" Background="{DynamicResource WindowBackgroundColor}"
                                 Style="{StaticResource PinButtonStyle}"
-                                Height="20">
+                                Height="30">
                             <Path Data="{StaticResource FilledStarGeometry}"
                                   Style="{StaticResource PinStarPathIconStyle}" />
                         </Button>
@@ -785,19 +785,19 @@
                                                                 </Style.Triggers>
                                                             </Style>
                                                         </Button.Style>
-                                                            <Grid>
-                                                                <Grid.Resources>
-                                                                    <Style TargetType="Path">
-                                                                        <Setter Property="Fill"
+                                                        <Grid>
+                                                            <Grid.Resources>
+                                                                <Style TargetType="Path">
+                                                                    <Setter Property="Fill"
                                                                              Value="{DynamicResource SecondaryWindowForegroundColor}" />
-                                                                    </Style>
-                                                                </Grid.Resources>
-                                                                <Path Data="{StaticResource GoToParent1of5Geometry}" />
-                                                                <Path Data="{StaticResource GoToParent2of5Geometry}" />
-                                                                <Path Data="{StaticResource GoToParent3of5Geometry}" />
-                                                                <Path Data="{StaticResource GoToParent4of5Geometry}" />
-                                                                <Path Data="{StaticResource GoToParent5of5Geometry}" />
-                                                            </Grid>
+                                                                </Style>
+                                                            </Grid.Resources>
+                                                            <Path Data="{StaticResource GoToParent1of5Geometry}" />
+                                                            <Path Data="{StaticResource GoToParent2of5Geometry}" />
+                                                            <Path Data="{StaticResource GoToParent3of5Geometry}" />
+                                                            <Path Data="{StaticResource GoToParent4of5Geometry}" />
+                                                            <Path Data="{StaticResource GoToParent5of5Geometry}" />
+                                                        </Grid>
                                                     </Button>
 
                                                     <Grid Grid.Column="1"
@@ -911,7 +911,7 @@
                                                                 ToolTip="Unpin this item from the list"
                                                                 Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.UnpinCommand}"
                                                                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
-                                                                Background="{Binding Transparent}"
+                                                                Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
                                                                 Visibility="{Binding IsPined, Converter={StaticResource BoolVisibilityConverter}}"
                                                                 BorderThickness="0"
                                                                 Margin="5 5 0 5"
@@ -1493,7 +1493,9 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                     </Style>
                 </TextBlock.Style></TextBlock>
             <Grid Grid.Row="2" IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
-                <DataGrid x:Name="ListOfDriveItems" MouseMove="DataGrid_MouseMove"
+                <StackPanel Orientation="Vertical">
+
+                    <DataGrid x:Name="ListOfDriveItems" MouseMove="DataGrid_MouseMove"
                           Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                           ItemsSource="{Binding FoldersItemList}"
                           Visibility="{Binding CurFilterStatus.ItemsCount, Converter={StaticResource ZeroIntVisibilityConverter}}"
@@ -1506,7 +1508,7 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                           SelectionMode="Single" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                           SelectionUnit="FullRow" 
                           AllowDrop="True">
-                    <!--<i:Interaction.Triggers>
+                        <!--<i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseDoubleClick">
                             <i:InvokeCommandAction Command="{Binding FolderItemDoubleClickCommand}" CommandParameter="this"/>
                         </i:EventTrigger>
@@ -1514,115 +1516,115 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                             <i:InvokeCommandAction Command="{Binding FolderItemSingleClickCommand}" CommandParameter="this"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>-->
-                    <DataGrid.RowStyle>
-                        <Style TargetType="DataGridRow" BasedOn="{StaticResource DGRowStyle}">
-                            <EventSetter Event="MouseLeftButtonUp" Handler="DataGridRow_MouseLeftButtonUp"/>
-                            <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
-                        </Style>
-                    </DataGrid.RowStyle>
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow" BasedOn="{StaticResource DGRowStyle}">
+                                <EventSetter Event="MouseLeftButtonUp" Handler="DataGridRow_MouseLeftButtonUp"/>
+                                <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
+                            </Style>
+                        </DataGrid.RowStyle>
 
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn MinWidth="70"
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn MinWidth="70"
                                                 Width="auto">
-                            <DataGridTemplateColumn.Header>
-                                <Grid Margin="23 0 0 0"
+                                <DataGridTemplateColumn.Header>
+                                    <Grid Margin="23 0 0 0"
                                       HorizontalAlignment="Center">
-                                    <Path Stretch="None"
+                                        <Path Stretch="None"
                                           Height="16"
                                           Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                           Data="{StaticResource DGHeaderFile1of6Geometry}" />
-                                    <Path Stretch="None"
+                                        <Path Stretch="None"
                                           Height="16"
                                           Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                           Data="{StaticResource DGHeaderFile2of6Geometry}" />
-                                    <Path Stretch="None"
+                                        <Path Stretch="None"
                                           Height="16"
                                           Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                           Data="{StaticResource DGHeaderFile3of6Geometry}" />
-                                    <Path Stretch="None"
+                                        <Path Stretch="None"
                                           Height="16"
                                           Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                           Data="{StaticResource DGHeaderFile4of6Geometry}" />
-                                    <Path Stretch="None"
+                                        <Path Stretch="None"
                                           Height="16"
                                           Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                           Data="{StaticResource DGHeaderFile5of6Geometry}" />
-                                    <Path Stretch="None"
+                                        <Path Stretch="None"
                                           Height="16"
                                           Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                           Data="{StaticResource DGHeaderFile6of6Geometry}" />
-                                </Grid>
-                            </DataGridTemplateColumn.Header>
+                                    </Grid>
+                                </DataGridTemplateColumn.Header>
 
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Image Height="25"
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Height="25"
                                            Width="25"
                                            Source="{Binding IconSource}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                        <!--ElementStyle="{StaticResource Centering}"-->
-                        <DataGridTextColumn Width="*"
+                            <!--ElementStyle="{StaticResource Centering}"-->
+                            <DataGridTextColumn Width="*"
                                             MinWidth="250"
                                             SortMemberPath="Name"
                                             ElementStyle="{StaticResource Centering}"
                                             Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <DataGridTextColumn.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Name"
+                                <DataGridTextColumn.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Name"
                                                VerticalAlignment="Center"
                                                Margin="0,0,10,0" />
 
 
-                                    <Grid Height="25"
+                                        <Grid Height="25"
                                           VerticalAlignment="Center">
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility"
+                                            <Grid.Style>
+                                                <Style TargetType="Grid">
+                                                    <Setter Property="Visibility"
                                                         Value="Collapsed" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridNameAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridNameAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                                                  Value="True">
-                                                        <Setter Property="Visibility"
+                                                            <Setter Property="Visibility"
                                                                 Value="Visible" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGUpArrow1of3Geometry}" />
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGUpArrow2of3Geometry}" />
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGUpArrow3of3Geometry}" />
-                                    </Grid>
+                                        </Grid>
 
-                                    <Grid Height="25"
+                                        <Grid Height="25"
                                           VerticalAlignment="Center">
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility"
+                                            <Grid.Style>
+                                                <Style TargetType="Grid">
+                                                    <Setter Property="Visibility"
                                                         Value="Collapsed" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridNameAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridNameAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                                                  Value="False">
-                                                        <Setter Property="Visibility"
+                                                            <Setter Property="Visibility"
                                                                 Value="Visible" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGDownArrow1of3Geometry}" />
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGDownArrow2of3Geometry}" />
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGDownArrow3of3Geometry}" />
-                                    </Grid>
+                                        </Grid>
 
-                                    <Button Grid.Column="3"
+                                        <Button Grid.Column="3"
                                             Command="{Binding DataContext.ResetSortFilterCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                             Background="{StaticResource WindowBackgroundColor}"
                                             FontSize="20"
@@ -1632,38 +1634,38 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                             VerticalAlignment="Center"
                                             Margin="10,0,0,0"
                                             Foreground="{DynamicResource WindowForegroundColor}">
-                                        <Button.Template>
-                                            <ControlTemplate>
-                                                <Grid Height="20"
-                                                      Width="24"
+                                            <Button.Template>
+                                                <ControlTemplate>
+                                                    <Grid Height="20"
+                                                      Width="24" Background="{TemplateBinding Background}"
                                                       VerticalAlignment="Center">
-                                                    <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                                           Data="{StaticResource DGBtnRefresh1of3Geometry}" />
-                                                    <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                                           Data="{StaticResource DGBtnRefresh2of3Geometry}" />
-                                                    <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                                           Data="{StaticResource DGBtnRefresh3of3Geometry}" />
-                                                </Grid>
-                                            </ControlTemplate>
-                                        </Button.Template>
-                                    </Button>
-                                </StackPanel>
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </StackPanel>
+                                </DataGridTextColumn.Header>
+                            </DataGridTextColumn>
 
 
-                        <DataGridTemplateColumn MinWidth="80"
+                            <DataGridTemplateColumn MinWidth="80"
                                                 Width="auto">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition></ColumnDefinition>
-                                            <ColumnDefinition></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid Grid.Column="0"
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition></ColumnDefinition>
+                                                <ColumnDefinition></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid Grid.Column="0"
                                               Visibility="{Binding Type, Converter={StaticResource DirFileTypeVisibilityConverter}}">
-                                            <Button x:Name="btnStar"
+                                                <Button x:Name="btnStar"
                                                     ToolTip="Set this item as default"
                                                     Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.StarCommand}"
                                                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
@@ -1672,39 +1674,39 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                     Margin="0 5 5 5"
                                                     Width="30"
                                                     Height="30">
-                                                <Button.Style>
-                                                    <Style  TargetType="Button"
+                                                    <Button.Style>
+                                                        <Style  TargetType="Button"
                                                             BasedOn="{StaticResource PinButtonStyle}">
-                                                        <Setter Property="Visibility"
+                                                            <Setter Property="Visibility"
                                                                 Value="Collapsed" />
-                                                        <Style.Triggers>
-                                                            <MultiDataTrigger>
-                                                                <MultiDataTrigger.Conditions>
-                                                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}"
+                                                            <Style.Triggers>
+                                                                <MultiDataTrigger>
+                                                                    <MultiDataTrigger.Conditions>
+                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}"
                                                                                Value="True" />
-                                                                    <Condition Binding="{Binding IsDefault}"
+                                                                        <Condition Binding="{Binding IsDefault}"
                                                                                Value="False" />
-                                                                </MultiDataTrigger.Conditions>
-                                                                <Setter Property="Visibility"
+                                                                    </MultiDataTrigger.Conditions>
+                                                                    <Setter Property="Visibility"
                                                                         Value="Visible" />
-                                                            </MultiDataTrigger>
-                                                            <MultiDataTrigger>
-                                                                <MultiDataTrigger.Conditions>
-                                                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}"
+                                                                </MultiDataTrigger>
+                                                                <MultiDataTrigger>
+                                                                    <MultiDataTrigger.Conditions>
+                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}"
                                                                                Value="True" />
-                                                                    <Condition Binding="{Binding IsDefault}"
+                                                                        <Condition Binding="{Binding IsDefault}"
                                                                                Value="False" />
-                                                                </MultiDataTrigger.Conditions>
-                                                                <Setter Property="Visibility"
+                                                                    </MultiDataTrigger.Conditions>
+                                                                    <Setter Property="Visibility"
                                                                         Value="Visible" />
-                                                            </MultiDataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Button.Style>
-                                                <Path Data="{StaticResource StarGeometry}"
+                                                                </MultiDataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                    <Path Data="{StaticResource StarGeometry}"
                                                       Style="{StaticResource PinStarPathIconStyle}" />
-                                            </Button>
-                                            <Button x:Name="btnUnstar"
+                                                </Button>
+                                                <Button x:Name="btnUnstar"
                                                     ToolTip="Unset this item as default"
                                                     Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.UnstarCommand}"
                                                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
@@ -1715,12 +1717,12 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                     Width="30"
                                                     Style="{StaticResource PinButtonStyle}"
                                                     Height="30">
-                                                <Path Data="{StaticResource FilledStarGeometry}"
+                                                    <Path Data="{StaticResource FilledStarGeometry}"
                                                       Style="{StaticResource PinStarPathIconStyle}" />
-                                            </Button>
-                                        </Grid>
-                                        <Grid Grid.Column="1">
-                                            <Button x:Name="btnPin"
+                                                </Button>
+                                            </Grid>
+                                            <Grid Grid.Column="1">
+                                                <Button x:Name="btnPin"
                                                     ToolTip="Pin this item to the list"
                                                     Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.PinCommand}"
                                                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
@@ -1730,43 +1732,43 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                     Width="30"
                                                     Height="30">
 
-                                                <Button.Style>
-                                                    <Style  TargetType="Button"
+                                                    <Button.Style>
+                                                        <Style  TargetType="Button"
                                                             BasedOn="{StaticResource PinButtonStyle}">
-                                                        <Setter Property="Visibility"
+                                                            <Setter Property="Visibility"
                                                                 Value="Collapsed" />
-                                                        <Style.Triggers>
-                                                            <MultiDataTrigger>
-                                                                <MultiDataTrigger.Conditions>
-                                                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}"
+                                                            <Style.Triggers>
+                                                                <MultiDataTrigger>
+                                                                    <MultiDataTrigger.Conditions>
+                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsMouseOver}"
                                                                                Value="True" />
-                                                                    <Condition Binding="{Binding IsPined}"
+                                                                        <Condition Binding="{Binding IsPined}"
                                                                                Value="False" />
-                                                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.IsPinLimitReached}"
+                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.IsPinLimitReached}"
                                                                                Value="False" />
-                                                                </MultiDataTrigger.Conditions>
-                                                                <Setter Property="Visibility"
+                                                                    </MultiDataTrigger.Conditions>
+                                                                    <Setter Property="Visibility"
                                                                         Value="Visible" />
-                                                            </MultiDataTrigger>
-                                                            <MultiDataTrigger>
-                                                                <MultiDataTrigger.Conditions>
-                                                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}"
+                                                                </MultiDataTrigger>
+                                                                <MultiDataTrigger>
+                                                                    <MultiDataTrigger.Conditions>
+                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}"
                                                                                Value="True" />
-                                                                    <Condition Binding="{Binding IsPined}"
+                                                                        <Condition Binding="{Binding IsPined}"
                                                                                Value="False" />
-                                                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.IsPinLimitReached}"
+                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.IsPinLimitReached}"
                                                                                Value="False" />
-                                                                </MultiDataTrigger.Conditions>
-                                                                <Setter Property="Visibility"
+                                                                    </MultiDataTrigger.Conditions>
+                                                                    <Setter Property="Visibility"
                                                                         Value="Visible" />
-                                                            </MultiDataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Button.Style>
-                                                <Path Data="{StaticResource PinGeometry}"
+                                                                </MultiDataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                    <Path Data="{StaticResource PinGeometry}"
                                                       Style="{StaticResource PinStarPathIconStyle}" />
-                                            </Button>
-                                            <Button x:Name="btnUnpin"
+                                                </Button>
+                                                <Button x:Name="btnUnpin"
                                                     ToolTip="Unpin this item from the list"
                                                     Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.UnpinCommand}"
                                                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=DataContext}"
@@ -1777,122 +1779,123 @@ v-42.667H427.683z M129.016,42.673h234.667V149.34v64H129.016v-128V42.673z M43.683
                                                     Width="30"
                                                     Style="{StaticResource PinButtonStyle}"
                                                     Height="30">
-                                                <Path Data="{StaticResource UnPinGeometry}"
+                                                    <Path Data="{StaticResource UnPinGeometry}"
                                                       Style="{StaticResource PinStarPathIconStyle}" />
-                                            </Button>
+                                                </Button>
+                                            </Grid>
                                         </Grid>
-                                    </Grid>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                        <DataGridTextColumn Width="Auto"
+                            <DataGridTextColumn Width="Auto"
                                             MinWidth="250"
                                             SortMemberPath="DateModified"
                                             ElementStyle="{StaticResource Centering}"
                                             Binding="{Binding LastModifiedDateTime,Converter={StaticResource DateTimeConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <DataGridTextColumn.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Date Modified"
+                                <DataGridTextColumn.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Date Modified"
                                                VerticalAlignment="Center"
                                                Margin="0,0,10,0" />
 
 
-                                    <Grid Height="25"
+                                        <Grid Height="25"
                                           VerticalAlignment="Center">
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility"
+                                            <Grid.Style>
+                                                <Style TargetType="Grid">
+                                                    <Setter Property="Visibility"
                                                         Value="Collapsed" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridDateAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridDateAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                                                  Value="True">
-                                                        <Setter Property="Visibility"
+                                                            <Setter Property="Visibility"
                                                                 Value="Visible" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGUpArrow1of3Geometry}" />
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGUpArrow2of3Geometry}" />
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGUpArrow3of3Geometry}" />
-                                    </Grid>
+                                        </Grid>
 
-                                    <Grid Height="25"
+                                        <Grid Height="25"
                                           VerticalAlignment="Center">
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility"
+                                            <Grid.Style>
+                                                <Style TargetType="Grid">
+                                                    <Setter Property="Visibility"
                                                         Value="Collapsed" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridDateAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.IsDriveItemsGridDateAscending, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                                                  Value="False">
-                                                        <Setter Property="Visibility"
+                                                            <Setter Property="Visibility"
                                                                 Value="Visible" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGDownArrow1of3Geometry}" />
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGDownArrow2of3Geometry}" />
-                                        <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
+                                            <Path Fill="{DynamicResource SecondaryWindowForegroundColor}"
                                               Data="{StaticResource DGDownArrow3of3Geometry}" />
-                                    </Grid>
-                                </StackPanel>
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
-                    <DataGrid.ContextMenu>
-                        <ContextMenu StaysOpen="False">
-                            <MenuItem Header="Open"
+                                        </Grid>
+                                    </StackPanel>
+                                </DataGridTextColumn.Header>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                        <DataGrid.ContextMenu>
+                            <ContextMenu StaysOpen="False">
+                                <MenuItem Header="Open"
                                       Command="{Binding OpenItemCommand}"
                                       CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                       Height="35" />
-                            <MenuItem Header="Copy path to clipboard"
+                                <MenuItem Header="Copy path to clipboard"
                                       Command="{Binding CopyItemPathCommand}"
                                       CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                       Height="35" />
-                            <MenuItem Header="Rename"
+                                <MenuItem Header="Rename"
                                       Command="{Binding RenameItemCommand}"
                                       CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                       Height="35" />
-                            <MenuItem Header="Delete"
+                                <MenuItem Header="Delete"
                                       Command="{Binding DeleteItemCommand}"
                                       CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                       Height="35" />
-                        </ContextMenu>
-                    </DataGrid.ContextMenu>
-                </DataGrid>
-                <!--Animated Loader-->
-                <StackPanel Orientation="Horizontal"
-                            Margin="50 10"
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                    </DataGrid>
+                    <!--Animated Loader-->
+                    <StackPanel Orientation="Horizontal"
+                            Margin="75 10" VerticalAlignment="Top"
                             HorizontalAlignment="Left"
-                            Visibility="{Binding CurSearchStatus.IsLoading,Converter={StaticResource BoolVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
+                        Visibility="{Binding CurSearchStatus.IsLoading,Converter={StaticResource BoolVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
 
-                    <common:AnimatedCircle CurrentIndex="2"
-                                           Width="15"
-                                           Height="15"
+                        <common:AnimatedCircle CurrentIndex="2"
+                                           Width="11"
+                                           Height="11"
                                            Margin="10,5"
                                            Background="#616161"
                                            CornerRadius="100" />
-                    <common:AnimatedCircle CurrentIndex="1"
-                                           Width="15"
-                                           Height="15"
+                        <common:AnimatedCircle CurrentIndex="1"
+                                           Width="11"
+                                           Height="11"
                                            Margin="10,5"
                                            Background="#616161"
                                            CornerRadius="100" />
-                    <common:AnimatedCircle CurrentIndex="0"
-                                           Width="15"
-                                           Height="15"
+                        <common:AnimatedCircle CurrentIndex="0"
+                                           Width="11"
+                                           Height="11"
                                            Margin="10,5"
                                            Background="#616161"
                                            CornerRadius="100" />
 
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </Grid>

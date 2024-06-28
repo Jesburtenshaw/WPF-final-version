@@ -20,14 +20,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Name="border"
+                    <Border Name="border" Background="{TemplateBinding Background}"
                             CornerRadius="4"
                             Padding="2">
                         <ContentPresenter HorizontalAlignment="Center"
                                           VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver"
+                        <Trigger Property="IsMouseOver" SourceName="border"
                                  Value="True">
                             <Setter TargetName="border"
                                     Property="Background"
