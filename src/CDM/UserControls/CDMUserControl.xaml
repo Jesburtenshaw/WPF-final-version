@@ -102,22 +102,22 @@
 
             <!--Pin, Star, GotoParent button background style-->
             <Style x:Key="PinButtonStyle"
-                   TargetType="Button">
+        TargetType="Button">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Border Name="border"
-                                    CornerRadius="4"
-                                    Padding="2">
+                         CornerRadius="4"
+                         Padding="2">
                                 <ContentPresenter HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center" />
+                                       VerticalAlignment="Center" />
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver"
-                                         Value="True">
+                              Value="True">
                                     <Setter TargetName="border"
-                                            Property="Background"
-                                            Value="{DynamicResource PinHoverBackgroundColor}" />
+                                 Property="Background"
+                                 Value="{DynamicResource PinHoverBackgroundColor}" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -391,13 +391,13 @@
                                 HorizontalAlignment="Right"
                                 Style="{StaticResource btnSearch}"
                                 Visibility="{Binding TxtSearchBoxItem, Converter={StaticResource EmptyStringVisibilityConverter}}">
-                            
-                                    <Path Stretch="Uniform"
+
+                            <Path Stretch="Uniform"
                                           Stroke="#1C1C1C"
                                           Fill="#1C1C1C"
                                           Height="12"
                                           Data="{StaticResource CloseGeometry}" />
-                               
+
                         </Button>
 
                         <Button x:Name="purchasedBookSearchBtn"
@@ -433,22 +433,22 @@
                                     Command="{Binding ShowLocationsCommand}"
                                     Cursor="Hand"
                                     Style="{StaticResource btnSearch}">
-                              
-                                        <Border>
-                                            <Grid VerticalAlignment="Center"
+
+                                <Border>
+                                    <Grid VerticalAlignment="Center"
                                                   HorizontalAlignment="Center">
-                                                <Path  Visibility="{Binding CurFilterStatus.ShowLocations, Converter={StaticResource BoolVisibilityInverseConverter}}"
+                                        <Path  Visibility="{Binding CurFilterStatus.ShowLocations, Converter={StaticResource BoolVisibilityInverseConverter}}"
                                                        Data="{StaticResource DownArrowGeometry}"
                                                        Fill="#1C1C1C"
                                                        Height="10"
                                                        Stretch="Uniform" />
 
-                                                <Path Visibility="{Binding CurFilterStatus.ShowLocations, Converter={StaticResource BoolVisibilityConverter}}"
+                                        <Path Visibility="{Binding CurFilterStatus.ShowLocations, Converter={StaticResource BoolVisibilityConverter}}"
                                                       Data="{StaticResource UpArrowGeometry}"
                                                       Fill="#1C1C1C" />
-                                            </Grid>
-                                        </Border>
-                                   
+                                    </Grid>
+                                </Border>
+
                             </Button>
 
                             <Popup Name="popupLocations"
@@ -528,16 +528,16 @@
         </Grid>-->
 
         <!--Mainwindow-->
-        <Grid Grid.Row="2"
-              Name="DriveWindow"
+        <Grid Grid.Row="2" 
+              Name="DriveWindow" HorizontalAlignment="Stretch"
               Visibility="{Binding IsDriveWindowVisible}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="36" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Border Grid.Row="0">
-                <Grid>
+            <Border Grid.Row="0"  HorizontalAlignment="Stretch" >
+                <Grid  HorizontalAlignment="Stretch" Width="{Binding RelativeSource={RelativeSource AncestorType=Border},Path=ActualWidth}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="Auto"></RowDefinition>
@@ -550,19 +550,20 @@
                                Visibility="{Binding CurFilterStatus.DrivesCount, Converter={StaticResource ZeroIntVisibilityInverseConverter}}"
                                Foreground="{DynamicResource WindowForegroundColor}">
                     </TextBlock>
-                    <ListView ItemTemplate="{StaticResource DriveTemplateStyle}"
+
+                    <ListView ItemTemplate="{StaticResource DriveTemplateStyle}" 
                                       IsEnabled="{Binding Online,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                              Grid.Row="0" Width="{Binding ParentWidth}" 
+                              Grid.Row="0" Width="{Binding RelativeSource={RelativeSource AncestorType=Grid},Path=ActualWidth}"
                               ItemsSource="{Binding PagedDrivesList,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               ItemContainerStyle="{StaticResource driveListViewItemStyle}"
                               VerticalAlignment="Top" HorizontalAlignment="Stretch"
                               BorderBrush="Transparent"
-                              BorderThickness="0"
+                              BorderThickness="0" 
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               ScrollViewer.VerticalScrollBarVisibility="Auto"
                               SelectedItem="{Binding DriveSelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              Background="Transparent"
-                              SelectionMode="Single" Margin="0,0,15,0">
+                             Background="Transparent"
+                              SelectionMode="Single" Margin="10,0,15,0">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseLeftButtonUp">
@@ -573,7 +574,7 @@
 
                         <ListView.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <WrapPanel Height="Auto"
+                                <WrapPanel Height="Auto" MaxHeight="200"
                                            Margin="0" />
                             </ItemsPanelTemplate>
                         </ListView.ItemsPanel>
@@ -586,14 +587,23 @@
                         Height="36"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right">
-                <Button x:Name="Left"
+                <Button x:Name="Left" 
                         Command="{Binding PrevDrivesCommand}"
-                        Visibility="{Binding IsFirstDrivesPage,Converter={StaticResource BoolVisibilityInverseConverter}}"
-                        Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
+                 Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
                         BorderThickness="0"
                         Margin="0 0 5 0"
                         Width="36"
                         Height="36">
+                    <Button.Style >
+                        <Style TargetType="Button">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowPrevDriveBtn,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Value="true">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
                     <Path Data="M297.813333 491.648l1.365334-1.749333 379.093333-376.149334a38.784 38.784 0 0 1 5.077333-4.096 34.346667 34.346667 0 0 1 14.293334-4.992c2.218667-0.170667 2.176-0.170667 4.394666-0.170666a33.493333 33.493333 0 0 1 14.549334 4.181333c12.330667 6.997333 18.688 21.76 15.274666 35.498667-1.237333 5.077333-7.04 13.44-7.04 13.44l-355.498666 352.853333 354.090666 354.389333s6.272 7.978667 7.893334 12.928a32.213333 32.213333 0 0 1-33.749334 41.557334c-6.656-0.682667-17.749333-7.68-17.749333-7.68l-379.221333-377.984-1.28-1.450667a30.378667 30.378667 0 0 1-7.893334-17.749333 31.018667 31.018667 0 0 1 3.712-18.602667 27.221333 27.221333 0 0 1 2.688-4.224z"
                           Fill="{DynamicResource DriveNavigationBtnIcnPath}"
                           Height="20"
@@ -603,11 +613,20 @@
 
                 <Button x:Name="Right"
                         Command="{Binding NextDrivesCommand}"
-                        Visibility="{Binding IsLastDrivesPage,Converter={StaticResource BoolVisibilityInverseConverter}}"
-                        Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
+                Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
                         BorderThickness="0"
                         Width="36"
-                        Height="36">
+                        Height="36" Margin="0 0 5 0">
+                    <Button.Style >
+                        <Style TargetType="Button">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowNextDriveBtn,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Value="true">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
                     <Path Data="M290.909091 983.272727a29.090909 29.090909 0 0 1-20.596364-49.570909L689.92 512l-418.909091-421.701818a29.090909 29.090909 0 0 1 41.309091-40.96l439.505455 442.181818a29.090909 29.090909 0 0 1 0 40.96l-439.505455 442.181818a28.974545 28.974545 0 0 1-21.410909 8.610909z"
                           Fill="{DynamicResource DriveNavigationBtnIcnPath}"
                           Height="20"
@@ -766,19 +785,19 @@
                                                                 </Style.Triggers>
                                                             </Style>
                                                         </Button.Style>
-                                                        <Grid>
-                                                            <Grid.Resources>
-                                                                <Style TargetType="Path">
-                                                                    <Setter Property="Fill"
-                                                                            Value="{DynamicResource SecondaryWindowForegroundColor}" />
-                                                                </Style>
-                                                            </Grid.Resources>
-                                                            <Path Data="{StaticResource GoToParent1of5Geometry}" />
-                                                            <Path Data="{StaticResource GoToParent2of5Geometry}" />
-                                                            <Path Data="{StaticResource GoToParent3of5Geometry}" />
-                                                            <Path Data="{StaticResource GoToParent4of5Geometry}" />
-                                                            <Path Data="{StaticResource GoToParent5of5Geometry}" />
-                                                        </Grid>
+                                                            <Grid>
+                                                                <Grid.Resources>
+                                                                    <Style TargetType="Path">
+                                                                        <Setter Property="Fill"
+                                                                             Value="{DynamicResource SecondaryWindowForegroundColor}" />
+                                                                    </Style>
+                                                                </Grid.Resources>
+                                                                <Path Data="{StaticResource GoToParent1of5Geometry}" />
+                                                                <Path Data="{StaticResource GoToParent2of5Geometry}" />
+                                                                <Path Data="{StaticResource GoToParent3of5Geometry}" />
+                                                                <Path Data="{StaticResource GoToParent4of5Geometry}" />
+                                                                <Path Data="{StaticResource GoToParent5of5Geometry}" />
+                                                            </Grid>
                                                     </Button>
 
                                                     <Grid Grid.Column="1"

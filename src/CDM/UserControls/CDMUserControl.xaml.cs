@@ -43,30 +43,20 @@ namespace CDM.UserControls
         Dispatcher _sysDispatcher;
         private Point _startPoint;
         private bool _isDragging = false;
+        double PWidth = 0;
+        double PHeight = 0;
 
         #endregion
         #region :: Constructor ::
         public CDMUserControl(Dispatcher sysDispatcher, double width = 0, double height = 0)
         {
-
             _sysDispatcher = sysDispatcher;
-            //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            PWidth = width;
+            PHeight = height;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-            //Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
             InitializeComponent();
-            vm = new CDMViewModel(_sysDispatcher);
-            vm.ParentHeight = height;
-            vm.ParentWidth = width;
-            vm.EventHighlightSearchedText += Vm_EventHighlightSearchedText;
-            this.DataContext = vm;
             SetInitialTheme();
-
-            // Subscribe to system theme changes
-            Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
-            //IsSystemInDarkMode();
-
         }
-
 
         public void CDMUserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -74,6 +64,7 @@ namespace CDM.UserControls
             {
                 vm.ParentHeight = e.NewSize.Height;
                 vm.ParentWidth = e.NewSize.Width;
+                UpdateDrivePagination();
             }
         }
         #endregion
@@ -102,17 +93,56 @@ namespace CDM.UserControls
                 //UpdateUIForTheme(isDarkTheme);
             }
         }
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            var drivesPageSize = (Convert.ToInt32(this.ActualWidth - 20D) / 472) * (Convert.ToInt32((this.ActualHeight - 130D) * 0.4D) / 104);
-            vm.DrivesPageSize = drivesPageSize == 0 ? 1 : drivesPageSize;
-            vm.Init();
-
-            DriveManager.DrivesStateChanged += DriveManager_DrivesStateChanged;
-            cts = new CancellationTokenSource();
-            _ = DriveManager.Check(cts.Token);
-            vm.SortByName(true);
+            vm = new CDMViewModel(_sysDispatcher);
+            vm.ParentHeight = PHeight;
+            vm.ParentWidth = PWidth;
+            vm.EventHighlightSearchedText += Vm_EventHighlightSearchedText;
+            this.DataContext = vm;
+            await Task.Delay(100);
         }
+
+        public void LoadUI()
+        {
+            try
+            {
+                // Subscribe to system theme changes
+                Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
+
+                var drivesPageSize = ((int)Math.Floor((this.ActualWidth - 35D) / 464D) * 2);
+                vm.DrivesPageSize = drivesPageSize == 0 ? 1 : drivesPageSize;
+
+                vm.Init();
+                DriveManager.DrivesStateChanged += DriveManager_DrivesStateChanged;
+                cts = new CancellationTokenSource();
+                _ = DriveManager.Check(cts.Token);
+                vm.SortByName(true);
+            }
+            catch
+            {
+            }
+        }
+
+        private void UpdateDrivePagination()
+        {
+            try
+            {
+                if (vm == null)
+                {
+                    return;
+                }
+                var drivesPageSize = ((int)Math.Floor((this.ActualWidth - 35D) / 464D) * 2);
+                vm.DrivesPageSize = drivesPageSize == 0 ? 1 : drivesPageSize;
+                vm.UpdateDrivePageCount();
+                vm.CurDrivesPagesIndex = 0;
+            }
+            catch
+            {
+
+            }
+        }
+
         private void DriveManager_DrivesStateChanged(object sender, bool e)
         {
             this.Dispatcher.Invoke(() =>

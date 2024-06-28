@@ -24,7 +24,7 @@ namespace CDMMain
         {
             InitializeComponent();
             this.Loaded += MainWindow_Loaded;
-            
+
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -32,6 +32,20 @@ namespace CDMMain
             var cdmControl = new CDM.UserControls.CDMUserControl(this.Dispatcher, grdMain.ActualWidth, grdMain.ActualHeight);
             SizeChanged += cdmControl.CDMUserControl_SizeChanged;
             grdMain.Children.Add(cdmControl);
+            cdmControl.Loaded += CdmControl_Loaded;
+
+        }
+
+        private void CdmControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                (sender as CDM.UserControls.CDMUserControl).LoadUI();
+            }
+            catch 
+            {
+
+            }
         }
     }
 }

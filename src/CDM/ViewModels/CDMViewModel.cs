@@ -130,27 +130,33 @@ namespace CDM.ViewModels
             }
         }
 
-        private bool isFirstDrivesPage = true;
-        public bool IsFirstDrivesPage
+        private bool _showPrevDriveBtn = false;
+
+        public bool ShowPrevDriveBtn
         {
-            get { return isFirstDrivesPage; }
+            get { return _showPrevDriveBtn; }
             set
             {
-                isFirstDrivesPage = value;
-                OnPropertyChanged(nameof(IsFirstDrivesPage));
+                _showPrevDriveBtn = value;
+                OnPropertyChanged(nameof(ShowPrevDriveBtn));
             }
         }
 
-        private bool isLastDrivesPage = true;
-        public bool IsLastDrivesPage
+
+        private bool _showNextDriveBtn = false;
+        public bool ShowNextDriveBtn
         {
-            get { return isLastDrivesPage; }
+            get
+            {
+                return _showNextDriveBtn;
+            }
             set
             {
-                isLastDrivesPage = value;
-                OnPropertyChanged(nameof(IsLastDrivesPage));
+                _showNextDriveBtn = value;
+                OnPropertyChanged(nameof(ShowNextDriveBtn));
             }
         }
+
         private ObservableCollection<DragDropTaskModel> _dragDropTaskList;
         public ObservableCollection<DragDropTaskModel> DragDropTaskList
         {
@@ -504,18 +510,6 @@ namespace CDM.ViewModels
             }
         }
 
-        //private bool _isAscending = true;
-        //public bool IsAscending
-        //{
-        //    get => _isAscending;
-        //    set
-        //    {
-        //        _isAscending = value;
-        //        OnPropertyChanged(nameof(IsAscending));
-        //    }
-        //}
-
-
         private bool _isDriveItemsGridNameAscending = true;
         public bool IsDriveItemsGridNameAscending
         {
@@ -580,7 +574,6 @@ namespace CDM.ViewModels
 
         public RelayCommand BackWindowCommand { get; set; }
         public RelayCommand DoubleClickCommand { get; set; }
-        //public RelayCommand SearchBoxTextChangedCommand { get; set; }
         public RelayCommand TxtSearchGotFocusCommand { get; set; }
         public RelayCommand TxtSearchLostFocusCommand { get; set; }
         public RelayCommand FolderItemDoubleClickCommand { get; set; }
@@ -588,7 +581,6 @@ namespace CDM.ViewModels
         public RelayCommand RecentItemDoubleClickCommand { get; set; }
         public RelayCommand PinnedItemDoubleClickCommand { get; set; }
         public RelayCommand SearchItemCommand { get; set; }
-        //public RelayCommand RecentItemSortCommand { get; set; }
         public RelayCommand PinCommand { get; set; }
         public RelayCommand UnpinCommand { get; set; }
         public RelayCommand StarCommand { get; set; }
@@ -644,7 +636,7 @@ namespace CDM.ViewModels
                 CurFilterStatus.DrivesCount = DriveList.Count;
                 if (CurFilterStatus.DrivesCount > 0)
                 {
-                    CurDrivesPagesIndex = 1;
+                    CurDrivesPagesIndex = 0;
                 }
 
                 CurSearchStatus.IsLoadingDrives = false;
@@ -672,7 +664,7 @@ namespace CDM.ViewModels
 
         private void PrevDrives(object sender)
         {
-            if (CurDrivesPagesIndex <= 1)
+            if (CurDrivesPagesIndex <= 0)
             {
                 return;
             }
@@ -1443,16 +1435,6 @@ namespace CDM.ViewModels
                             DeepSearch(dest, TxtSearchBoxItem, ctsSearch.Token);
                         }
 
-
-                        //_userControl.Dispatcher.Invoke(() =>
-                        //{
-                        //CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
-                        //CurFilterStatus.ItemsCount = FoldersItemList.Count;
-                        //CurSearchStatus.IsLoadingItems = false;
-                        //CurSearchStatus.IsDoing = false;
-                        //CurSearchStatus.Searched = true;
-                        //});
-                        //});
                     }
                     else
                     {
@@ -1468,10 +1450,7 @@ namespace CDM.ViewModels
                 else
                 {
                     IsSearchBoxPlaceholderVisible = Visibility.Visible;
-                    //if (FoldersItemList.Count > 0)
-                    //{
-                    //    CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
-                    //}
+                    
                     if (!string.IsNullOrEmpty(curNavigatingFolderPath))
                     {
                         NavigateToFolder(curNavigatingFolderPath);
@@ -1488,7 +1467,6 @@ namespace CDM.ViewModels
                         CurSearchStatus.IsDoing = false;
                     }
                 }
-                //Logger.LogNow("DoSearch Method Completed Internal", true);
             }
             catch (Exception ex)
             {
@@ -1524,43 +1502,7 @@ namespace CDM.ViewModels
                 CurSearchStatus.Desc = "";
             }
 
-            /*
-            CurSearchStatus.IsDoing = false;
-            if (!string.IsNullOrEmpty(TxtSearchBoxItem))
-            {
-                IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
-                if (FoldersItemList.Count > 0)
-                {
-                    CurFolder = nullFolder;
-                    FoldersItemList.Clear();
-                    DeepSearch(curNavigatingFolderPath, TxtSearchBoxItem);
-                    CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
-                    CurFilterStatus.ItemsCount = FoldersItemList.Count;
-                }
-                else
-                {
-                    CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(RecentItemList);
-                    view.Filter = searchItemFilter; 
-                    view = (CollectionView)CollectionViewSource.GetDefaultView(PinnedItemList);
-                    view.Filter = searchItemFilter;
-                }
-                CurSearchStatus.IsDoing = true;
-            }
-            else
-            {
-                IsSearchBoxPlaceholderVisible = Visibility.Visible;
-                if (FoldersItemList.Count > 0)
-                {
-                    CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
-                }
-                else
-                {
-                    CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
-                    CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
-                }
-                ResetFilter(sender);
-            }
-            */
+           
         }
 
         private void RenameTextChanged(object sender)
@@ -1620,7 +1562,7 @@ namespace CDM.ViewModels
                         RecentManager.Add(SelectedFileFolderItem);
 
                         Process.Start(path);
-                        
+
                         CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
                         CurFilterStatus.RecentCount = RecentItemList.Count;
 
@@ -1791,14 +1733,7 @@ namespace CDM.ViewModels
 
         }
 
-        //public async void UpdateIsloading(bool _isloadingValue)
-        //{
-        //   await Task.Run(Task.Run(() =>
-        //    {
-        //        IsLoading = _isloadingValue;
-
-        //    }));
-        //}
+        
 
         private bool IsRootFolder(string path)
         {
@@ -1960,67 +1895,7 @@ namespace CDM.ViewModels
 
         }
 
-        // File icon set
-        //private string SetIcon(string extension)
-        //{
-        //    string folderFileSource = ""; // Initialize the variable to hold the icon path
-
-        //    switch (extension.ToLower())
-        //    {
-        //        case ".pdf":
-        //            folderFileSource = "Resources/icnpdf.png";
-        //            break;
-        //        case ".jpg":
-        //        case ".jpeg":
-        //            folderFileSource = "Resources/icnjpg.png";
-        //            break;
-        //        case ".png":
-        //            folderFileSource = "Resources/icnpng.png";
-        //            break;
-        //        case ".mkv":
-        //            folderFileSource = "Resources/icnmkv.png";
-        //            break;
-        //        case ".xaml":
-        //            folderFileSource = "Resources/icnxml.png";
-        //            break;
-        //        case ".svg":
-        //            folderFileSource = "Resources/icnsvg.png";
-        //            break;
-        //        case ".txt":
-        //            folderFileSource = "Resources/icntxt.png";
-        //            break;
-        //        case ".sql":
-        //            folderFileSource = "Resources/icnsql.png";
-        //            break;
-        //        case ".zip":
-        //            folderFileSource = "Resources/icnzip.png";
-        //            break;
-        //        case ".sln":
-        //            folderFileSource = "Resources/icnsln.png";
-        //            break;
-        //        case ".exe":
-        //            folderFileSource = "Resources/icnexe.png";
-        //            break;
-        //        default:
-        //            folderFileSource = "Resources/icnfolder.png";
-        //            break;
-        //    }
-        //    return folderFileSource;
-        //}
-
-        // search list filter
-        //private bool folderListFilter(object item)
-        //{
-        //    if (String.IsNullOrEmpty(TxtSearchBoxItem))
-        //        return true;
-        //    else
-        //        return (item as FolderModel).FolderName.StartsWith(TxtSearchBoxItem, StringComparison.OrdinalIgnoreCase);
-        //}
-
-        //private void RecentItemSort(object obj)
-        //{
-        //    IsAscending = !IsAscending;
-        //}
+        
 
         #endregion
 
@@ -2033,7 +1908,6 @@ namespace CDM.ViewModels
         {
             if (e.PropertyName.Equals(nameof(SelectedType)))
             {
-                //if (CurFilterStatus.ShowTypes) CurFilterStatus.ShowTypes = !CurFilterStatus.ShowTypes;
                 CurFilterStatus.CurType = string.IsNullOrEmpty(SelectedType?.Code) ? "" : SelectedType?.Name;
                 DoFilter(sender);
                 return;
@@ -2045,9 +1919,9 @@ namespace CDM.ViewModels
             }
             if (e.PropertyName.Equals(nameof(CurDrivesPagesIndex)))
             {
-                IsFirstDrivesPage = CurDrivesPagesIndex == 1;
-                IsLastDrivesPage = CurDrivesPagesIndex == DrivesPagesCount;
-                var list = DriveList.Skip((CurDrivesPagesIndex - 1) * DrivesPageSize).Take(DrivesPageSize);
+                ShowPrevDriveBtn = curDrivesPagesIndex > 0;
+                ShowNextDriveBtn = curDrivesPagesIndex < DrivesPagesCount - 1;
+                var list = DriveList.Skip((CurDrivesPagesIndex) * DrivesPageSize).Take(DrivesPageSize);
                 PagedDrivesList.Clear();
                 foreach (var item in list)
                 {
@@ -2068,11 +1942,22 @@ namespace CDM.ViewModels
         {
             if (e.PropertyName.Equals(nameof(CurFilterStatus.DrivesCount)))
             {
-                DrivesPagesCount = CurFilterStatus.DrivesCount % DrivesPageSize == 0 ? (CurFilterStatus.DrivesCount / DrivesPageSize) : (CurFilterStatus.DrivesCount / DrivesPageSize + 1);
+                UpdateDrivePageCount();
                 return;
             }
         }
 
+        public void UpdateDrivePageCount()
+        {
+            try
+            {
+                DrivesPagesCount = CurFilterStatus.DrivesCount % DrivesPageSize == 0 ? (CurFilterStatus.DrivesCount / DrivesPageSize) : ((CurFilterStatus.DrivesCount / DrivesPageSize) + 1);
+            }
+            catch
+            {
+
+            }
+        }
         private void SearchStatus_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName.Equals(nameof(CurSearchStatus.IsDoing)))
@@ -2084,7 +1969,6 @@ namespace CDM.ViewModels
         {
             if (!string.IsNullOrEmpty(TxtSearchBoxItem))
             {
-                //IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
                 CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(RecentItemList);
                 view.Filter = searchItemFilter;
             }
@@ -2099,7 +1983,6 @@ namespace CDM.ViewModels
         {
             if (!string.IsNullOrEmpty(TxtSearchBoxItem))
             {
-                //IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
                 CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(PinnedItemList);
                 view.Filter = searchItemFilter;
             }
@@ -2112,7 +1995,6 @@ namespace CDM.ViewModels
         {
             if (!string.IsNullOrEmpty(TxtSearchBoxItem))
             {
-                //IsSearchBoxPlaceholderVisible = Visibility.Collapsed;
                 CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(FoldersItemList);
                 view.Filter = searchItemFilter;
             }
@@ -2123,50 +2005,4 @@ namespace CDM.ViewModels
         }
         #endregion
     }
-
-    //public static class Logger
-    //{
-    //    private static readonly string logFilePath = "C:\\Users\\Lenovo\\Documents\\cdm_log\\log.txt";
-    //    private static readonly string infoFilePath = "C:\\Users\\Lenovo\\Documents\\cdm_log\\info.txt";
-
-    //    static Logger()
-    //    {
-    //        // Optional: Initialize log file if needed
-    //        if (!File.Exists(logFilePath))
-    //        {
-    //            using (File.Create(logFilePath)) { }
-    //        }
-
-    //        // Optional: Initialize log file if needed
-    //        if (!File.Exists(infoFilePath))
-    //        {
-    //            using (File.Create(infoFilePath)) { }
-    //        }
-    //    }
-
-    //    public static void LogNow(string message, bool isInfo = false)
-    //    {
-
-    //        string logMessage = $"{DateTime.Now}: {message}";
-    //        Console.WriteLine(logMessage);
-    //        LogToFile(logMessage, isInfo);
-
-    //    }
-
-    //    private static void LogToFile(string message, bool isInfo = false)
-    //    {
-    //        try
-    //        {
-    //            using (StreamWriter writer = new StreamWriter(isInfo ? infoFilePath : logFilePath, true))
-    //            {
-    //                writer.WriteLine(message);
-    //            }
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            Console.WriteLine($"Failed to log message to file: {ex.Message}");
-    //        }
-    //    }
-    //}
-
 }
