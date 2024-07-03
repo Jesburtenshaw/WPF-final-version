@@ -60,13 +60,11 @@ namespace CDM.UserControls
 
         public void CDMUserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (vm != null)
-            {
-                vm.ParentHeight = e.NewSize.Height;
-                vm.ParentWidth = e.NewSize.Width;
-                UpdateDrivePagination();
-            }
+
+            MasterSizeChanged(e.NewSize.Height, e.NewSize.Width);
+
         }
+
         #endregion
         #region :: Events ::
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -132,8 +130,8 @@ namespace CDM.UserControls
                 {
                     return;
                 }
-                var drivesPageSize = ((int)Math.Floor((this.ActualWidth - 35D) / 464D) * 2);
-                vm.DrivesPageSize = drivesPageSize == 0 ? 1 : drivesPageSize;
+                var drivesPageSize = ((int)Math.Floor((this.Width - 35D) / 464D) * 2);
+                vm.DrivesPageSize = drivesPageSize <= 0 ? 1 : drivesPageSize;
                 vm.UpdateDrivePageCount();
                 vm.CurDrivesPagesIndex = 0;
             }
@@ -668,6 +666,14 @@ namespace CDM.UserControls
             catch (Exception ex)
             {
 
+            }
+        }
+
+        public void MasterSizeChanged(double height, double width)
+        {
+            if (vm != null)
+            {
+                UpdateDrivePagination();
             }
         }
     }

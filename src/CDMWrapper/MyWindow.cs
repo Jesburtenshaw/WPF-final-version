@@ -37,26 +37,50 @@ namespace CDMWrapper
         }
         private IntPtr WindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
         {
-            // Handle messages here
-            switch (msg)
+            try
             {
-                case 0x0005: // WM_SIZE
-                    {
-                        RECT lpRect;
-                        GetClientRect(hwndParent, out lpRect);
+                // Handle messages here
+                switch (msg)
+                {
+                    case 0x0005: // WM_SIZE
+                        {
+                            RECT lpRect;
+                            GetClientRect(hwndParent, out lpRect);
 
-                        RECT lpRectLeft;
-                        GetClientRect(hwndLeft, out lpRectLeft);
-                        double width = (lpRect.Right - lpRect.Left) - (lpRectLeft.Right - lpRectLeft.Left);
-                        double height = (lpRect.Bottom - lpRect.Top);
-                        //MessageBox.Show("w: " + width + "  h: " + height);
-                        cdmControl.Height = height;
-                        cdmControl.Width = width;
-                    }
-                    break;
-                    // Add more cases as needed for different messages
+                            RECT lpRectLeft;
+                            GetClientRect(hwndLeft, out lpRectLeft);
+                            double width = (lpRect.Right - lpRect.Left) - (lpRectLeft.Right - lpRectLeft.Left);
+                            double height = (lpRect.Bottom - lpRect.Top);
+                            //MessageBox.Show("w: " + width + "  h: " + height);
+                            if (height > 0 && width > 0)
+                            {
+
+                                cdmControl.Height = height;
+                                cdmControl.Width = width;
+
+                                cdmControl.MasterSizeChanged(height, width);
+                                cdmControl.Dispatcher.Invoke(() =>
+                                {
+                                    cdmControl.UpdateLayout();
+                                });
+                            }
+                            else
+                            {
+                                //Negative height or width received
+                                // MessageBox.Show($"height: {height}, width:{width}");
+                            }
+
+                        }
+                        break;
+
+                        // Add more cases as needed for different messages
+                }
+
             }
-
+            catch (Exception ex)
+            {
+                //MessageBox.Show(ex.Message);
+            }
             return CallWindowProc(oldProc, hWnd, msg, wParam, lParam);
         }
 

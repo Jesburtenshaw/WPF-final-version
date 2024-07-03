@@ -12,9 +12,7 @@
              PreviewMouseDown="UserControl_PreviewMouseDown"
              PreviewKeyDown="UserControl_PreviewKeyDown"
              AllowDrop="True" ScrollViewer.CanContentScroll="False"
-             DragEnter="UserControl_DragEnter"   
-             Height="{Binding ParentHeight}"
-             Width="{Binding ParentWidth}"
+             DragEnter="UserControl_DragEnter"  
              Drop="UserControl_Drop" Background="{DynamicResource WindowBackgroundColor}"
              mc:Ignorable="d">
     <UserControl.Resources>

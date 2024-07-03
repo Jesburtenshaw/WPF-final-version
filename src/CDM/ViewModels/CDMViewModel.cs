@@ -614,6 +614,7 @@ namespace CDM.ViewModels
         {
             RegistryManager.CheckMostRecentAndEnsureKeyExists();
 
+            DriveManager.DrivesUpdated += DriveManager_DrivesUpdated;
             IsPinLimitReached = PinManager.IsPinLimitReached;
             PinnedItemList = PinManager.PinnedItemList;
             RecentItemList = RecentManager.RecentItemList;
@@ -660,6 +661,21 @@ namespace CDM.ViewModels
 
             });
             //});
+        }
+
+        private void DriveManager_DrivesUpdated(object sender, EventArgs e)
+        {
+            DriveList = DriveManager.DriveList;
+            _sysDispatcher.Invoke(() =>
+            {
+                CurFilterStatus.DrivesCount = DriveList.Count;
+                if (CurFilterStatus.DrivesCount > 0)
+                {
+                    CurDrivesPagesIndex = 0;
+                }
+
+                CurSearchStatus.IsLoadingDrives = false;
+            });
         }
 
         private void PrevDrives(object sender)
@@ -778,7 +794,7 @@ namespace CDM.ViewModels
                 }
                 if (null != driveItem)
                 {
-                    driveItem.IsPined = !driveItem.IsPined;
+                    // driveItem.IsPined = !driveItem.IsPined;
                 }
                 else
                 {
@@ -840,7 +856,7 @@ namespace CDM.ViewModels
                 }
                 if (null != driveItem)
                 {
-                    driveItem.IsPined = !driveItem.IsPined;
+                    // driveItem.IsPined = !driveItem.IsPined;
                 }
                 else
                 {
@@ -1450,7 +1466,7 @@ namespace CDM.ViewModels
                 else
                 {
                     IsSearchBoxPlaceholderVisible = Visibility.Visible;
-                    
+
                     if (!string.IsNullOrEmpty(curNavigatingFolderPath))
                     {
                         NavigateToFolder(curNavigatingFolderPath);
@@ -1502,7 +1518,7 @@ namespace CDM.ViewModels
                 CurSearchStatus.Desc = "";
             }
 
-           
+
         }
 
         private void RenameTextChanged(object sender)
@@ -1559,6 +1575,17 @@ namespace CDM.ViewModels
                 {
                     try
                     {
+                        if (Path.GetExtension(path) == ".lnk")
+                        {
+                            string targetFilePath = ShortcutHelper.GetLnkTarget(path);
+                            if (string.IsNullOrEmpty(targetFilePath) || !(File.Exists(targetFilePath) || Directory.Exists(targetFilePath)))
+                            {
+                                MessageBox.Show("The link location is not valid.");
+                                return;
+                            }
+
+                        }
+
                         RecentManager.Add(SelectedFileFolderItem);
 
                         Process.Start(path);
@@ -1733,7 +1760,7 @@ namespace CDM.ViewModels
 
         }
 
-        
+
 
         private bool IsRootFolder(string path)
         {
@@ -1895,7 +1922,7 @@ namespace CDM.ViewModels
 
         }
 
-        
+
 
         #endregion
 

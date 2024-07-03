@@ -523,7 +523,7 @@ HorizontalAlignment="Stretch"
                                         <MultiDataTrigger.Conditions>
                                             <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=IsMouseOver}"
                                                        Value="True" />
-                                            <Condition Binding="{Binding IsPined}"
+                                            <Condition Binding="{Binding IsPined,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                                        Value="False" />
                                         </MultiDataTrigger.Conditions>
                                         <Setter Property="Visibility"
@@ -542,7 +542,7 @@ HorizontalAlignment="Stretch"
                             Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.UnpinCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=DataContext}"
                             Background="{DynamicResource DriveNavigationBtnBackgrounfColor}"
-                            Visibility="{Binding IsPined, Converter={StaticResource BoolVisibilityConverter}}"
+                            Visibility="{Binding IsPined, Converter={StaticResource BoolVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                             BorderThickness="0"
                             Margin="0 0 5 0"
                             Width="30"

@@ -65,6 +65,12 @@ namespace CDM.Helper
                     Drives.Add(fcm);
                     //});
                 }
+
+                DriveList = new ObservableCollection<DriveModel>(
+                    DriveList.OrderByDescending(s => s.IsPined).ThenBy(s => s.DriveName).ToList()
+                    );
+
+                DrivesUpdated?.Invoke(null, null);
             }
             catch (Exception ex)
             {
@@ -116,6 +122,8 @@ namespace CDM.Helper
                 {
                     drive.IsPined = PinManager.IsPined(drive.DriveName);
                 }
+                DriveList = new ObservableCollection<DriveModel>(DriveList.OrderByDescending(s => s.IsPined).ThenBy(s => s.DriveName).ToList());
+                DrivesUpdated?.Invoke(null, null);
             }
             catch
             {
@@ -163,6 +171,7 @@ namespace CDM.Helper
         }
 
         public static event EventHandler<bool> DrivesStateChanged;
+        public static event EventHandler DrivesUpdated;
         #endregion
     }
 }

@@ -205,6 +205,10 @@ namespace CDM.Helper
             }
             CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
             UpdatePinLimitReached();
+            if (item.IsDrive)
+            {
+                DriveManager.UpdatePinnedDrives();
+            }
         }
 
         public static void Unpin(FileFolderModel item)
@@ -229,6 +233,10 @@ namespace CDM.Helper
             PinnedItemList.Remove(item);
             CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
             UpdatePinLimitReached();
+            if (item.IsDrive)
+            {
+                DriveManager.UpdatePinnedDrives();
+            }
         }
 
         private static bool IsThisPathDrive(string path)
