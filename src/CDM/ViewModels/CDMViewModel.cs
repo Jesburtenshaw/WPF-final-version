@@ -72,6 +72,7 @@ namespace CDM.ViewModels
             PrevDrivesCommand = new RelayCommand(PrevDrives);
             NextDrivesCommand = new RelayCommand(NextDrives);
             GoToParentCommand = new RelayCommand(GoToParent);
+            OkErrorCommand = new RelayCommand(CloseErrorMessageDialog);
 
             //DriveCommand = new RelayCommand(driveCommand);
             IsSearchBoxPlaceholderVisible = Visibility.Visible;
@@ -568,6 +569,49 @@ namespace CDM.ViewModels
             }
         }
 
+        private bool _isErrorMessageWindowVisible = false;
+        public bool IsErrorMessageWindowVisible
+        {
+            get
+            {
+                return _isErrorMessageWindowVisible;
+            }
+            set
+            {
+                _isErrorMessageWindowVisible = value;
+                OnPropertyChanged(nameof(IsErrorMessageWindowVisible));
+            }
+        }
+
+        private string _errorMessage = string.Empty;
+        public string ErrorMessage
+        {
+            get
+            {
+                return _errorMessage;
+            }
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged(nameof(ErrorMessage));
+            }
+        }
+
+
+        private bool _isSortIconsVisible = false;
+        public bool IsSortIconsVisible
+        {
+            get
+            {
+                return _isSortIconsVisible;
+            }
+            set
+            {
+                _isSortIconsVisible = value;
+                OnPropertyChanged(nameof(IsSortIconsVisible));
+            }
+        }
+
         #endregion
 
         #region :: Commands ::
@@ -605,6 +649,7 @@ namespace CDM.ViewModels
         public RelayCommand PrevDrivesCommand { get; set; }
         public RelayCommand NextDrivesCommand { get; set; }
         public RelayCommand GoToParentCommand { get; set; }
+        public RelayCommand OkErrorCommand { get; set; }
 
         #endregion
 
@@ -1105,14 +1150,40 @@ namespace CDM.ViewModels
             CurSearchStatus.CanSearch = true;
         }
 
-        private void ClearSearch(object obj)
+        private async void ClearSearch(object obj)
         {
             if (!CurSearchStatus.CanSearch)
             {
                 return;
             }
+
             TxtSearchBoxItem = "";
-            DoSearch(null);
+            IsSearchBoxPlaceholderVisible = Visibility.Visible;
+
+            await Task.Run(() =>
+            {
+
+            });
+            await Task.Delay(10);
+
+
+            if (!string.IsNullOrEmpty(curNavigatingFolderPath))
+            {
+                NavigateToFolder(curNavigatingFolderPath);
+                ResetFilter(obj);
+                CurSearchStatus.IsDoing = false;
+            }
+            else
+            {
+                CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
+                CurFilterStatus.RecentCount = RecentItemList.Count;
+                CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
+                CurFilterStatus.PinnedCountWithoutDrive = PinnedItemList.Count(s => s.IsDrive == false);
+                ResetFilter(obj);
+                CurSearchStatus.IsDoing = false;
+            }
+
+
         }
 
         private void ClearSearchError(object obj)
@@ -1384,6 +1455,11 @@ namespace CDM.ViewModels
         {
             try
             {
+                if (string.IsNullOrEmpty(TxtSearchBoxItem))
+                {
+                    return;
+                }
+
                 if (!CurSearchStatus.CanSearch)
                 {
                     return;
@@ -1463,26 +1539,7 @@ namespace CDM.ViewModels
                         CurSearchStatus.IsDoing = false;
                     }
                 }
-                else
-                {
-                    IsSearchBoxPlaceholderVisible = Visibility.Visible;
 
-                    if (!string.IsNullOrEmpty(curNavigatingFolderPath))
-                    {
-                        NavigateToFolder(curNavigatingFolderPath);
-                        ResetFilter(sender);
-                        CurSearchStatus.IsDoing = false;
-                    }
-                    else
-                    {
-                        CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
-                        CurFilterStatus.RecentCount = RecentItemList.Count;
-                        CollectionViewSource.GetDefaultView(PinnedItemList).Refresh();
-                        CurFilterStatus.PinnedCountWithoutDrive = PinnedItemList.Count(s => s.IsDrive == false);
-                        ResetFilter(sender);
-                        CurSearchStatus.IsDoing = false;
-                    }
-                }
             }
             catch (Exception ex)
             {
@@ -1580,7 +1637,14 @@ namespace CDM.ViewModels
                             string targetFilePath = ShortcutHelper.GetLnkTarget(path);
                             if (string.IsNullOrEmpty(targetFilePath) || !(File.Exists(targetFilePath) || Directory.Exists(targetFilePath)))
                             {
-                                MessageBox.Show("The link location is not valid.");
+                                ShowCustomErrorMessageDialog("The link location is not valid.");
+                                return;
+                            }
+
+                            //Navigate within our app if target directory exist
+                            if (Directory.Exists(targetFilePath))
+                            {
+                                NavigateToFolder(targetFilePath);
                                 return;
                             }
 
@@ -1854,6 +1918,7 @@ namespace CDM.ViewModels
 
         private void ResetSortFilter(object obj)
         {
+            IsSortIconsVisible = false;
             IsDriveItemsGridNameAscending = true;
             IsDriveItemsGridDateAscending = true;
             SortByName(true);
@@ -1922,7 +1987,17 @@ namespace CDM.ViewModels
 
         }
 
+        public void CloseErrorMessageDialog(object obj)
+        {
+            IsErrorMessageWindowVisible = false;
+            ErrorMessage = string.Empty;
+        }
 
+        public void ShowCustomErrorMessageDialog(string errorMessage)
+        {
+            ErrorMessage = errorMessage;
+            IsErrorMessageWindowVisible = true;
+        }
 
         #endregion
 

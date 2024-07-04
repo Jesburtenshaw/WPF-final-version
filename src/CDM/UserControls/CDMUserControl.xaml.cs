@@ -60,7 +60,8 @@ namespace CDM.UserControls
 
         public void CDMUserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-
+            this.Height = e.NewSize.Height;
+            this.Width = e.NewSize.Width;
             MasterSizeChanged(e.NewSize.Height, e.NewSize.Width);
 
         }
@@ -306,10 +307,12 @@ namespace CDM.UserControls
 
             if (e.Column.SortMemberPath == "Name")
             {
+                vm.IsSortIconsVisible = true;
                 vm.SortByName();
             }
             else if (e.Column.SortMemberPath == "DateModified")
             {
+                vm.IsSortIconsVisible = true;
                 vm.SortByDateModified();
             }
         }
