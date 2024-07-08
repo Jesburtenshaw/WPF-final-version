@@ -42,6 +42,22 @@ namespace CDMWrapper
                 // Handle messages here
                 switch (msg)
                 {
+                    
+                    case 0x0100: // WM_KEYDOWN
+                        {
+                            int virtualKeyCode = wParam.ToInt32();
+                            
+                            if (virtualKeyCode == 32) // Check for backspace key
+                            {
+                                //    // Handle backspace key press here
+                                //    // Example: cdmControl.HandleBackspaceKeyPress();
+                                //    // Replace with your actual logic to handle the backspace press
+                                MessageBox.Show("WM_KEYDOWN  - BackSpace");
+                            }
+                        }
+                        break;
+                        
+
                     case 0x0005: // WM_SIZE
                         {
                             RECT lpRect;
@@ -73,7 +89,8 @@ namespace CDMWrapper
                         }
                         break;
 
-                        // Add more cases as needed for different messages
+                    // Add more cases as needed for different messages
+
                 }
 
             }

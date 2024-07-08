@@ -624,6 +624,36 @@ LRESULT CDMDriveShellView::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	}
 }
 
+LRESULT CDMDriveShellView::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	// Handle WM_KEYDOWN message here
+	int virtualKeyCode = static_cast<int>(wParam);
+
+	// Example: Handle specific keys
+	switch (virtualKeyCode)
+	{
+	case VK_LEFT:
+		// Handle left arrow key
+		break;
+	case VK_RIGHT:
+		// Handle right arrow key
+		break;
+	case VK_UP:
+		// Handle up arrow key
+		break;
+	case VK_DOWN:
+		// Handle down arrow key
+		break;
+	default:
+		// Handle other keys if needed
+		break;
+	}
+
+	// Return 0 to indicate message was handled
+	return 0;
+}
+
+
 LRESULT CDMDriveShellView::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	try
