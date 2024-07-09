@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
@@ -35,28 +36,46 @@ namespace CDMWrapper
             this.newProc = new WndProc(WindowProc);
             this.oldProc = SetWindowLongPtr(hwnd, GWLP_WNDPROC, Marshal.GetFunctionPointerForDelegate(newProc));
         }
+
         private IntPtr WindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
         {
             try
             {
+                Debug.WriteLine($"msg: {msg}    , wParam {wParam.ToInt32()}    ,lParam {lParam}");
+
+                /*
+                   got below values on backspace key press
+                   msg: 144 , wParam 0    ,lParam 0
+                   msg: 24  , wParam 0    ,lParam 0
+                   msg: 2   , wParam 0    ,lParam 0
+                   msg: 130 , wParam 0    ,lParam 0
+                */
+
+                //Tried below code, but sometimes not hitting and crash sometime
+                //if (msg == 144)
+                //{
+                //    Debug.WriteLine($"144  - BackSpace");
+                //    MessageBox.Show("144  - BackSpace");
+                //}
+
                 // Handle messages here
                 switch (msg)
                 {
-                    
                     case 0x0100: // WM_KEYDOWN
                         {
                             int virtualKeyCode = wParam.ToInt32();
-                            
+
                             if (virtualKeyCode == 32) // Check for backspace key
                             {
                                 //    // Handle backspace key press here
                                 //    // Example: cdmControl.HandleBackspaceKeyPress();
                                 //    // Replace with your actual logic to handle the backspace press
+                                Debug.WriteLine($"WM_KEYDOWN  - BackSpace");
                                 MessageBox.Show("WM_KEYDOWN  - BackSpace");
                             }
                         }
                         break;
-                        
+
 
                     case 0x0005: // WM_SIZE
                         {
@@ -89,7 +108,7 @@ namespace CDMWrapper
                         }
                         break;
 
-                    // Add more cases as needed for different messages
+                        // Add more cases as needed for different messages
 
                 }
 
