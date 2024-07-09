@@ -41,7 +41,10 @@ namespace CDMWrapper
             sourceParams.ParentWindow = hwnd;
             sourceParams.WindowStyle = 0x10000000 | 0x40000000; // WS_VISIBLE | WS_CHILD; // style
             System.Windows.Interop.HwndSource source = new System.Windows.Interop.HwndSource(sourceParams);
-            userControl = new CDM.UserControls.CDMUserControl(source.Dispatcher, width, height);
+            if (userControl == null)
+            {
+                userControl = new CDM.UserControls.CDMUserControl(source.Dispatcher, width, height);
+            }
             myWindow = new MyWindow(hwnd, hwndParent, hwndLeft, userControl);
             UIElement page = userControl;
             source.RootVisual = page;
