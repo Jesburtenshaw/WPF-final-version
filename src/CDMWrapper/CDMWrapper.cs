@@ -44,11 +44,11 @@ namespace CDMWrapper
             if (userControl == null)
             {
                 userControl = new CDM.UserControls.CDMUserControl(source.Dispatcher, width, height);
+                myWindow = new MyWindow(hwnd, hwndParent, hwndLeft, userControl);
+                UIElement page = userControl;
+                source.RootVisual = page;
+                userControl.LoadUI();
             }
-            myWindow = new MyWindow(hwnd, hwndParent, hwndLeft, userControl);
-            UIElement page = userControl;
-            source.RootVisual = page;
-            userControl.LoadUI();
         }
     }
 
