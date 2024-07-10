@@ -22,6 +22,7 @@ namespace CDMWrapper
         MyWindow myWindow;
         CDM.UserControls.CDMUserControl userControl;
         System.Windows.Interop.HwndSourceParameters sourceParams;
+        System.Windows.Interop.HwndSource source;
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
 
@@ -40,18 +41,16 @@ namespace CDMWrapper
             sourceParams = new System.Windows.Interop.HwndSourceParameters("CDMWrapper");
             sourceParams.ParentWindow = hwnd;
             sourceParams.WindowStyle = 0x10000000 | 0x40000000; // WS_VISIBLE | WS_CHILD; // style
-            System.Windows.Interop.HwndSource source = new System.Windows.Interop.HwndSource(sourceParams);
-            if (userControl == null)
+
+            source = new System.Windows.Interop.HwndSource(sourceParams);
+            userControl = new CDM.UserControls.CDMUserControl(source.Dispatcher, width, height);
+            myWindow = new MyWindow(hwnd, hwndParent, hwndLeft, userControl);
+            UIElement page = userControl;
+            source.Dispatcher.Invoke(new Action(async () =>
             {
-                userControl = new CDM.UserControls.CDMUserControl(source.Dispatcher, width, height);
-                myWindow = new MyWindow(hwnd, hwndParent, hwndLeft, userControl);
-                UIElement page = userControl;
-                source.Dispatcher.Invoke(new Action(async () =>
-                {
-                    source.RootVisual = page;
-                    userControl.LoadUI();
-                }));
-            }
+                source.RootVisual = page;
+                userControl.LoadUI();
+            }));
 
         }
 
