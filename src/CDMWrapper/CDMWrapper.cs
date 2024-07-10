@@ -46,9 +46,18 @@ namespace CDMWrapper
                 userControl = new CDM.UserControls.CDMUserControl(source.Dispatcher, width, height);
                 myWindow = new MyWindow(hwnd, hwndParent, hwndLeft, userControl);
                 UIElement page = userControl;
-                source.RootVisual = page;
-                userControl.LoadUI();
+                source.Dispatcher.Invoke(new Action(async () =>
+                {
+                    source.RootVisual = page;
+                    userControl.LoadUI();
+                }));
             }
+
+        }
+
+        ~CDMWrapper()
+        {
+            //MessageBox.Show("CDMWrapper Destroying...");
         }
     }
 

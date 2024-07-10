@@ -51,6 +51,7 @@ namespace CDM.UserControls
         public CDMUserControl(Dispatcher sysDispatcher, double width = 0, double height = 0)
         {
             _sysDispatcher = sysDispatcher;
+            _sysDispatcher.UnhandledException += Application_DispatcherUnhandledException;
             PWidth = width;
             PHeight = height;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
