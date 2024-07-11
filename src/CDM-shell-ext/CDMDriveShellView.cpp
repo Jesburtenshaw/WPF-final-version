@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "CDMDriveShellView.h"
 
+
+
 UINT CDMDriveShellView::sm_uListID = 101;
 
 
@@ -91,31 +93,6 @@ IFACEMETHODIMP CDMDriveShellView::ContextSensitiveHelp(_In_ BOOL fEnterMode)
 	}
 }
 
-//HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant params[], int numParams, CComVariant& result)
-//{
-//	if (pDisp == NULL)
-//		return E_POINTER;
-//	DISPID dispId;
-//	LPOLESTR v1[] = { (LPOLESTR)name };
-//	HRESULT hr = pDisp->GetIDsOfNames(IID_NULL, v1, 1, LOCALE_SYSTEM_DEFAULT, &dispId);
-//	if (FAILED(hr))
-//	{
-//		return hr;
-//	}
-//	DISPPARAMS dp;
-//	dp.cNamedArgs = 0;
-//	dp.cArgs = numParams;
-//	dp.rgdispidNamedArgs = NULL;
-//	dp.rgvarg = params;
-//	EXCEPINFO exInfo;
-//	UINT n = 0;
-//	hr = pDisp->Invoke(dispId, IID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_METHOD, &dp, &result, &exInfo, &n);
-//	if (FAILED(hr))
-//	{
-//		return hr;
-//	}
-//	return S_OK;
-//}
 
 HRESULT CallIDispatchMethod(IDispatch* pDisp, LPCWSTR name, CComVariant param1, CComVariant param2, CComVariant param3, CComVariant& result)
 {
@@ -236,53 +213,66 @@ HRESULT CDMDriveShellView::CallMethod(LPCWSTR assemblyName, LPCWSTR className, L
 	return hr;
 }
 
-//void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent)
-//{
-//	// Combine HWND and HWNDParent into a single long parameter if necessary
-//	// For simplicity, we'll just pass hWnd in this example
-//
-//	LONGLONG param = reinterpret_cast<LONGLONG>(hWnd);
-//
-//	HRESULT hr = CallMethod(L"CDMWrapper.dll", L"CDMWrapper.CDMWrapper", L"showCDM", param);
-//	if (FAILED(hr))
-//	{
-//		// Handle error
-//	}
-//}
-
 
 void CDMDriveShellView::LoadCDM(HWND hWnd, HWND hWndParent, HWND hWndLeft)
 {
-	// Create a unique pointer to a CCLRLoaderSimple object
-	m_pCLRLoader = std::make_unique<CCLRLoaderSimple>();
-
-	// Attempt to create an instance of the COM object with the specified ProgID
-	HRESULT hr = m_pCLRLoader->CreateInstance(L"CDMWrapper", L"CDMWrapper.CDMWrapper", &m_cdmPtr);
-
-	// If the instance creation failed, exit the function
-	if (FAILED(hr))
+	if(Singleton::getInstance().getValue() == 0)
 	{
-		// Log the error if logging is available
-		// e.g., Logger::LogError(L"Failed to create instance of CDMWrapper");
-		return;
+		Singleton::getInstance().setValue(1);
+		// Create a unique pointer to a CCLRLoaderSimple object
+		m_pCLRLoader = std::make_unique<CCLRLoaderSimple>();
+
+		// Attempt to create an instance of the COM object with the specified ProgID
+		HRESULT hr = m_pCLRLoader->CreateInstance(L"CDMWrapper", L"CDMWrapper.CDMWrapper", &m_cdmPtr);
+
+		// If the instance creation failed, exit the function
+		if (FAILED(hr))
+		{
+			// Log the error if logging is available
+			// e.g., Logger::LogError(L"Failed to create instance of CDMWrapper");
+			return;
+		}
+
+		Singleton::getInstance().setPtrValue(m_cdmPtr);
+		// Prepare the parameters to be passed to the COM method
+		CComVariant v1((UINT64)hWnd);
+		CComVariant v2((UINT64)hWndParent);
+		CComVariant v3((UINT64)hWndLeft);
+
+		CComVariant result;
+
+		// Call the "showCDM" method on the COM object with the prepared parameters
+		hr = CallIDispatchMethod(m_cdmPtr, L"initCDM", v1, v2, v3, result);
+
+		// If the method call failed, exit the function
+		if (FAILED(hr))
+		{
+			// Log the error if logging is available
+			// e.g., Logger::LogError(L"Failed to call showCDM method");
+			return;
+		}
 	}
+	else {
 
-	// Prepare the parameters to be passed to the COM method
-	CComVariant v1((UINT64)hWnd);
-	CComVariant v2((UINT64)hWndParent);
-	CComVariant v3((UINT64)hWndLeft);
+		m_cdmPtr = Singleton::getInstance().getPtrValue();
+		// Prepare the parameters to be passed to the COM method
+		CComVariant v1((UINT64)hWnd);
+		CComVariant v2((UINT64)hWndParent);
+		CComVariant v3((UINT64)hWndLeft);
 
-	CComVariant result;
+		CComVariant result;
 
-	// Call the "showCDM" method on the COM object with the prepared parameters
-	hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", v1, v2, v3, result);
+		// Call the "showCDM" method on the COM object with the prepared parameters
+		HRESULT hr = CallIDispatchMethod(m_cdmPtr, L"showCDM", v1, v2, v3, result);
 
-	// If the method call failed, exit the function
-	if (FAILED(hr))
-	{
-		// Log the error if logging is available
-		// e.g., Logger::LogError(L"Failed to call showCDM method");
-		return;
+		// If the method call failed, exit the function
+		if (FAILED(hr))
+		{
+			// Log the error if logging is available
+			// e.g., Logger::LogError(L"Failed to call showCDM method");
+			return;
+		}
+
 	}
 }
 

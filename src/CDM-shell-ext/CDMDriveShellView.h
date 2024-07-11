@@ -6,6 +6,45 @@
 #include "clrloadersimple.h"
 #pragma comment(lib, "mscoree.lib")
 
+class Singleton {
+public:
+	// Delete copy constructor and assignment operator to prevent copies
+	Singleton(const Singleton&) = delete;
+	Singleton& operator=(const Singleton&) = delete;
+
+	// Static method to get the single instance of the class
+	static Singleton& getInstance() {
+		static Singleton instance; // Guaranteed to be destroyed and instantiated on first use
+		return instance;
+	}
+
+	// Method to get the value
+	int getValue() const {
+		return value;
+	}
+
+	// Method to set the value
+	void setValue(int newValue) {
+		value = newValue;
+	}
+
+	// Method to get the value
+	IDispatchPtr getPtrValue() const {
+		return mcdmPtr;
+	}
+
+	// Method to set the value
+	void setPtrValue(IDispatchPtr newValue) {
+		mcdmPtr = newValue;
+	}
+
+private:
+	int value; // The integer value to be stored
+	IDispatchPtr mcdmPtr;
+	// Private constructor to prevent instantiation
+	Singleton() : value(0) {}
+};
+
 
 
 class ATL_NO_VTABLE CDMDriveShellView :
