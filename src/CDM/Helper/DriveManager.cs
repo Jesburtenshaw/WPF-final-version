@@ -29,6 +29,7 @@ namespace CDM.Helper
         /// 
         public static Tuple<ObservableCollection<DriveModel>, ObservableCollection<FilterConditionModel>> GetDrivesItem()
         {
+            DriveList = new ObservableCollection<DriveModel>();
             var fcm = new FilterConditionModel
             {
                 Code = "",

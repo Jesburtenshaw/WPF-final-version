@@ -87,12 +87,33 @@ namespace CDMWrapper
         public async void showCDM(long param, long param2, long param3)
         {
             // this functions is call on every CDM Drive Item click after initialization
-            //Element page = userControl;
-            //urce.Dispatcher.Invoke(new Action(async () =>
-            //
-            //   source.RootVisual = page;
-            //  userControl.LoadUI();
-            //));
+            hwnd = (IntPtr)param;
+            hwndParent = (IntPtr)param2;
+            hwndLeft = (IntPtr)param3;
+            RECT lpRect;
+            GetClientRect(hwndParent, out lpRect);
+            RECT lpRectLeft;
+            GetClientRect(hwndLeft, out lpRectLeft);
+            double width = (lpRect.Right - lpRect.Left) - (lpRectLeft.Right - lpRectLeft.Left);
+            double height = (lpRect.Bottom - lpRect.Top);
+
+            if (source == null || source.IsDisposed)
+            {
+                sourceParams = new System.Windows.Interop.HwndSourceParameters("CDMWrapper");
+                sourceParams.ParentWindow = hwnd;
+                sourceParams.WindowStyle = 0x10000000 | 0x40000000; // WS_VISIBLE | WS_CHILD; // style
+
+                source = new System.Windows.Interop.HwndSource(sourceParams);
+
+                myWindow = new MyWindow(hwnd, hwndParent, hwndLeft, userControl);
+
+                source.Dispatcher.Invoke(new Action(async () =>
+                {
+                    userControl.UpdateDispatcher(source.Dispatcher);
+                    source.RootVisual = userControl;
+                    userControl.LoadUI();
+                }));
+            }
         }
         ~CDMWrapper()
         {

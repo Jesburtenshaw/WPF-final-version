@@ -680,5 +680,9 @@ namespace CDM.UserControls
                 UpdateDrivePagination();
             }
         }
+        public void UpdateDispatcher(Dispatcher dispatcher)
+        {
+            _sysDispatcher = dispatcher;
+        }
     }
 }
