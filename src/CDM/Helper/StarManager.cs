@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace CDM.Helper
 {
-    public static class StarManager
+    public class StarManager
     {
         #region :: Variable ::
-        private static string starFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CDM");
+        private string starFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CDM");
         #endregion
         #region :: Constructor ::
-        static StarManager()
+        public StarManager()
         {
             DirectoryHelper.CheckAndCreateDirectory(starFolder);
         }
@@ -26,7 +26,7 @@ namespace CDM.Helper
         /// </summary>
         /// <param name="folderPath"></param>
         /// <returns></returns>
-        public static bool IsDefault(string folderPath)
+        public bool IsDefault(string folderPath)
         {
             return GetDefault(folderPath, out string driveStarFile) == folderPath;
         }
@@ -36,7 +36,7 @@ namespace CDM.Helper
         /// <param name="folderPath"></param>
         /// <param name="driveStarFile"></param>
         /// <returns></returns>
-        public static string GetDefault(string folderPath, out string driveStarFile)
+        public string GetDefault(string folderPath, out string driveStarFile)
         {
             driveStarFile = Path.Combine(starFolder, $"{folderPath.Substring(0, 1)}.txt");
             if (!File.Exists(driveStarFile))
@@ -62,7 +62,7 @@ namespace CDM.Helper
         /// </summary>
         /// <param name="folderPath"></param>
         /// <returns></returns>
-        public static string SetDefault(string folderPath)
+        public string SetDefault(string folderPath)
         {
             string driveStarFile = "";
             var driveStarPath = GetDefault(folderPath, out driveStarFile);

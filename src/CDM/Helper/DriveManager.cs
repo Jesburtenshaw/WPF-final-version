@@ -13,12 +13,12 @@ using System.Windows;
 
 namespace CDM.Helper
 {
-    public static class DriveManager
+    public class DriveManager
     {
         #region ::Variables::
-        public static ObservableCollection<DriveModel> DriveList = new ObservableCollection<DriveModel>();
-        public static ObservableCollection<FilterConditionModel> Drives = new ObservableCollection<FilterConditionModel>();
-        public static string[] _driveNameList;
+        public ObservableCollection<DriveModel> DriveList = new ObservableCollection<DriveModel>();
+        public ObservableCollection<FilterConditionModel> Drives = new ObservableCollection<FilterConditionModel>();
+        public string[] _driveNameList;
 
         #endregion
         #region ::Methods::
@@ -27,7 +27,7 @@ namespace CDM.Helper
         /// </summary>
         /// <returns></returns>
         /// 
-        public static Tuple<ObservableCollection<DriveModel>, ObservableCollection<FilterConditionModel>> GetDrivesItem()
+        public Tuple<ObservableCollection<DriveModel>, ObservableCollection<FilterConditionModel>> GetDrivesItem()
         {
             DriveList = new ObservableCollection<DriveModel>();
             var fcm = new FilterConditionModel
@@ -52,7 +52,6 @@ namespace CDM.Helper
                     {
                         DriveName = drive.Name,//.TrimEnd('\\'),
                         DriveDescription = drive.VolumeLabel,
-                        IsPined = PinManager.IsPined(drive.Name)
                     });
                     //});
                     fcm = new FilterConditionModel
@@ -79,7 +78,7 @@ namespace CDM.Helper
             }
             return new Tuple<ObservableCollection<DriveModel>, ObservableCollection<FilterConditionModel>>(DriveList, Drives);
         }
-        public static async Task Check(CancellationToken ct)
+        public async Task Check(CancellationToken ct)
         {
             while (!ct.IsCancellationRequested)
             {
@@ -115,28 +114,12 @@ namespace CDM.Helper
             }
         }
 
-        public static void UpdatePinnedDrives()
-        {
-            try
-            {
-                foreach (DriveModel drive in DriveList)
-                {
-                    drive.IsPined = PinManager.IsPined(drive.DriveName);
-                }
-                DriveList = new ObservableCollection<DriveModel>(DriveList.OrderByDescending(s => s.IsPined).ThenBy(s => s.DriveName).ToList());
-                DrivesUpdated?.Invoke(null, null);
-            }
-            catch
-            {
-            }
-        }
-
 
         #endregion
         #region ::Events::
-        public static event EventHandler DriveIsSelectedChanged;
+        public event EventHandler DriveIsSelectedChanged;
 
-        private static void FilterConditionModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void FilterConditionModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (!e.PropertyName.Equals("IsSelected"))
             {
@@ -171,8 +154,13 @@ namespace CDM.Helper
             DriveIsSelectedChanged?.Invoke(sender, e);
         }
 
-        public static event EventHandler<bool> DrivesStateChanged;
-        public static event EventHandler DrivesUpdated;
+        public void DrivesUpdatedFromPinManger()
+        {
+            DrivesUpdated?.Invoke(null, null);
+        }
+
+        public event EventHandler<bool> DrivesStateChanged;
+        public event EventHandler DrivesUpdated;
         #endregion
     }
 }

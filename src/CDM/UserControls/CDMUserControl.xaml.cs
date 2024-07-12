@@ -51,7 +51,7 @@ namespace CDM.UserControls
         public CDMUserControl(Dispatcher sysDispatcher, double width = 0, double height = 0)
         {
             _sysDispatcher = sysDispatcher;
-            _sysDispatcher.UnhandledException += Application_DispatcherUnhandledException;
+            //_sysDispatcher.UnhandledException += Application_DispatcherUnhandledException;
             PWidth = width;
             PHeight = height;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
@@ -114,9 +114,9 @@ namespace CDM.UserControls
                 vm.DrivesPageSize = drivesPageSize == 0 ? 1 : drivesPageSize;
 
                 vm.Init();
-                DriveManager.DrivesStateChanged += DriveManager_DrivesStateChanged;
+                vm._driveManager.DrivesStateChanged += DriveManager_DrivesStateChanged;
                 cts = new CancellationTokenSource();
-                _ = DriveManager.Check(cts.Token);
+                _ = vm._driveManager.Check(cts.Token);
                 vm.SortByName(true);
             }
             catch
@@ -680,9 +680,11 @@ namespace CDM.UserControls
                 UpdateDrivePagination();
             }
         }
-        public void UpdateDispatcher(Dispatcher dispatcher)
+
+        public void StopProcess()
         {
-            _sysDispatcher = dispatcher;
+            cts?.Cancel();
+            vm?.CancelSearchToken();
         }
     }
 }

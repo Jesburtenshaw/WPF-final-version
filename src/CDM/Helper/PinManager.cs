@@ -12,19 +12,25 @@ using System.Windows.Data;
 
 namespace CDM.Helper
 {
-    public static class PinManager
+    public class PinManager
     {
+
         #region :: Variables ::
         // Path to the Taskbar pinned items folder
-        private static string pinFolder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
+        private string pinFolder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
 
-        public static ObservableCollection<FileFolderModel> PinnedItemList = new ObservableCollection<FileFolderModel>();
-
+        public ObservableCollection<FileFolderModel> PinnedItemList = new ObservableCollection<FileFolderModel>();
+        private DriveManager _driveManager;
         #endregion
 
+        public PinManager(DriveManager driveManager)
+        {
+            _driveManager = driveManager;
+        }
+
         #region :: Methods ::
-        public static bool IsPinLimitReached { get; set; } = false;
-        public static ObservableCollection<FileFolderModel> GetPinnedItems()
+        public bool IsPinLimitReached { get; set; } = false;
+        public ObservableCollection<FileFolderModel> GetPinnedItems(StarManager starManager)
         {
             PinnedItemList.Clear();
             //if (RegistryManager.IsUsingRegistry)
@@ -74,7 +80,7 @@ namespace CDM.Helper
                         Path = dirInfo.FullName,
                         IconSource = IconHelper.GetIcon(dirInfo.FullName),
                         IsPined = true,
-                        IsDefault = StarManager.IsDefault(dirInfo.FullName),
+                        IsDefault = starManager.IsDefault(dirInfo.FullName),
                         Type = "Dir",
                         IsDrive = IsThisPathDrive(file)
                     });
@@ -148,7 +154,7 @@ namespace CDM.Helper
             return PinnedItemList;
         }
 
-        private static void UpdatePinLimitReached()
+        private void UpdatePinLimitReached()
         {
             if (PinnedItemList != null && PinnedItemList.Count >= 100)
             {
@@ -160,12 +166,12 @@ namespace CDM.Helper
             }
         }
 
-        public static bool IsPined(string fileOrFolderName)
+        public bool IsPined(string fileOrFolderName)
         {
             return PinnedItemList.FirstOrDefault(item => item.Path.Equals(fileOrFolderName)) != null;
         }
 
-        public static void Pin(FileFolderModel item)
+        public void Pin(FileFolderModel item)
         {
             //if (RegistryManager.IsUsingRegistry)
             //{
@@ -207,11 +213,11 @@ namespace CDM.Helper
             UpdatePinLimitReached();
             if (item.IsDrive)
             {
-                DriveManager.UpdatePinnedDrives();
+                UpdatePinnedDrives();
             }
         }
 
-        public static void Unpin(FileFolderModel item)
+        public void Unpin(FileFolderModel item)
         {
             //if (RegistryManager.IsUsingRegistry)
             //{
@@ -235,17 +241,34 @@ namespace CDM.Helper
             UpdatePinLimitReached();
             if (item.IsDrive)
             {
-                DriveManager.UpdatePinnedDrives();
+                UpdatePinnedDrives();
             }
         }
 
-        private static bool IsThisPathDrive(string path)
+        private bool IsThisPathDrive(string path)
         {
-            if (!string.IsNullOrWhiteSpace(path) && DriveManager.Drives != null && DriveManager.Drives?.Count(s => s.Name == path) > 0)
+            if (!string.IsNullOrWhiteSpace(path) && _driveManager.Drives != null && _driveManager.Drives?.Count(s => s.Name == path) > 0)
             {
                 return true;
             }
             return false;
+        }
+
+
+        public void UpdatePinnedDrives()
+        {
+            try
+            {
+                foreach (DriveModel drive in _driveManager.DriveList)
+                {
+                    drive.IsPined = IsPined(drive.DriveName);
+                }
+                _driveManager.DriveList = new ObservableCollection<DriveModel>(_driveManager.DriveList.OrderByDescending(s => s.IsPined).ThenBy(s => s.DriveName).ToList());
+                _driveManager.DrivesUpdatedFromPinManger();
+            }
+            catch
+            {
+            }
         }
 
         #endregion

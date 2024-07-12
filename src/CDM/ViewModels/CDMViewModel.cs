@@ -80,7 +80,6 @@ namespace CDM.ViewModels
             IsDriveFoldersVisible = Visibility.Collapsed;
 
             this.PropertyChanged += CDMViewModel_PropertyChanged;
-            DriveManager.DriveIsSelectedChanged += DriveManager_DriveIsSelectedChanged;
 
             CurSearchStatus.PropertyChanged += SearchStatus_PropertyChanged;
             CurFilterStatus.PropertyChanged += FilterStatus_PropertyChanged;
@@ -89,6 +88,10 @@ namespace CDM.ViewModels
         #endregion
 
         #region :: Properties ::
+        public DriveManager _driveManager;
+        public PinManager _pinManager;
+        public RecentManager _recentManager;
+        public StarManager _starManager;
 
         public bool EntereingDrives { get; set; } = false;
         private string forbiddenChars = "\\/:*\"<>|";
@@ -659,12 +662,19 @@ namespace CDM.ViewModels
         {
             RegistryManager.CheckMostRecentAndEnsureKeyExists();
 
-            DriveManager.DrivesUpdated += DriveManager_DrivesUpdated;
-            IsPinLimitReached = PinManager.IsPinLimitReached;
-            PinnedItemList = PinManager.PinnedItemList;
-            RecentItemList = RecentManager.RecentItemList;
-            DriveList = DriveManager.DriveList;
-            Drives = DriveManager.Drives;
+            _driveManager = new DriveManager();
+            _driveManager.DriveIsSelectedChanged += DriveManager_DriveIsSelectedChanged;
+            _driveManager.DrivesUpdated += DriveManager_DrivesUpdated;
+            
+            _starManager = new StarManager();
+            _pinManager = new PinManager(_driveManager);
+            _recentManager = new RecentManager(_pinManager);
+
+            IsPinLimitReached = _pinManager.IsPinLimitReached;
+            PinnedItemList = _pinManager.PinnedItemList;
+            RecentItemList = _recentManager.RecentItemList;
+            DriveList = _driveManager.DriveList;
+            Drives = _driveManager.Drives;
             Types = FilterConditionModel.Types;
 
             //Task.Run(() =>
@@ -676,9 +686,11 @@ namespace CDM.ViewModels
                 CurSearchStatus.IsLoadingPinned = true;
                 CurSearchStatus.IsLoadingRecent = true;
             });
-            DriveManager.GetDrivesItem();
+
             _sysDispatcher.Invoke(() =>
             {
+                _driveManager.GetDrivesItem();
+
                 CurFilterStatus.DrivesCount = DriveList.Count;
                 if (CurFilterStatus.DrivesCount > 0)
                 {
@@ -687,16 +699,16 @@ namespace CDM.ViewModels
 
                 CurSearchStatus.IsLoadingDrives = false;
             });
-            PinManager.GetPinnedItems();
-            DriveManager.UpdatePinnedDrives();
+            _pinManager.GetPinnedItems(_starManager);
+            _pinManager.UpdatePinnedDrives();
 
             _sysDispatcher.Invoke(() =>
             {
                 CurFilterStatus.PinnedCountWithoutDrive = PinnedItemList.Count(s => s.IsDrive == false);
                 CurSearchStatus.IsLoadingPinned = false;
-                IsPinLimitReached = PinManager.IsPinLimitReached;
+                IsPinLimitReached = _pinManager.IsPinLimitReached;
             });
-            RecentManager.GetRecentItems();
+            _recentManager.GetRecentItems();
             _sysDispatcher.Invoke(() =>
             {
                 CurFilterStatus.RecentCount = RecentItemList.Count;
@@ -710,7 +722,7 @@ namespace CDM.ViewModels
 
         private void DriveManager_DrivesUpdated(object sender, EventArgs e)
         {
-            DriveList = DriveManager.DriveList;
+            DriveList = _driveManager.DriveList;
             _sysDispatcher.Invoke(() =>
             {
                 CurFilterStatus.DrivesCount = DriveList.Count;
@@ -817,8 +829,8 @@ namespace CDM.ViewModels
             }
             try
             {
-                PinManager.Pin(unpinedItem);
-                IsPinLimitReached = PinManager.IsPinLimitReached;
+                _pinManager.Pin(unpinedItem);
+                IsPinLimitReached = _pinManager.IsPinLimitReached;
 
                 FileFolderModel t = null;
                 if (null == curItem || string.IsNullOrEmpty(curItem.OriginalPath))
@@ -879,8 +891,8 @@ namespace CDM.ViewModels
             }
             try
             {
-                PinManager.Unpin(pinedItem);
-                IsPinLimitReached = PinManager.IsPinLimitReached;
+                _pinManager.Unpin(pinedItem);
+                IsPinLimitReached = _pinManager.IsPinLimitReached;
 
                 FileFolderModel t = null;
                 if (null == curItem || string.IsNullOrEmpty(curItem.OriginalPath))
@@ -923,7 +935,7 @@ namespace CDM.ViewModels
             {
                 foreach (FileFolderModel item in RecentItemList.Where(s => s.Path == pinUnpinnedItem.Path))
                 {
-                    item.IsPined = PinManager.IsPined(item.Path);
+                    item.IsPined = _pinManager.IsPined(item.Path);
                 }
             }
 
@@ -933,7 +945,7 @@ namespace CDM.ViewModels
             var item = obj as FileFolderModel;
             try
             {
-                StarManager.SetDefault(item.Path);
+                _starManager.SetDefault(item.Path);
 
                 var t = RecentItemList.FirstOrDefault(e => !e.Equals(item) && e.Path.Equals(item.Path));
                 if (null != t)
@@ -980,7 +992,7 @@ namespace CDM.ViewModels
             var item = obj as FileFolderModel;
             try
             {
-                StarManager.SetDefault(item.Path);
+                _starManager.SetDefault(item.Path);
 
                 var t = RecentItemList.FirstOrDefault(e => !e.Equals(item) && e.Path.Equals(item.Path));
                 if (null != t)
@@ -1015,7 +1027,7 @@ namespace CDM.ViewModels
             }
             try
             {
-                RecentManager.Add(item);
+                _recentManager.Add(item);
                 Process.Start(item.Path);
                 CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
                 CurFilterStatus.RecentCount = RecentItemList.Count;
@@ -1075,13 +1087,13 @@ namespace CDM.ViewModels
             var t = RecentItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
             if (null != t)
             {
-                RecentManager.Remove(t);
+                _recentManager.Remove(t);
             }
             t = PinnedItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
             if (null != t)
             {
-                PinManager.Unpin(t);
-                IsPinLimitReached = PinManager.IsPinLimitReached;
+                _pinManager.Unpin(t);
+                IsPinLimitReached = _pinManager.IsPinLimitReached;
             }
             t = FoldersItemList.FirstOrDefault(e => e.Path.Equals(item.Path));
             if (null != t)
@@ -1116,19 +1128,19 @@ namespace CDM.ViewModels
             var t = RecentItemList.FirstOrDefault(e => e.Path.Equals(CurRenameItem.Path));
             if (null != t)
             {
-                RecentManager.Remove(t);
+                _recentManager.Remove(t);
                 t.Name = curRenameStatus.Name;
                 t.Path = newPath;
-                RecentManager.Add(t);
+                _recentManager.Add(t);
             }
             t = PinnedItemList.FirstOrDefault(e => e.Path.Equals(CurRenameItem.Path));
             if (null != t)
             {
-                PinManager.Unpin(t);
+                _pinManager.Unpin(t);
                 t.Name = curRenameStatus.Name;
                 t.Path = newPath;
-                PinManager.Pin(t);
-                IsPinLimitReached = PinManager.IsPinLimitReached;
+                _pinManager.Pin(t);
+                IsPinLimitReached = _pinManager.IsPinLimitReached;
             }
             t = FoldersItemList.FirstOrDefault(e => e.Path.Equals(CurRenameItem.Path));
             if (null != t)
@@ -1306,7 +1318,7 @@ namespace CDM.ViewModels
 
                 if (item?.DriveName != null && item.DriveName != string.Empty)
                 {
-                    var defaultFolderPath = StarManager.GetDefault(item.DriveName, out string driveStarFile);
+                    var defaultFolderPath = _starManager.GetDefault(item.DriveName, out string driveStarFile);
                     if (!string.IsNullOrEmpty(defaultFolderPath))
                     {
                         //Logger.LogNow("Opening Star File or DefaultFolderPath", true);
@@ -1437,8 +1449,8 @@ namespace CDM.ViewModels
                         LastModifiedDateTime = info.LastWriteTime,
                         IconSource = IconHelper.GetIcon(info.FullName),
                         Type = type,
-                        IsDefault = StarManager.IsDefault(info.FullName),
-                        IsPined = PinManager.IsPined(info.FullName)
+                        IsDefault = _starManager.IsDefault(info.FullName),
+                        IsPined = _pinManager.IsPined(info.FullName)
                     });
                 });
                 //await Task.Delay(10);
@@ -1650,7 +1662,7 @@ namespace CDM.ViewModels
 
                         }
 
-                        RecentManager.Add(SelectedFileFolderItem);
+                        _recentManager.Add(SelectedFileFolderItem);
 
                         Process.Start(path);
 
@@ -1674,7 +1686,7 @@ namespace CDM.ViewModels
             {
                 try
                 {
-                    RecentManager.Add(SelectedRecentItem);
+                    _recentManager.Add(SelectedRecentItem);
 
                     Process.Start(SelectedRecentItem.Path);
 
@@ -1697,7 +1709,7 @@ namespace CDM.ViewModels
             {
                 try
                 {
-                    RecentManager.Add(pinedItem);
+                    _recentManager.Add(pinedItem);
                     Process.Start(pinedItem.Path);
                     CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
                     CurFilterStatus.RecentCount = RecentItemList.Count;
@@ -1745,8 +1757,8 @@ namespace CDM.ViewModels
                             LastModifiedDateTime = curDir.LastWriteTime,
                             IconSource = IconHelper.GetIcon(curDir.FullName),
                             Type = "Dir",
-                            IsPined = PinManager.IsPined(folderPath),
-                            IsDefault = StarManager.IsDefault(folderPath)
+                            IsPined = _pinManager.IsPined(folderPath),
+                            IsDefault = _starManager.IsDefault(folderPath)
                         };
 
                     }
@@ -1770,8 +1782,8 @@ namespace CDM.ViewModels
                                     LastModifiedDateTime = subFolderInfo.LastWriteTime,
                                     IconSource = IconHelper.GetIcon(subFolderInfo.FullName),
                                     Type = "Dir",
-                                    IsDefault = StarManager.IsDefault(subFolder),
-                                    IsPined = PinManager.IsPined(subFolder)
+                                    IsDefault = _starManager.IsDefault(subFolder),
+                                    IsPined = _pinManager.IsPined(subFolder)
                                 });
 
                             }
@@ -1798,8 +1810,8 @@ namespace CDM.ViewModels
                                     LastModifiedDateTime = fileInfo.LastWriteTime,
                                     IconSource = IconHelper.GetIcon(fileInfo.FullName),
                                     Type = "File",
-                                    IsDefault = StarManager.IsDefault(file),
-                                    IsPined = PinManager.IsPined(file)
+                                    IsDefault = _starManager.IsDefault(file),
+                                    IsPined = _pinManager.IsPined(file)
                                 });
 
                             }
@@ -2104,6 +2116,11 @@ namespace CDM.ViewModels
             {
                 CollectionViewSource.GetDefaultView(FoldersItemList).Refresh();
             }
+        }
+
+        internal void CancelSearchToken()
+        {
+            ctsSearch?.Cancel();
         }
         #endregion
     }

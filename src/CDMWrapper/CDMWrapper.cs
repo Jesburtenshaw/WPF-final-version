@@ -56,7 +56,7 @@ namespace CDMWrapper
         //}
         public async void initCDM(long param, long param2, long param3)
         {
-            
+
             // this function is call only ones
             // change this code , keep class instances global  
             hwnd = (IntPtr)param;
@@ -80,41 +80,44 @@ namespace CDMWrapper
             source.Dispatcher.Invoke(new Action(async () =>
             {
                 source.RootVisual = page;
-                userControl.LoadUI();
             }));
+            userControl.LoadUI();
+            source.Disposed += Source_Disposed;
+            source.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
 
         }
-        public async void showCDM(long param, long param2, long param3)
+
+        private void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            // this functions is call on every CDM Drive Item click after initialization
-            hwnd = (IntPtr)param;
-            hwndParent = (IntPtr)param2;
-            hwndLeft = (IntPtr)param3;
-            RECT lpRect;
-            GetClientRect(hwndParent, out lpRect);
-            RECT lpRectLeft;
-            GetClientRect(hwndLeft, out lpRectLeft);
-            double width = (lpRect.Right - lpRect.Left) - (lpRectLeft.Right - lpRectLeft.Left);
-            double height = (lpRect.Bottom - lpRect.Top);
+            MessageBox.Show(e.Exception.Message);
+            e.Handled = true;
+        }
 
-            if (source == null || source.IsDisposed)
+        private void Source_Disposed(object sender, EventArgs e)
+        {
+            //MessageBox.Show("Source Disposed !");
+            if (userControl != null)
             {
-                sourceParams = new System.Windows.Interop.HwndSourceParameters("CDMWrapper");
-                sourceParams.ParentWindow = hwnd;
-                sourceParams.WindowStyle = 0x10000000 | 0x40000000; // WS_VISIBLE | WS_CHILD; // style
-
-                source = new System.Windows.Interop.HwndSource(sourceParams);
-
-                myWindow = new MyWindow(hwnd, hwndParent, hwndLeft, userControl);
-
-                source.Dispatcher.Invoke(new Action(async () =>
-                {
-                    userControl.UpdateDispatcher(source.Dispatcher);
-                    source.RootVisual = userControl;
-                    userControl.LoadUI();
-                }));
+                userControl.StopProcess();
             }
         }
+
+        public async void showCDM(long param, long param2, long param3)
+        {
+            try
+            {
+                source.Dispose();
+                source.Disposed -= Source_Disposed;
+                source.Dispatcher.UnhandledException -= Dispatcher_UnhandledException;
+                source = null;
+                initCDM(param, param2, param3);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
         ~CDMWrapper()
         {
             //MessageBox.Show("CDMWrapper Destroying...");

@@ -12,16 +12,22 @@ using System.Windows.Data;
 
 namespace CDM.Helper
 {
-    public static class RecentManager
+    public class RecentManager
     {
         #region :: Variables ::
-        private static string recentFolder = Environment.GetFolderPath(Environment.SpecialFolder.Recent);
 
-        public static ObservableCollection<FileFolderModel> RecentItemList = new ObservableCollection<FileFolderModel>();
+        private PinManager _pinManager;
+        private string recentFolder = Environment.GetFolderPath(Environment.SpecialFolder.Recent);
+
+        public ObservableCollection<FileFolderModel> RecentItemList = new ObservableCollection<FileFolderModel>();
         #endregion
 
+        public RecentManager(PinManager pinManager)
+        {
+            _pinManager = pinManager;
+        }
         #region :: Methods ::
-        public static ObservableCollection<FileFolderModel> GetRecentItems()
+        public ObservableCollection<FileFolderModel> GetRecentItems()
         {
 
             RecentItemList.Clear();
@@ -48,7 +54,7 @@ namespace CDM.Helper
                             LastModifiedDateTime = recentFile.LastOpenedDate ?? DateTime.Now,
                             Path = fileInfo.FullName,
                             IconSource = IconHelper.GetIcon(fileInfo.FullName),
-                            IsPined = PinManager.IsPined(fileInfo.FullName),
+                            IsPined = _pinManager.IsPined(fileInfo.FullName),
                             Type = "File"
                         });
 
@@ -86,12 +92,12 @@ namespace CDM.Helper
                             Path = fileInfo.FullName,
                             IconSource = IconHelper.GetIcon(fileInfo.FullName),
                             OriginalPath = recentFile,
-                            IsPined = PinManager.IsPined(fileInfo.FullName),
+                            IsPined = _pinManager.IsPined(fileInfo.FullName),
                             Type = "File"
                         });
                         //});
                     }
-                    
+
                 }
             }
 
@@ -103,7 +109,7 @@ namespace CDM.Helper
             return RecentItemList;
         }
 
-        private static void RemoveRecentItemsMoreThan100()
+        private void RemoveRecentItemsMoreThan100()
         {
             //Remove old items 
             var allRecentItems = RecentItemList.OrderByDescending(s => s.LastModifiedDateTime).ToList();
@@ -113,7 +119,7 @@ namespace CDM.Helper
             }
         }
 
-        public static void Add(FileFolderModel item)
+        public void Add(FileFolderModel item)
         {
             if (RegistryManager.IsUsingRegistry)
             {
@@ -143,7 +149,7 @@ namespace CDM.Helper
             CollectionViewSource.GetDefaultView(RecentItemList).Refresh();
         }
 
-        public static void Remove(FileFolderModel item)
+        public void Remove(FileFolderModel item)
         {
             if (RegistryManager.IsUsingRegistry)
             {
